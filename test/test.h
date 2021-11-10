@@ -307,7 +307,7 @@ void error(const unsigned char *my, const unsigned char *gnu, long size,
 void result(long all, long ok)
 {
 	if (all == ok)
-		printf("  ✅  " OK "[%ld/%ld] all test passed 💪😎\n" RESET, ok, all);
+		printf("  ✅  " OK "[%ld/%ld] all test passed 😎\n" RESET, ok, all);
 	else if (ok >= all * 9 / 10)
 		printf("  ⚠️   " TERM_YELLOW "[%ld/%ld] tests passed 🤔" RESET "\n", ok, all);
 	else
@@ -319,6 +319,13 @@ void fill(void *array, long size)
 	unsigned char *a = (unsigned char *)array;
 	for (long i=0; i <size; ++i)
 		a[i] = (unsigned char)rand();
+}
+
+void prompt()
+{
+	printf(TERM_GREEN "       ╭──────────────────────╮" RESET "\n");
+	printf(TERM_GREEN "       │ RUNNING %d BIT TESTS │" RESET "\n", BIT);
+	printf(TERM_GREEN "       ╰──────────────────────╯" RESET "\n");
 }
 
 #endif

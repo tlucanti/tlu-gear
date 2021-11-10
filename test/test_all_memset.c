@@ -1,5 +1,33 @@
 #include "test.h"
 
+#if TESTFUNC == 1
+# define _CALL_TEST1 \
+	TLUmemset(my + shift, 0x23, test_num); \
+	memset(gnu + shift, 0x23, test_num)
+# define _CALL_TEST2 \
+	TLUmemset(my + shift, c, test_num); \
+	memset(gnu + shift, c, test_num)
+# define _CALL_TEST3 \
+	TLUmemset(my + shift, c, size); \
+	memset(gnu + shift, c, size)
+
+#endif
+
+#if TESTFUNC == 2
+# define _CALL_TEST1 \
+	TLUbzero(my + shift, test_num); \
+	bzero(gnu + shift, test_num)
+# define _CALL_TEST2 \
+	(void)c; \
+	TLUbzero(my + shift, test_num); \
+	bzero(gnu + shift, test_num)
+# define _CALL_TEST3 \
+	(void)c; \
+	TLUbzero(my + shift, size); \
+	bzero(gnu + shift, size)
+
+#endif
+
 void memset_test()
 {
 	srand(time(NULL));
@@ -18,8 +46,7 @@ void memset_test()
 				memset(my, 0x78, BUFF_SIZE);
 				memset(gnu, 0x78, BUFF_SIZE);
 
-				TLUmemset(my + shift, 0x23, test_num);
-				memset(gnu + shift, 0x23, test_num);
+				_CALL_TEST1;
 
 				if (memcmp(my, gnu, BUFF_SIZE))
 				{
@@ -28,8 +55,8 @@ void memset_test()
 					 * BRAIKPOINT POSITION ( 1 )
 					 * SET BRAKEPOINT HERE TO KNOW WHERE IS ERROR 
 					 */
-					TLUmemset(my + shift, 0x23, test_num);
 #ifdef STOPATERROR
+					_CALL_TEST1;
 					return;
 #endif
 				}
@@ -38,11 +65,10 @@ void memset_test()
 				++all;
 
 				fill(my, BUFF_SIZE);
+				unsigned char c = rand();
 				memcpy(gnu, my, BUFF_SIZE);
-
-				unsigned int c = (unsigned char)rand();
-				TLUmemset(my + shift, c, test_num);
-				memset(gnu + shift, c, test_num);
+				
+				_CALL_TEST2;
 
 				if (memcmp(my, gnu, BUFF_SIZE))
 				{
@@ -51,9 +77,9 @@ void memset_test()
 					 * BRAIKPOINT POSITION ( 2 )
 					 * SET BRAKEPOINT HERE TO KNOW WHERE IS ERROR 
 					 */
-					TLUmemset(my + shift, c, test_num);
 #ifdef STOPATERROR
-				return;
+					_CALL_TEST2;
+					return;
 #endif
 				}
 				else
@@ -66,7 +92,7 @@ void memset_test()
 
 	{
 		printf(INFO "[INFO]" TERM_WHITE
-			" Random test (small) for memset\n" RESET "\n");
+			" Random test (small) for memset" RESET "\n");
 		long all = 0;
 		long ok = 0;
 		const long TEST_NUM = 100000;
@@ -81,8 +107,7 @@ void memset_test()
 			unsigned char c = rand();
 			memcpy(gnu, my, BUFF_SIZE);
 
-			TLUmemset(my + shift, c, size);
-			memset(gnu + shift, c, size);
+			_CALL_TEST3;
 
 			if (memcmp(my, gnu, BUFF_SIZE))
 			{
@@ -91,8 +116,8 @@ void memset_test()
 				 * BRAIKPOINT POSITION ( 3 )
 				 * SET BRAKEPOINT HERE TO KNOW WHERE IS ERROR 
 				 */
-				TLUmemset(my + shift, c, size);
 #ifdef STOPATERROR
+				_CALL_TEST3;
 				return;
 #endif
 			}
@@ -105,7 +130,7 @@ void memset_test()
 
 	{
 		printf(INFO "[INFO]" TERM_WHITE
-			" Random test (medium) for memset\n" RESET "\n");
+			" Random test (medium) for memset" RESET "\n");
 		long all = 0;
 		long ok = 0;
 		const long TEST_NUM = 100000;
@@ -120,8 +145,7 @@ void memset_test()
 			unsigned char c = rand();
 			memcpy(gnu, my, BUFF_SIZE);
 
-			TLUmemset(my + shift, c, size);
-			memset(gnu + shift, c, size);
+			_CALL_TEST3;
 
 			if (memcmp(my, gnu, BUFF_SIZE))
 			{
@@ -130,8 +154,8 @@ void memset_test()
 				 * BRAIKPOINT POSITION ( 4 )
 				 * SET BRAKEPOINT HERE TO KNOW WHERE IS ERROR 
 				 */
-				TLUmemset(my + shift, c, size);
 #ifdef STOPATERROR
+				_CALL_TEST3;
 				return;
 #endif
 			}
@@ -144,7 +168,7 @@ void memset_test()
 
 	{
 		printf(INFO "[INFO]" TERM_WHITE
-			" Random test (large) for memset\n" RESET);
+			" Random test (large) for memset" RESET "\n");
 		long all = 0;
 		long ok = 0;
 		const long TEST_NUM = 100000;
@@ -159,8 +183,8 @@ void memset_test()
 			unsigned char c = rand();
 			memcpy(gnu, my, BUFF_SIZE);
 
-			TLUmemset(my + shift, c, size);
-			memset(gnu + shift, c, size);
+			_CALL_TEST3;
+
 			if (memcmp(my, gnu, BUFF_SIZE))
 			{
 				error(my, gnu, BUFF_SIZE, 5);
@@ -168,8 +192,8 @@ void memset_test()
 				 * BRAIKPOINT POSITION ( 5 )
 				 * SET BRAKEPOINT HERE TO KNOW WHERE IS ERROR 
 				 */
-				TLUmemset(my + shift, c, size);
 #ifdef STOPATERROR
+				_CALL_TEST3;
 				return;
 #endif
 			}
@@ -183,5 +207,6 @@ void memset_test()
 
 int main()
 {
+	prompt();
 	memset_test();
 }

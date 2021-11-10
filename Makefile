@@ -6,7 +6,7 @@
 #    By: kostya <kostya@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/10 15:29:59 by kostya            #+#    #+#              #
-#    Updated: 2021/11/10 21:02:34 by kostya           ###   ########.fr        #
+#    Updated: 2021/11/10 23:31:23 by kostya           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,11 +43,13 @@ OBJS_DIR	=	obj
 OBJS_DIR32	=	obj32
 INCLUDE_DIR	=	inc
 SCRS_DIR	=	src
+SCRS_DIR32	=	src32
 GNL			=	gnl
 TEST_DIR	=	test
 # ------------------------------- project sorces -------------------------------
 SRCS		=	\
-				TLUmemset
+				TLUmemset	\
+				TLUbzero
 SRCS32		=	\
 				TLUmemset32
 # ------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ all:
 ${OBJS_DIR}/%.o: ${SCRS_DIR}/%.c ${DEPS} Makefile
 	${CC}		${CFLAGS} ${COPTIONS} -c -o $@ $< ${INCLUDE}
 
-${OBJS_DIR32}/%.o: ${SCRS_DIR}/%.c ${DEPS} Makefile
+${OBJS_DIR32}/%.o: ${SCRS_DIR32}/%.c ${DEPS} Makefile
 	${CC}		${CFLAGS} ${COPTIONS} -m32 -c -o $@ $< ${INCLUDE}
 
 # ------------------------------------------------------------------------------
@@ -106,19 +108,9 @@ ${OBJS_DIR32}:
 
 # =========================== TESTS PART OF MAKEFILE ===========================
 # ------------------------------------------------------------------------------
-test: \
-	test-memset
 
-test-memset: $(NAME) $(NAME32)
-	@echo 64bit test
-	@${CC} ${CFLAGS} ${C_DEFINES} -m64 -O3 -ffast-math ${TEST_DIR}/test_memset.c ${SCRS_DIR}/TLUmemset.c -o ${OBJS_DIR}/test_memset64 -L. -lTLU
-	@./${OBJS_DIR}/test_memset64
-	@${RM} ./${OBJS_DIR}/test_memset64
-	@echo 32bit test
-	@${CC} ${CFLAGS} ${C_DEFINES} -m32 -O3 -ffast-math ${TEST_DIR}/test_memset.c ${SCRS_DIR}/TLUmemset.c -o ${OBJS_DIR32}/test_memset64 -L. -lTLU32
-	@./${OBJS_DIR32}/test_memset32
-	@${RM} ./${OBJS_DIR32}/test_memset32
-
+test-%: all
+	python3 ${TEST_DIR}/test_runner.py $@ '${C_DEFINES}'
 
 # ------------------------------------------------------------------------------
 .PHONY:			all clean fclean re
