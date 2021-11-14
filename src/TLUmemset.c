@@ -14,7 +14,7 @@ void	*TLUmemset(void *dst, unsigned char c, size_t len)
 	}
 	if (len >= 8)
 	{
-		uint_fast64_t	cccc = c;
+		uint_fast64_t cccc = c;
 		cccc |= cccc << 8;
 		cccc |= cccc << 16;
 		cccc |= cccc << 32;
