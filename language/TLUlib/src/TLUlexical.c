@@ -1,7 +1,7 @@
 
-#include "../inc/TLUlexical.h"
-#include "../inc/TLUstring.h"
-#include "../inc/TLUassert.h"
+#include <TLUlexical.h>
+#include <TLUstring.h>
+#include <TLUnistd.h>
 
 # define __INT_STR__(__x) #__x
 # define INT_STR(__x) __INT_STR__(__x)

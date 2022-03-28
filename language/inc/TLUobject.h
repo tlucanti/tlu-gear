@@ -2,7 +2,7 @@
 #ifndef TLU_OBJECT_H
 # define TLU_OBJECT_H
 
-# include "TLUtypeid.h"
+# include <TLUtypeid.h>
 
 typedef struct  _TLUobject_t
 {

@@ -7,8 +7,6 @@
 
 #include "../TLUstr.h"
 
-#define _GET_STR(_obj) (_TLUstr *)(_obj->object)
-
 // --------------------------------- converter ---------------------------------
 __WUR
 TLUobject   TLUstr(const char *st)

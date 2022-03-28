@@ -2,14 +2,24 @@
 #ifndef TLU_DEFS_H
 # define TLU_DEFS_H
 
+# include <sys/types.h>
 # include <stddef.h>
 # include <stdint.h>
 # include <limits.h>
 
-# define __NOTHROW __attribute__((nothrow))
-# define __WUR __attribute__((warn_unused_result))
-# define __PTR __restrict
-# define __UNUSED __attribute__((unused))
+# ifndef __COMMON_TLUDEFS
+#  define __COMMON_TLUDEFS
+#  define __NOTHROW  __attribute__((nothrow))
+#  define __WUR      __attribute__((warn_unused_result))
+#  define __UNUSED   __attribute__((unused))
+#  define __PTR      __restrict
+# endif /* __COMMON_TLUDEFS */
+
+# define _GET_NUM(_obj) (_TLUnum *)((_obj).object)
+# define _GET_STR(_obj) (_TLUstr *)((_obj).object)
+
+# define _GET_NUM_NUM(_obj) (_GET_NUM(_obj))->number
+# define _GET_STR_BUF(_obj) (_GET_STR(_obj))->buf
 
 # define TLUgolden_ratio = 1.6180339887498948482
 
@@ -38,6 +48,15 @@ inline ret_type func (TLUobject self, TLUobject other) \
         [self.typeid][other.typeid](self, other); \
 }
 
-# define _TLUwrite write
+# define _TLUinit_macro do { \
+    _TLUobjstack = _TLUallocator(sizeof(TLUobject) * 162); \
+    _TLUobjstack_allocated = 162; \
+    TLUfun_begin; \
+} while (0)
+
+# define _TLUstop_macro  do { \
+    _TLUobjstack_clear(); \
+    _TLUdeallocator(_TLUobjstack); \
+} while (0)
 
 #endif /* TLU_DEFS_H */

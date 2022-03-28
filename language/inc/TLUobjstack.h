@@ -2,8 +2,8 @@
 #ifndef TLU_OBJSTACK_H
 # define TLU_OBJSTACK_H
 
-# include "TLUdefs.h"
-# include "TLUobject.h"
+# include <TLUdefs.h>
+# include <TLUobject.h>
 
 extern TLUobject   *_TLUobjstack = NULL;
 extern size_t      _TLUobjstack_allocated = 0;

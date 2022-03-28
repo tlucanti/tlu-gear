@@ -5,9 +5,10 @@
 * @Last Modified time: 2022-03-27 20:19:56
 */
 
-#include "../inc/TLUobject.h"
-#include "../inc/TLUtypeid.h"
-#include "../inc/TLUoperators.h"
+#include <TLUdefs.h>
+#include <TLUobject.h>
+#include <TLUtypeid.h>
+#include <TLUoperators.h>
 
 TLUobject _TLU_operator_self(TLUobject arg) { return arg; }
 void _TLU_operator_empty(__UNUSED arg) {}

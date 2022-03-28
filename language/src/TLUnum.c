@@ -5,9 +5,7 @@
 * @Last Modified time: 2022-03-27 20:31:26
 */
 
-#include "../inc/TLUnum.h"
-
-#define _GET_NUM(_obj) (_TLUnum *)(_obj->object)
+#include <TLUnum.h>
 
 // --------------------------------- converter ---------------------------------
 TLUobject   TLUnum(intmax_t a)

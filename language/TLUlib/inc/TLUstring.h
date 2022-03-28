@@ -2,6 +2,7 @@
 #ifndef TLU_STRING_H
 # define TLU_STRING_H
 
+# include "defs.h"
 /* remove this */ #include <string.h>
 
 void    *_TLUmemset(void *ptr, unsigned char c, size_t size);
