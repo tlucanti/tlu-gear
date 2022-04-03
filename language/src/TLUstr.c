@@ -5,7 +5,14 @@
 * @Last Modified time: 2022-03-27 20:35:44
 */
 
-#include "../TLUstr.h"
+#include <TLUstr.h>
+#include <TLUstring.h>
+#include <TLUmemory.h>
+#include <TLUbuiltin.h>
+
+static __WUR TLUobject _TLUstr_size(const char *st, size_t size);
+static __WUR TLUobject _TLUstr_size_hash(const char *st, size_t size, intmax_t hash);
+static __WUR intmax_t _TLU_str_hash_compute(const char *st, size_t size);
 
 // --------------------------------- converter ---------------------------------
 __WUR
@@ -19,14 +26,14 @@ __WUR
 TLUobject _TLU_str_copy(TLUobject _obj)
 {
     _TLUstr *obj = _GET_STR(_obj);
-    return _TLU_str_size_hash(_obj->buf, _obj->size, _obj->hash);
+    return _TLUstr_size_hash(obj->buf, obj->size, obj->hash);
 }
 
 
 // -------------------------------- destructor ---------------------------------
 void _TLU_del_str(TLUobject _obj)
 {
-    _TLUstr *obj = _GET_str(_obj);
+    _TLUstr *obj = _GET_STR(_obj);
     _TLUdeallocator(obj->buf);
 }
 
@@ -39,33 +46,24 @@ intmax_t _TLU_hash_str(TLUobject _obj)
 }
 
 // ----------------------------------- iadd ------------------------------------
-void _TLU_iadd_str2str(_TLUstr *self, _TLUstr *other)
+void _TLU_iadd_str2str(TLUobject _self, TLUobject _other)
 {
+    _TLUstr *self = _GET_STR(_self);
+    _TLUstr *other = _GET_STR(_other);
     char *new_buf = _TLUallocator(self->size + other->size + 1);
     _TLUmemcpy(new_buf, self->buf, self->size);
     _TLUmemcpy(new_buf + self->size, other->buf, other->size + 1);
     _TLUdeallocator((void *)self->buf);
-    self_str->buf = new_buf;
-    self_str->size += other_str->size;
-    self_str->hash = _TLU_hash_str(new_buf);
-}
-
-// ------------------------------------ num ------------------------------------
-__WUR
-TLUobject _TLU_str2num(TLUobject _obj)
-{
-    _TLUstr *obj = _GET_STR(_obj);
-    if (obj->size < 19)
-        return TLUnum(_TLUatoi(obj->buf, obj->size));
-    else
-        return TLUnum_long(_obj->buf, obj->size);
+    self->buf = new_buf;
+    self->size += other->size;
+    self->hash = _TLU_str_hash_compute(new_buf, self->size);
 }
 
 // ------------------------------- miscellaneous -------------------------------
 static __WUR
 TLUobject _TLUstr_size(const char *st, size_t size)
 {
-    _TLUstr_size_hash(st, size, _TLU_str_hash_compute(st, size))
+    _TLUstr_size_hash(st, size, _TLU_str_hash_compute(st, size));
 }
 
 static __WUR

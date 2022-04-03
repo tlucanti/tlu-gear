@@ -1,14 +1,25 @@
 
-int func() { return 0; }
+#include <stdio.h>
+#include <setjmp.h>
 
-#define func(...) __VA_ARGS__
+jmp_buf buf;
 
-void *lol(int (*f)())
+int lol = 0;
+
+void f()
 {
-	return (void *)f;
+    printf("%d\n", lol);
 }
 
 int main()
 {
-	lol(func);
+    if (1)
+    {
+        int lol = 1;
+        {
+            printf("%d\n", lol);
+            f();
+        }
+        if (lol) { {} int qwe = 123; }
+    }
 }

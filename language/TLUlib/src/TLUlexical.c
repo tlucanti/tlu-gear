@@ -2,6 +2,7 @@
 #include <TLUlexical.h>
 #include <TLUstring.h>
 #include <TLUnistd.h>
+#include <TLUassert.h>
 
 # define __INT_STR__(__x) #__x
 # define INT_STR(__x) __INT_STR__(__x)
@@ -15,12 +16,12 @@ intmax_t _TLUs2num(const char *str, lexical_cast_errors *error_ptr, int base)
     intmax_t        ret_val = 0;
     unsigned int    sign    = 0;
 
-    _TLUassert(base >= 2 and base <= 32);
+    _TLUassert(base >= 2 && base <= 32);
     if (error_ptr)
         *error_ptr = ok;
     while (_TLUisspace(*str))
         ++str;
-    while (*str == '+' or *str == '-')
+    while (*str == '+' || *str == '-')
         if (*str++ == '-')
             sign ^= 1;
     while (_TLUisalnum(*str))
@@ -56,7 +57,7 @@ intmax_t _TLUs2num(const char *str, lexical_cast_errors *error_ptr, int base)
 
 static char *unum2s(unsigned long long int val, char *dest, int base, int upper)
 {
-    _TLUassert(base >= 2 and base <= 32);
+    _TLUassert(base >= 2 && base <= 32);
     static const char *_lower = "0123456789abcdefghijklmnopqrstuvwxyz";
     static const char *_upper = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const char *alpha = _lower;
@@ -82,7 +83,7 @@ static char *unum2s(unsigned long long int val, char *dest, int base, int upper)
 
 char *_TLUnum2s(intmax_t val, char *dest, int base, int upper)
 {
-    _TLUassert(base >= 2 and base <= 32);
+    _TLUassert(base >= 2 && base <= 32);
 
     if (val == LONG_LONG_MIN)
         return _TLUstrcpy(dest, INT_STR(LONG_LONG_MIN));

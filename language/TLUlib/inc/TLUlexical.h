@@ -4,6 +4,7 @@
 
 # include <TLUdefs.h>
 
+# warning "remove stdio header"
 # /* remove this */ include <stdio.h>
 
 typedef enum e_lexical_cast_errors

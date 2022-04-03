@@ -25,32 +25,33 @@ TLUobject _TLU_sum(size_t argc, TLUobject *argv)
     return counter;
 }
 
+intmax_t _TLU_print_single(int fd, TLUobject _obj)
+{
+    __TLUstr *arg_str = _TLU_operator_str_vec[_obj.typeid](_obj).object;
+    cnt += __TLUwrite(fd, arg_str->buf, arg_str->size);
+}
+
 TLUobject _TLU_print(size_t argc, TLUobject *argv)
 {
     intmax_t cnt = 0;
 
     while (argc)
     {
-        _TLUstr *arg_str = _TLU_operator_str_vec[argv->typeid](*argv).object;
-        cnt += _TLUwrite(1, arg_str->buf, arg_str->size);
+        _TLU_print_single(1, *argv);
         ++argv;
-        if (argv->typeid == _TLUOBJ_END_TYPEID)
+        if (argv->typeid == __TLUOBJ_END_TYPEID)
             break;
         cnt += _TLUwrite(1, " ", 1);
     }
-    cnt += _TLUwrite(1, "\n", 1);
+    cnt += __TLUwrite(1, "\n", 1);
     return TLUnum(cnt);
-}
-
-TLUobject _TLU_copy(TLUobject obj)
-{
-    return _TLU_operator_copy_vec[obj.typeid](obj);
 }
 
 __WUR
 TLUobject _TLU_num(size_t argc, TLUobject *argv)
 {
     intmax_t            base = 10;
+    intmax_t            result;
     lexical_cast_errors errors;
 
     if (argc == 0)
@@ -65,7 +66,16 @@ TLUobject _TLU_num(size_t argc, TLUobject *argv)
     if (base < 2 || base > 36)
         throw(ValueError(TLUstr("num() base should be in range [2:36]")));
     ASSERT_STR(argv[1]);
-    _TLUs2num(_GET_STR_BUF(argv[0]), &errors, (int)base);
+    result = _TLUs2num(_GET_STR_BUF(argv[0]), &errors, (int)base);
     if (errors)
-        throw(ValueError(something));
+        throw(ValueError(format(TLUstr("invalid literal for int() with base {}"), argv[1])));
+    return TLUnum(result);
+}
+
+void _TLU_true_del(TLUobject obj)
+{
+    /*
+     * find obj->object in objstack, deletes it with operator_delete
+     * and set pointer in objstack to NULL (to prevent double free)
+     */
 }

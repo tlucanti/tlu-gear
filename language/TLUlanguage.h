@@ -13,16 +13,12 @@
 #ifndef __TLU_LANGUAGE_H
 # define __TLU_LANGUAGE_H
 
-# ifdef __ALLOC_DEBUG
-#  define __alloc_log printf
-# else
-#  define __alloc_log(...)
-# endif /* __ALLOC_DEBUG */
+# include <TLUdefs.h>
+# include <TLUobject.h>
+# include <TLUnum.h>
+# include <TLUstr.h>
+# include <TLUbuiltin.h>
 
-# include "inc/TLUdefs.h"
-# include "inc/TLUobject.h"
-# include "inc/TLUnum.h"
-# include "inc/TLUstr.h"
-# include "inc/TLUbuiltin.h"
+#include <TLUmemory.h>
 
 #endif /* __TLU_LANGUAGE_H */

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "TLUlanguage.h"
+#include <TLUlanguage.h>
 
 TLUobject int_sum(TLUobject a, TLUobject b)
 {
@@ -23,9 +23,9 @@ int main()
 {
     TLUinit;
 
-    TLUobject   a  = num(123);
-    TLUobject   b  = num(456);
-    TLUobject   c  = num(789);
+    TLUobject   a  = TLUnum(123);
+    TLUobject   b  = TLUnum(456);
+    TLUobject   c  = TLUnum(789);
     TLUobject   sm = sum(a, b, c);
 
     print(TLUstr("sum of"), a, c, TLUstr("and"), b, TLUstr("="), sm);
@@ -37,6 +37,8 @@ int main()
     iadd(ss, s2);
 
     print(TLUstr("sum of"), s1, TLUstr("and"), s2, TLUstr("is"), ss);
+
+    print(TLUstr("call of function: "), int_sum(a, b));
 
     TLUstop;
 }

@@ -6,6 +6,10 @@
 */
 
 #include <TLUnum.h>
+#include <TLUmemory.h>
+#include <TLUobjstack.h>
+#include <TLUlexical.h>
+#include <TLUbuiltin.h>
 
 // --------------------------------- converter ---------------------------------
 TLUobject   TLUnum(intmax_t a)
@@ -21,10 +25,11 @@ __WUR
 TLUobject   _TLU_num_copy(TLUobject _obj)
 {
     _TLUnum *obj = _GET_NUM(_obj);
-    return TLUnum(obj->num);
+    return TLUnum(obj->number);
 }
 
 // ----------------------------------- hash ------------------------------------
+__WUR
 intmax_t   _TLU_hash_num(TLUobject _obj)
 {
     _TLUnum *obj = _GET_NUM(_obj);
@@ -45,6 +50,6 @@ TLUobject _TLU_num2str(TLUobject _obj)
 {
     _TLUnum *obj = _GET_NUM(_obj);
     char    buf[20];
-    _TLUitoa(buf, obj->number);
+    _TLUnum2s(obj->number, buf, 10, 0);
     return TLUstr(buf);
 }

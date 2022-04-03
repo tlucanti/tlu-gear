@@ -12,6 +12,7 @@ add_executable(language
         src/TLUobjstack.c
         src/TLUnum.c
         src/TLUbuiltin.c
+        src/TLUglobals.c
         src/TLUstr.c
         src/TLUoperators.c
         TLUlib/src/TLUnistd.c
