@@ -1,6 +1,6 @@
 
-build
-riscv
+/build
+/riscv
 
 a.out
 
