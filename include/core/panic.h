@@ -18,8 +18,8 @@
 #define ___panic_switch(a1, a2, a3, ...) a3
 #define __panic_switch(...) \
 	___panic_switch(__VA_ARGS__, __panic_reason, __panic_pure)
-#define __panic(name, ...) __panic_switch(__VA_ARGS__)(name, __VA_ARGS__)
-#define __bug(...) __panic("BUG", __VA_ARGS__)
+#define __panic(...) __panic_switch(__VA_ARGS__)(__VA_ARGS__)
+#define __bug(...) __panic("BUG", ##__VA_ARGS__)
 #endif
 
 /**
@@ -27,7 +27,7 @@
  *  panic() - to abort program
  *  panic("message") to abort program and print reason
  */
-#define panic(...) __panic("panic", __VA_ARGS__)
+#define panic(...) __panic("panic", ##__VA_ARGS__)
 
 /**
  * usage:
@@ -50,6 +50,6 @@
 		}                           \
 	} while (false)
 
-void __panic_impl(const char *name, const char *file, unsigned long line);
+void __panic_impl(const char *name, const char *file, unsigned long line, const char *reason);
 
 #endif /* _CORE_PANIC_ */

@@ -4,12 +4,13 @@
 #include <core/compiler.h>
 #include <core/panic.h>
 
-static void lenstr(const char *s)
+static size_t lenstr(const char *s)
 {
 	size_t n = 0;
 
 	while (*s) {
 		++n;
+		++s;
 	}
 
 	return n;
@@ -31,22 +32,22 @@ static void putnum(unsigned long n)
 	}
 
 	while (n) {
-		buf[i] = (unsigned char)(n % 10);
+		buf[i] = (unsigned char)(n % 10 + '0');
 		--i;
 		n /= 10;
 	}
 
-	write(2, buf + i - 1, 25 - i);
+	write(2, buf + i + 1, 24 - i);
 }
 
 __cold __noret
-void __panic_impl(const char *name. const char *file, unsigned long line, const char *reason)
+void __panic_impl(const char *name, const char *file, unsigned long line, const char *reason)
 {
-	putstr("[");
+	putstr("\n[");
 	putstr(name);
 	putstr("]: ");
 	putstr(file);
-	putstr(": ");
+	putstr(":");
 	putnum(line);
 
 	if (reason != NULL) {
@@ -54,5 +55,9 @@ void __panic_impl(const char *name. const char *file, unsigned long line, const 
 		putstr(reason);
 	}
 	putstr("\n");
+
+	abort();
+	__unreachable();
+
 }
 
