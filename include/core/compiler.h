@@ -30,6 +30,14 @@
 # define __cold __attribute__((__cold__))
 #endif
 
+#ifndef __aligned
+# define __aligned(__v) __attribute__((__aligned__(__v)))
+#endif
+
+#ifndef __section
+# define __section(__sec) __attribute__((__section__(__sec)))
+#endif
+
 #ifndef likely
 # define likely(expr) __builtin_expect(!!(expr), 1)
 #endif
