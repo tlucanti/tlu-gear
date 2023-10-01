@@ -8,19 +8,27 @@ struct __utest {
 	unsigned long magic;
 };
 
-#define __UTEST_MAGIC 0xAB0BA
+#define __UTEST_MAGIC 0xB00B5
+#define __FUZZ_MAGIC 0xDEADD0LL
 #define __UTEST_ATTR __used __aligned(1) __section(".utest")
+#define __FUZZ_ATTR __used __aligned(1) __section(".fuzz")
 
-#define __UTEST_IMPL(__name)                                           \
-	void UTEST_##__name(void);                                     \
-                                                                       \
-	static struct __utest __UTEST_STRUCT_##__name __UTEST_ATTR = { \
-		.name = #__name,                                       \
-		.func = &UTEST_##__name,                               \
-		.magic = 0xAB0BA                                       \
-	};                                                             \
-                                                                       \
-	void UTEST_##__name(void)
+#define __FUNC_NAME(__suite, __name) __suite##_##__name
+#define __STRUCT_NAME(__suite, __name) __suite##_STRUCT_##__name
+
+#define __FUZZ_IMPL(__name) __SUITE_IMPL(FUZZ, __name, __FUZZ_ATTR, __FUZZ_MAGIC)
+#define __UTEST_IMPL(__name) __SUITE_IMPL(UTEST, __name, __UTEST_ATTR, __UTEST_MAGIC)
+
+#define __SUITE_IMPL(__suite, __name, __attr, __magic)                  \
+	void __FUNC_NAME(__suite, __name)(void);                        \
+                                                                        \
+	static struct __utest __STRUCT_NAME(__suite, __name) __attr = { \
+		.name = #__name,                                        \
+		.func = &__FUNC_NAME(__suite, __name),                  \
+		.magic = __magic                                        \
+	};                                                              \
+                                                                        \
+	void __FUNC_NAME(__suite, __name)(void)
 
 #endif /* _UTEST_INTERNAL_H_ */
 
