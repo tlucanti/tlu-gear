@@ -10,7 +10,20 @@ _utest:
 _libc:
 	$(MAKE) -C libc
 
-_libc_utest: _utest
-	$(MAKE) -C libc/test
+_libc_utest:
+	gcc \
+		-Wall -Wextra \
+		-O0 -g3 \
+		-fdiagnostics-color=always \
+		-I include \
+		\
+		-D DEBUG \
+		\
+		core/*.c \
+		utest/*.c \
+		libc/generic-slow/*.c \
+		libc/test/test.c
+
+
 
 
