@@ -46,5 +46,9 @@
 # define unlikely(expr) __builtin_expect(!!(expr), 0)
 #endif
 
+#ifndef __unreachable
+# define __unreachable() __builtin_unreachable()
+#endif
+
 #endif /* _CORE_COMPILER_H_ */
 
