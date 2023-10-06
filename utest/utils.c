@@ -41,8 +41,10 @@ void utest_progress(unsigned long current, unsigned long total)
 	static unsigned long prev = ULONG_MAX;
 
 	panic_on(current >= total, "too many progress");
+
+	current = current * 100 / total;
 	if (current != prev) {
-		printf("\b\b\b%02lu%%", current * 100 / total);
+		printf("\b\b\b%02lu%%", current);
 		fflush(stdout);
 		prev = current;
 	}
