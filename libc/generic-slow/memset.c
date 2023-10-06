@@ -1,7 +1,7 @@
 
 #include <stddef.h>
 
-void memset_impl(void *vptr, unsigned char c, size_t size)
+void tlu_memset(void *vptr, unsigned char c, size_t size)
 {
 	unsigned char *ptr = vptr;
 
@@ -9,3 +9,4 @@ void memset_impl(void *vptr, unsigned char c, size_t size)
 		ptr[i] = c;
 	}
 }
+

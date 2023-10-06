@@ -69,6 +69,7 @@ struct mem_context {
 	enum mem_func {
 		FUNC_NONE = 0,
 		FUNC_BZERO,
+		FUNC_MEMSET,
 	} function;
 	unsigned char *expected_src;
 	unsigned char *expected_dst;
@@ -76,6 +77,8 @@ struct mem_context {
 	unsigned char *real_dst;
 	size_t size;
 	size_t offset;
+
+	unsigned char chr;
 };
 
 
@@ -85,6 +88,10 @@ void utest_mem_callback(struct mem_context *context)
 	case FUNC_BZERO:
 		tlu_bzero(context->real_dst + context->offset, context->size);
 		bzero(context->expected_dst + context->offset, context->size);
+		break;
+	case FUNC_MEMSET:
+		tlu_memset(context->real_dst + context->offset, context->chr, context->size);
+		memset(context->expected_dst + context->offset, context->chr, context->size);
 		break;
 	default:
 		panic("unknown function");
@@ -155,12 +162,30 @@ UTEST(bzero)
 	utest_mem_suite(100, 64, &context, true);
 }
 
+UTEST(memset)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMSET;
+	context.chr = 0xae;
+	utest_mem_suite(100, 64, &context, true);
+}
+
 FUZZ(bzero)
 {
 	struct mem_context context;
 
 	context.function = FUNC_BZERO;
 	utest_mem_suite(500, 128, &context, false);
+}
+
+FUZZ(memset)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMSET;
+	context.chr = 0xae;
+	utest_mem_suite(500, 64, &context, true);
 }
 
 int main()
