@@ -3,6 +3,7 @@
 #include <core/color.h>
 #include <core/panic.h>
 
+#include <sys/types.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -12,10 +13,12 @@
 
 static struct __utest utest_init __UTEST_ATTR = { .name = NULL,
 						  .func = NULL,
-						  .magic = __UTEST_MAGIC };
+						  .magic = __UTEST_MAGIC,
+						  .skip = false };
 static struct __utest fuzz_init __FUZZ_ATTR = { .name = NULL,
 						.func = NULL,
-						.magic = __FUZZ_MAGIC };
+						.magic = __FUZZ_MAGIC,
+						.skip = false };
 
 static jmp_buf jump_buf;
 
@@ -86,9 +89,9 @@ static void suite_run(struct __utest *suite, const char *name)
 {
 	struct __utest *begin = get_utest_begin(suite);
 	struct __utest *end = get_utest_end(suite);
-	int i = 0;
+	int i = 1;
 
-	const int nr_test = end - begin - 1;
+	const int nr_test = end - begin;
 
 	if (CONFIG_UTEST_CATCH_SEGFAULT) {
 		signal(SIGSEGV, signal_handler);
@@ -96,21 +99,23 @@ static void suite_run(struct __utest *suite, const char *name)
 		signal(SIGABRT, signal_handler);
 	}
 
-	for (; begin != end; ++begin) {
+	for (; begin != end; ++begin, ++i) {
 		if (begin->name == NULL) {
 			continue;
 		}
-
-		++i;
 
 		if (CONFIG_UTEST_CATCH_SEGFAULT && setjmp(jump_buf)) {
 			continue;
 		}
 		printf("%s %d/%d: %s: ", name, i, nr_test, begin->name);
 		fflush(stdout);
-		begin->func();
 
-		print_green("[ OK ]\n");
+		if (begin->skip) {
+			print_yellow("[SKIPPED]\n");
+		} else {
+			begin->func();
+			print_green("[ OK ]\n");
+		}
 	}
 }
 

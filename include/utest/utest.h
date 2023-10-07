@@ -18,8 +18,10 @@
 
 void unittest(void);
 
-#define UTEST(name) __UTEST_IMPL(name)
-#define FUZZ(name) __FUZZ_IMPL(name) /* FIXME: make fuzzer test suite */
+#define UTEST(name) __UTEST_IMPL(name, false)
+#define UTEST_SKIP(name) __UTEST_IMPL(name, true)
+#define FUZZ(name) __FUZZ_IMPL(name, false)
+#define FUZZ_SKIP(name) __FUZZ_IMPL(name, true)
 
 #include <stdlib.h>
 #define ASSERT_FAIL(...) abort()
