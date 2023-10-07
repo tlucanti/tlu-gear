@@ -1,12 +1,10 @@
 
-
-
 all:
 	gcc \
-		-Wall -Wextra -c \
+		-Wall -Wextra \
+		-O0 -g3 \
 		-fdiagnostics-color=always \
 		-I ../include \
 		utest.c utils.c \
-		-o ../build/utest.o
-	ar rcs \
-		../build/libutest.a ../build/utest.o
+		utest_test.c \
+		-o test
