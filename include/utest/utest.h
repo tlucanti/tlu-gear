@@ -4,6 +4,17 @@
 
 #include <core/compiler.h>
 #include <utest/internal.h>
+#include <stdbool.h>
+
+#ifndef CONFIG_UTEST_CATCH_SEGFAULT
+# define CONFIG_UTEST_CATCH_SEGFAULT true
+#endif
+#ifndef CONFIG_UTSET_COLOR_OUTPUT
+# define CONFIG_UTEST_COLOR_OUTPUT true
+#endif
+#ifndef CONFIG_UTEST_FIRST_FAIL
+# define CONFIG_UTEST_FIRST_FAIL false
+#endif
 
 void unittest(void);
 
