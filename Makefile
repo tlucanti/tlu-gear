@@ -16,6 +16,7 @@ all: build_all
 include $(BS_ROOT)/common.mk
 include $(BS_ROOT)/build.mk
 
+include $(BS_ROOT)/libcore.mk
 include $(BS_ROOT)/libutest.mk
 include $(BS_ROOT)/libc-generic-native.mk
 
