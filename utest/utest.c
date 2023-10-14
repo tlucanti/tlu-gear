@@ -2,12 +2,15 @@
 #include <utest/utest.h>
 #include <core/color.h>
 #include <core/panic.h>
+#include <core/compiler.h>
+#include <core/math.h>
 
 #include <sys/types.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <setjmp.h>
 #include <signal.h>
 
@@ -34,6 +37,7 @@ static jmp_buf jump_buf;
 #define print_green(format, ...) print_color(ANSI_BGREEN, format, ##__VA_ARGS__)
 #define print_yellow(format, ...) print_color(ANSI_BYELLOW, format, ##__VA_ARGS__)
 #define print_red(format, ...) print_color(ANSI_BRED, format, ##__VA_ARGS__)
+#define print_blue(format, ...) print_color(ANSI_BLUE, format, ##__VA_ARGS__)
 
 static void signal_handler(int sig)
 {
@@ -123,5 +127,135 @@ void unittest(void)
 {
 	suite_run(&utest_init, "TEST");
 	suite_run(&fuzz_init, "FUZZ");
+}
+
+__cold __noret
+static void test_failed(const char *file, unsigned long line)
+{
+	printf("\n[ASSERT FAILED]: %s:%lu\n", file, line);
+	fflush(stdout);
+	longjmp(jump_buf, 1);
+	__unreachable();
+}
+
+static void print_bool(bool v)
+{
+	if (v == true) {
+		print_blue("true");
+	} else {
+		print_blue("false");
+	}
+}
+
+static void print_int(intmax_t v)
+{
+	if (v == 0) {
+		print_blue("zero");
+	} else {
+		print_blue("%" PRIdMAX, v);
+	}
+}
+
+static void print_ptr(const void *v)
+{
+	if (v == NULL) {
+		print_blue("NULL");
+	} else {
+		print_blue("%p", v);
+	}
+}
+
+static void print_sign(intmax_t v)
+{
+	if (v > 0) {
+		print_blue("positive value");
+	} else if (v < 0) {
+		print_blue("negative value");
+	} else {
+		print_blue("zero");
+	}
+}
+
+void __assert_fail_impl(const char *file, unsigned long line)
+{
+	print_red("[FAIL]\n");
+	print_yellow("should not be here");
+	test_failed(file, line);
+}
+
+void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long line)
+{
+	if (unlikely(exp != real)) {
+		print_red("[FAIL]\n");
+		print_yellow("expected ");
+		print_bool(exp);
+		print_yellow(", got ");
+		print_bool(real);
+	} else {
+		return;
+	}
+
+	test_failed(file, line);
+}
+
+void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line)
+{
+	if (unlikely(eq && exp != real)) {
+		print_red("[FAIL]\n");
+		print_yellow("expected ");
+		print_int(exp);
+		print_yellow(", got ");
+		print_int(real);
+	} else if (unlikely(!eq && exp == real)) {
+		print_red("[FAIL]\n");
+		print_yellow("got ");
+		print_int(real);
+		print_yellow(", but didnt expect");
+	} else {
+		return;
+	}
+
+	test_failed(file, line);
+}
+
+void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, unsigned long line)
+{
+	if (unlikely(eq && exp != real)) {
+		print_red("[FAIL]\n");
+		print_yellow("expected ");
+		print_ptr(exp);
+		print_yellow(", got ");
+		print_ptr(real);
+	} else if (unlikely(!eq && exp == real)) {
+		print_red("[FAIL]\n");
+		print_yellow("got ");
+		print_ptr(real);
+		print_yellow(", but didnt expect");
+	} else {
+		return;
+	}
+
+	test_failed(file, line);
+}
+
+void __assert_sign_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line)
+{
+	if (unlikely(eq && sign(exp) != sign(real))) {
+		print_red("[FAIL]\n");
+		print_yellow("expected ");
+		print_sign(exp);
+		print_yellow(", got ");
+		print_sign(real);
+	} else if (unlikely(!eq && sign(exp) == sign(real))) {
+		print_red("[FAIL]\n");
+		print_yellow("got ");
+		print_sign(real);
+		print_yellow(", but expected ");
+		print_sign(exp);
+	} else {
+		return;
+	}
+
+	test_failed(file, line);
 }
 

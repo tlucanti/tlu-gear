@@ -4,7 +4,6 @@
 
 #include <core/compiler.h>
 #include <utest/internal.h>
-#include <stdbool.h>
 
 #ifndef CONFIG_UTEST_CATCH_SEGFAULT
 # define CONFIG_UTEST_CATCH_SEGFAULT true
@@ -23,8 +22,22 @@ void unittest(void);
 #define FUZZ(name) __FUZZ_IMPL(name, false)
 #define FUZZ_SKIP(name) __FUZZ_IMPL(name, true)
 
-#include <stdlib.h>
-#define ASSERT_FAIL(...) abort()
+#define ASSERT_FAIL() __assert_fail()
+#define ASSERT_FALSE(expr) __assert_bool(false, expr)
+#define ASSERT_TRUE(expr) __assert_bool(true, expr)
+
+#define ASSERT_ZERO(expr) __assert_equal(0, expr, true)
+#define ASSERT_NOT_ZERO(expr) __assert_equal(0, expr, false)
+#define ASSERT_EQUAL(exp, real) __assert_equal(exp, real, true)
+#define ASSERT_NOT_EQUAL(exp, real) __assert_equal(exp, real, false)
+
+#define ASSERT_NULL(expr) __assert_ptr(NULL, expr, true)
+#define ASSERT_NOT_NULL(expr) __assert_ptr(NULL, expr, false)
+#define ASSERT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, true)
+#define ASSERT_NOT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, false)
+
+#define ASSERT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, true)
+#define ASSERT_NOT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, false)
 
 #endif /* _UTEST_UTEST_H_ */
 

@@ -2,6 +2,9 @@
 #ifndef _UTEST_INTERNAL_H_
 #define _UTEST_INTERNAL_H_
 
+#include <stdbool.h>
+#include <stdint.h>
+
 struct __utest {
 	const char *name;
 	void (*func)(void);
@@ -33,6 +36,18 @@ struct __utest {
 	};                                                              \
                                                                         \
 	void __FUNC_NAME(__suite, __name)(void)
+
+#define __assert_fail() __assert_fail_impl(__FILE__, __LINE__)
+#define __assert_bool(exp, real) __assert_bool_impl(exp, real, __FILE__, __LINE__)
+#define __assert_equal(exp, real, eq) __assert_eq_impl(exp, real, eq, __FILE__, __LINE__)
+#define __assert_ptr(exp, real, eq) __assert_ptr_impl(exp, real, eq, __FILE__, __LINE__)
+#define __assert_sign(exp, real, eq) __assert_sign_impl(exp, real, eq, __FILE__, __LINE__)
+
+void __assert_fail_impl(const char *file, unsigned long line);
+void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long line);
+void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line);
+void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, unsigned long line);
+void __assert_sign_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line);
 
 #endif /* _UTEST_INTERNAL_H_ */
 
