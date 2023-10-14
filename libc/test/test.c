@@ -159,7 +159,7 @@ UTEST(bzero)
 	struct mem_context context;
 
 	context.function = FUNC_BZERO;
-	utest_mem_suite(100, 64, &context, true);
+	utest_mem_suite(100, 64, NULL, true);
 }
 
 UTEST(memset)
