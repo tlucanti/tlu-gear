@@ -1,29 +1,29 @@
 
-all: build _libc_utest
+include .config
 
-build:
-	mkdir -p build
+BS_ROOT = buildsystem
+BUILD   = build
 
-_utest:
-	$(MAKE) -C utest
+CFLAGS = -Wall -Wextra
+CC = clang
+LD = clang
+AR = ar rcs
 
-_libc:
-	$(MAKE) -C libc
+TARGETS =
 
-_libc_utest:
-	gcc \
-		-Wall -Wextra \
-		-O0 -g3 \
-		-fdiagnostics-color=always \
-		-I include \
-		\
-		-D DEBUG \
-		\
-		core/*.c \
-		utest/*.c \
-		libc/generic-slow/*.c \
-		libc/test/test.c
+all: build_all
 
+include $(BS_ROOT)/common.mk
+include $(BS_ROOT)/build.mk
 
+include $(BS_ROOT)/libutest.mk
+include $(BS_ROOT)/libc-generic-native.mk
 
+include $(BS_ROOT)/utest-libc-generic-native.mk
+
+build_all: $(BUILD) $(TARGETS)
+
+$(BUILD):
+	@echo MK $(BUILD)
+	@mkdir -p $(BUILD)
 
