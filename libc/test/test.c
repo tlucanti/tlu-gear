@@ -70,6 +70,7 @@ struct mem_context {
 		FUNC_NONE = 0,
 		FUNC_BZERO,
 		FUNC_MEMSET,
+		FUNC_MEMCMP,
 	} function;
 	unsigned char *expected_src;
 	unsigned char *expected_dst;
@@ -84,6 +85,9 @@ struct mem_context {
 
 void utest_mem_callback(struct mem_context *context)
 {
+	int real_ret;
+	int expected_ret;
+
 	switch (context->function) {
 	case FUNC_BZERO:
 		tlu_bzero(context->real_dst + context->offset, context->size);
@@ -92,6 +96,23 @@ void utest_mem_callback(struct mem_context *context)
 	case FUNC_MEMSET:
 		tlu_memset(context->real_dst + context->offset, context->chr, context->size);
 		memset(context->expected_dst + context->offset, context->chr, context->size);
+		break;
+	case FUNC_MEMCMP:
+		real_ret = tlu_memcmp(context->real_src + context->offset,
+				      context->real_dst + context->offset,
+				      context->size);
+		expected_ret = memcmp(context->expected_src + context->offset,
+				      context->expected_dst + context->offset,
+				      context->size);
+		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+
+		real_ret = tlu_memcmp(context->real_src + context->offset,
+				      context->real_src + context->offset,
+				      context->size);
+		expected_ret = memcmp(context->expected_src + context->offset,
+				      context->expected_src + context->offset,
+				      context->size);
+		ASSERT_EQUAL(expected_ret, real_ret);
 		break;
 	default:
 		panic("unknown function");
@@ -140,9 +161,7 @@ static void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_conte
 				printf("offset=%lu\n", ((uintptr_t)real_src + offset) % 8);
 				err = true;
 			}
-			if (err) {
-				ASSERT_FAIL("memory validation");
-			}
+			ASSERT_FALSE(err);
 
 			free(expected_src);
 			free(expected_dst);
@@ -159,7 +178,7 @@ UTEST(bzero)
 	struct mem_context context;
 
 	context.function = FUNC_BZERO;
-	utest_mem_suite(100, 64, NULL, true);
+	utest_mem_suite(64, 64, &context, true);
 }
 
 UTEST(memset)
@@ -168,7 +187,14 @@ UTEST(memset)
 
 	context.function = FUNC_MEMSET;
 	context.chr = 0xae;
-	utest_mem_suite(100, 64, &context, true);
+	utest_mem_suite(64, 64, &context, true);
+}
+
+UTEST(memcmp)
+{
+	struct mem_context context;
+	context.function = FUNC_MEMCMP;
+	utest_mem_suite(64, 64, &context, true);
 }
 
 FUZZ(bzero)
@@ -185,7 +211,14 @@ FUZZ(memset)
 
 	context.function = FUNC_MEMSET;
 	context.chr = 0xae;
-	utest_mem_suite(500, 64, &context, true);
+	utest_mem_suite(500, 128, &context, false);
+}
+
+FUZZ(memcmp)
+{
+	struct mem_context context;
+	context.function = FUNC_MEMCMP;
+	utest_mem_suite(500, 128, &context, true);
 }
 
 int main()

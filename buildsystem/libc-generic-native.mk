@@ -1,6 +1,6 @@
 
 TARGET = libcgn.a
-SRC = bzero.c memset.c
+SRC = bzero.c memset.c memcmp.c
 FLAGS = -I include/
 DEPS =
 DIR = libc/generic-native
