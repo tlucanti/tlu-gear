@@ -4,7 +4,9 @@ include .config
 BS_ROOT = buildsystem
 BUILD   = build
 
-CFLAGS = -Wall -Wextra
+CFLAGS  = -fdiagnostics-color=always -g3 -O0
+CFLAGS += -D DEBUG
+CFLAGS += -Wall -Wextra
 CC = clang
 LD = clang
 AR = ar rcs
@@ -27,4 +29,3 @@ build_all: $(BUILD) $(TARGETS)
 $(BUILD):
 	@echo MK $(BUILD)
 	@mkdir -p $(BUILD)
-
