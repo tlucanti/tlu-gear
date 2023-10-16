@@ -8,6 +8,8 @@ enum mem_func {
 	FUNC_MEMSET,
 	FUNC_MEMCMP,
 	FUNC_MEMEQ,
+	FUNC_MEMNCHR,
+	FUNC_MEMCHR,
 };
 
 struct mem_context {
@@ -18,6 +20,7 @@ struct mem_context {
 	unsigned char *real_dst;
 	size_t size;
 	size_t offset;
+	size_t needle;
 
 	unsigned char chr;
 };

@@ -1,6 +1,9 @@
 
+#define  _GNU_SOURCE
+
 #include <core/color.h>
 #include <core/panic.h>
+#include <core/math.h>
 
 #include <libc/libc.h>
 #include <libc/libc_test_utils.h>
@@ -68,18 +71,20 @@ void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, 
 
 void utest_mem_callback(struct mem_context *context)
 {
-	int real_ret;
-	int expected_ret;
+	int real_ret, expected_ret;
+	const void *real_p, *expected_p;
 
 	switch (context->function) {
 	case FUNC_BZERO:
 		tlu_bzero(context->real_dst + context->offset, context->size);
 		bzero(context->expected_dst + context->offset, context->size);
 		break;
+
 	case FUNC_MEMSET:
 		tlu_memset(context->real_dst + context->offset, context->chr, context->size);
 		memset(context->expected_dst + context->offset, context->chr, context->size);
 		break;
+
 	case FUNC_MEMCMP:
 		real_ret = tlu_memcmp(context->real_src + context->offset,
 				      context->real_dst + context->offset,
@@ -97,10 +102,11 @@ void utest_mem_callback(struct mem_context *context)
 				      context->size);
 		ASSERT_EQUAL(expected_ret, real_ret);
 		break;
+
 	case FUNC_MEMEQ:
 		real_ret = tlu_memeq(context->real_src + context->offset,
-				      context->real_dst + context->offset,
-				      context->size);
+				     context->real_dst + context->offset,
+				     context->size);
 		expected_ret = memcmp(context->expected_src + context->offset,
 				      context->expected_dst + context->offset,
 				      context->size);
@@ -108,13 +114,46 @@ void utest_mem_callback(struct mem_context *context)
 		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
 
 		real_ret = tlu_memeq(context->real_src + context->offset,
-				      context->real_src + context->offset,
-				      context->size);
+				     context->real_src + context->offset,
+				     context->size);
 		expected_ret = memcmp(context->expected_src + context->offset,
 				      context->expected_src + context->offset,
 				      context->size);
 		expected_ret = expected_ret == 0;
 		ASSERT_EQUAL(expected_ret, real_ret);
+		break;
+
+	case FUNC_MEMNCHR:
+		real_p = tlu_memnchr(context->real_src + context->offset,
+				     context->real_src[context->needle],
+				     context->size);
+		expected_p = memchr(context->expected_src + context->offset,
+				    context->expected_src[context->needle],
+				    context->size);
+		ASSERT_EQUAL_PTR(expected_p, real_p);
+
+		real_p = tlu_memnchr(context->real_src + context->offset, 0,
+				     context->size);
+		expected_p = memchr(context->expected_src + context->offset, 0,
+				    context->size);
+		ASSERT_EQUAL_PTR(expected_p, real_p);
+		break;
+
+	case FUNC_MEMCHR:
+		BUG_ON(NULL == memchr(context->expected_src + context->offset,
+				      context->expected_src[context->needle],
+				      context->size));
+
+		real_p = tlu_memchr(context->real_src + context->offset,
+				    context->real_src[context->needle]);
+		expected_p = rawmemchr(context->expected_src + context->offset,
+				       context->expected_src[context->needle]);
+		ASSERT_EQUAL_PTR(expected_p, real_p);
+
+		real_p = tlu_memchr(context->real_src + context->offset, 0);
+		expected_p =
+			rawmemchr(context->expected_src + context->offset, 0);
+		ASSERT_EQUAL_PTR(expected_p, real_p);
 		break;
 
 	default:
@@ -149,6 +188,7 @@ void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_context *con
 
 			context->size = size;
 			context->offset = offset;
+			context->needle = utest_random_range(context->offset, max(context->size, context->offset));
 
 			utest_mem_callback(context);
 
