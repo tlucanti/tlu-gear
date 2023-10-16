@@ -1,5 +1,5 @@
 
-#include <stdbool.h>
+#include <libc/libc.h>
 
 bool tlu_isdigit(unsigned char c)
 {
