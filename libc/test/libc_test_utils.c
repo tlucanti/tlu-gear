@@ -14,8 +14,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 
-void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
+static void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
 {
 	for (size_t i = 0; i < size; ++i) {
 		if (data[i] != cmp[i]) {
@@ -31,7 +32,7 @@ void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
 	}
 }
 
-int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size)
+static int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size)
 {
 	if (memcmp(expected, real, size) == 0) {
 		return 0;
@@ -46,7 +47,7 @@ int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t s
 	return EFAULT;
 }
 
-void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable)
+static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable)
 {
 	const char *alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	unsigned char c;
@@ -69,7 +70,7 @@ void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, 
 	}
 }
 
-void utest_string_callback(struct string_context *context)
+static void utest_string_callback(struct string_context *context)
 {
 	int real_ret, expected_ret;
 	const void *real_p, *expected_p;
@@ -214,5 +215,71 @@ void utest_string_suite(size_t max_size, size_t max_offset, struct string_contex
 	}
 
 	utest_progress_done();
+}
+
+static void utest_ctype_callback(struct ctype_context *context)
+{
+	switch (context->function) {
+	case FUNC_ISALNUM:
+		context->name = "isalnum";
+		context->real = tlu_isalnum(context->c);
+		context->expected = isalnum(context->c);
+		break;
+	case FUNC_ISALPHA:
+		context->name = "isalpha";
+		context->real = tlu_isalpha(context->c);
+		context->expected = isalpha(context->c);
+		break;
+	case FUNC_ISLOWER:
+		context->name = "islower";
+		context->real = tlu_islower(context->c);
+		context->expected = islower(context->c);
+		break;
+	case FUNC_ISUPPER:
+		context->name = "isupper";
+		context->real = tlu_isupper(context->c);
+		context->expected = isupper(context->c);
+		break;
+	case FUNC_ISPRINT:
+		context->name = "isprint";
+		context->real = tlu_isprint(context->c);
+		context->expected = isprint(context->c);
+		break;
+	case FUNC_ISPUNCT:
+		context->name = "ispunct";
+		context->real = tlu_ispunct(context->c);
+		context->expected = ispunct(context->c);
+		break;
+	case FUNC_ISSPACE:
+		context->name = "isspace";
+		context->real = tlu_isspace(context->c);
+		context->expected = isspace(context->c);
+		break;
+	case FUNC_ISHEX:
+		context->name = "ishex";
+		context->real = tlu_ishex(context->c);
+		context->expected = isxdigit(context->c);
+		break;
+	default:
+		panic("unknown function");
+	}
+}
+
+void utest_ctype_suite(struct ctype_context *context)
+{
+	for (int c = 0; c <= UCHAR_MAX; ++c) {
+		context->c = (unsigned char)c;
+		utest_ctype_callback(context);
+
+		if (context->real != context->expected) {
+			printf("\nfunction %s char ", context->name);
+			if (isprint(context->c)) {
+				printf("%c (%d)", context->c, (int)context->c);
+			} else {
+				printf("(%d)\n", (int)context->c);
+			}
+		}
+		ASSERT_EQUAL(context->expected, context->real);
+	}
 }
 

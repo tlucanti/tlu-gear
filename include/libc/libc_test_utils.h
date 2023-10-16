@@ -25,11 +25,28 @@ struct string_context {
 	unsigned char chr;
 };
 
-void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size);
-int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size);
-void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable);
-void utest_string_callback(struct string_context *context);
+enum ctype_func {
+	FUNC_ISALNUM,
+	FUNC_ISALPHA,
+	FUNC_ISLOWER,
+	FUNC_ISUPPER,
+	FUNC_ISPRINT,
+	FUNC_ISPUNCT,
+	FUNC_ISSPACE,
+	FUNC_ISHEX,
+};
+
+struct ctype_context {
+	enum ctype_func function;
+	const char *name;
+	unsigned char c;
+	unsigned char res;
+	bool expected;
+	bool real;
+};
+
 void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable);
+void utest_ctype_suite(struct ctype_context *context);
 
 #endif /* _LIBC_LIBC_TEST_UTILS_H_ */
 

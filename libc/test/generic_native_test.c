@@ -32,6 +32,7 @@ UTEST(memset)
 UTEST(memcmp)
 {
 	struct string_context context;
+
 	context.function = FUNC_MEMCMP;
 	utest_string_suite(64, 64, &context, true);
 }
@@ -39,8 +40,73 @@ UTEST(memcmp)
 UTEST(memceq)
 {
 	struct string_context context;
+
 	context.function = FUNC_MEMEQ;
 	utest_string_suite(64, 64, &context, true);
+}
+
+UTEST(isalnum)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISALNUM;
+	utest_ctype_suite(&context);
+}
+
+UTEST(isalpha)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISALNUM;
+	utest_ctype_suite(&context);
+}
+
+UTEST(islower)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISLOWER;
+	utest_ctype_suite(&context);
+}
+
+UTEST(isupper)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISUPPER;
+	utest_ctype_suite(&context);
+}
+
+UTEST(isprint)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISPRINT;
+	utest_ctype_suite(&context);
+}
+
+UTEST(ispunct)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISPUNCT;
+	utest_ctype_suite(&context);
+}
+
+UTEST(isspace)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISSPACE;
+	utest_ctype_suite(&context);
+}
+
+UTEST(ishex)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_ISHEX;
+	utest_ctype_suite(&context);
 }
 
 FUZZ(bzero)
@@ -63,6 +129,7 @@ FUZZ(memset)
 FUZZ(memcmp)
 {
 	struct string_context context;
+
 	context.function = FUNC_MEMCMP;
 	utest_string_suite(500, 128, &context, true);
 }
@@ -70,6 +137,7 @@ FUZZ(memcmp)
 FUZZ(memceq)
 {
 	struct string_context context;
+
 	context.function = FUNC_MEMEQ;
 	utest_string_suite(500, 128, &context, true);
 }
