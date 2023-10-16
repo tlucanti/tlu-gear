@@ -3,6 +3,7 @@
 #include <core/panic.h>
 
 #include <libc/libc.h>
+#include <libc/libc_test_utils.h>
 #include <utest/utest.h>
 #include <utest/utils.h>
 
@@ -11,7 +12,7 @@
 #include <ctype.h>
 #include <errno.h>
 
-static void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
+void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
 {
 	for (size_t i = 0; i < size; ++i) {
 		if (data[i] != cmp[i]) {
@@ -27,7 +28,7 @@ static void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t 
 	}
 }
 
-static int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size)
+int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size)
 {
 	if (memcmp(expected, real, size) == 0) {
 		return 0;
@@ -42,7 +43,7 @@ static int utest_validate_memory(unsigned char *expected, unsigned char *real, s
 	return EFAULT;
 }
 
-static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable)
+void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable)
 {
 	const char *alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	unsigned char c;
@@ -64,25 +65,6 @@ static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t
 		(*m2)[i] = c;
 	}
 }
-
-struct mem_context {
-	enum mem_func {
-		FUNC_NONE = 0,
-		FUNC_BZERO,
-		FUNC_MEMSET,
-		FUNC_MEMCMP,
-		FUNC_MEMEQ,
-	} function;
-	unsigned char *expected_src;
-	unsigned char *expected_dst;
-	unsigned char *real_src;
-	unsigned char *real_dst;
-	size_t size;
-	size_t offset;
-
-	unsigned char chr;
-};
-
 
 void utest_mem_callback(struct mem_context *context)
 {
@@ -140,7 +122,7 @@ void utest_mem_callback(struct mem_context *context)
 	}
 }
 
-static void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_context *context, bool printable)
+void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_context *context, bool printable)
 {
 	unsigned char *expected_src, *expected_dst;
 	unsigned char *real_src, *real_dst;
@@ -192,73 +174,5 @@ static void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_conte
 	}
 
 	utest_progress_done();
-}
-
-UTEST(bzero)
-{
-	struct mem_context context;
-
-	context.function = FUNC_BZERO;
-	utest_mem_suite(64, 64, &context, true);
-}
-
-UTEST(memset)
-{
-	struct mem_context context;
-
-	context.function = FUNC_MEMSET;
-	context.chr = 0xae;
-	utest_mem_suite(64, 64, &context, true);
-}
-
-UTEST(memcmp)
-{
-	struct mem_context context;
-	context.function = FUNC_MEMCMP;
-	utest_mem_suite(64, 64, &context, true);
-}
-
-UTEST(memceq)
-{
-	struct mem_context context;
-	context.function = FUNC_MEMEQ;
-	utest_mem_suite(64, 64, &context, true);
-}
-
-FUZZ(bzero)
-{
-	struct mem_context context;
-
-	context.function = FUNC_BZERO;
-	utest_mem_suite(500, 128, &context, false);
-}
-
-FUZZ(memset)
-{
-	struct mem_context context;
-
-	context.function = FUNC_MEMSET;
-	context.chr = 0xae;
-	utest_mem_suite(500, 128, &context, false);
-}
-
-FUZZ(memcmp)
-{
-	struct mem_context context;
-	context.function = FUNC_MEMCMP;
-	utest_mem_suite(500, 128, &context, true);
-}
-
-FUZZ(memceq)
-{
-	struct mem_context context;
-	context.function = FUNC_MEMEQ;
-	utest_mem_suite(500, 128, &context, true);
-}
-
-int main()
-{
-	utest_random_init(0);
-	unittest();
 }
 
