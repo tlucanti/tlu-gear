@@ -57,7 +57,7 @@ static void signal_handler(int sig)
 		print_red("BUS ERROR\n");
 		goto jmp;
 	case SIGABRT:
-		print_red("SIGABRT\n");
+		print_red("PANIC\n");
 		goto jmp;
 	default:
 		panic("unknown error");
