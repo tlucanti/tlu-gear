@@ -69,7 +69,7 @@ void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, 
 	}
 }
 
-void utest_mem_callback(struct mem_context *context)
+void utest_string_callback(struct string_context *context)
 {
 	int real_ret, expected_ret;
 	const void *real_p, *expected_p;
@@ -161,7 +161,7 @@ void utest_mem_callback(struct mem_context *context)
 	}
 }
 
-void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_context *context, bool printable)
+void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
 {
 	unsigned char *expected_src, *expected_dst;
 	unsigned char *real_src, *real_dst;
@@ -190,7 +190,7 @@ void utest_mem_suite(size_t max_size, size_t max_offset, struct mem_context *con
 			context->offset = offset;
 			context->needle = utest_random_range(context->offset, max(context->size, context->offset));
 
-			utest_mem_callback(context);
+			utest_string_callback(context);
 
 			if (utest_validate_memory(expected_src, real_src, alloc_size)) {
 				printf("src valdation error with ");

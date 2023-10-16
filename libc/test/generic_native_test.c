@@ -14,64 +14,64 @@
 
 UTEST(bzero)
 {
-	struct mem_context context;
+	struct string_context context;
 
 	context.function = FUNC_BZERO;
-	utest_mem_suite(64, 64, &context, true);
+	utest_string_suite(64, 64, &context, true);
 }
 
 UTEST(memset)
 {
-	struct mem_context context;
+	struct string_context context;
 
 	context.function = FUNC_MEMSET;
 	context.chr = 0xae;
-	utest_mem_suite(64, 64, &context, true);
+	utest_string_suite(64, 64, &context, true);
 }
 
 UTEST(memcmp)
 {
-	struct mem_context context;
+	struct string_context context;
 	context.function = FUNC_MEMCMP;
-	utest_mem_suite(64, 64, &context, true);
+	utest_string_suite(64, 64, &context, true);
 }
 
 UTEST(memceq)
 {
-	struct mem_context context;
+	struct string_context context;
 	context.function = FUNC_MEMEQ;
-	utest_mem_suite(64, 64, &context, true);
+	utest_string_suite(64, 64, &context, true);
 }
 
 FUZZ(bzero)
 {
-	struct mem_context context;
+	struct string_context context;
 
 	context.function = FUNC_BZERO;
-	utest_mem_suite(500, 128, &context, false);
+	utest_string_suite(500, 128, &context, false);
 }
 
 FUZZ(memset)
 {
-	struct mem_context context;
+	struct string_context context;
 
 	context.function = FUNC_MEMSET;
 	context.chr = 0xae;
-	utest_mem_suite(500, 128, &context, false);
+	utest_string_suite(500, 128, &context, false);
 }
 
 FUZZ(memcmp)
 {
-	struct mem_context context;
+	struct string_context context;
 	context.function = FUNC_MEMCMP;
-	utest_mem_suite(500, 128, &context, true);
+	utest_string_suite(500, 128, &context, true);
 }
 
 FUZZ(memceq)
 {
-	struct mem_context context;
+	struct string_context context;
 	context.function = FUNC_MEMEQ;
-	utest_mem_suite(500, 128, &context, true);
+	utest_string_suite(500, 128, &context, true);
 }
 
 int main()
