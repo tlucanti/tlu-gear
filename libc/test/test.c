@@ -71,6 +71,7 @@ struct mem_context {
 		FUNC_BZERO,
 		FUNC_MEMSET,
 		FUNC_MEMCMP,
+		FUNC_MEMEQ,
 	} function;
 	unsigned char *expected_src;
 	unsigned char *expected_dst;
@@ -114,6 +115,26 @@ void utest_mem_callback(struct mem_context *context)
 				      context->size);
 		ASSERT_EQUAL(expected_ret, real_ret);
 		break;
+	case FUNC_MEMEQ:
+		real_ret = tlu_memeq(context->real_src + context->offset,
+				      context->real_dst + context->offset,
+				      context->size);
+		expected_ret = memcmp(context->expected_src + context->offset,
+				      context->expected_dst + context->offset,
+				      context->size);
+		expected_ret = expected_ret == 0;
+		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+
+		real_ret = tlu_memeq(context->real_src + context->offset,
+				      context->real_src + context->offset,
+				      context->size);
+		expected_ret = memcmp(context->expected_src + context->offset,
+				      context->expected_src + context->offset,
+				      context->size);
+		expected_ret = expected_ret == 0;
+		ASSERT_EQUAL(expected_ret, real_ret);
+		break;
+
 	default:
 		panic("unknown function");
 	}
@@ -197,6 +218,13 @@ UTEST(memcmp)
 	utest_mem_suite(64, 64, &context, true);
 }
 
+UTEST(memceq)
+{
+	struct mem_context context;
+	context.function = FUNC_MEMEQ;
+	utest_mem_suite(64, 64, &context, true);
+}
+
 FUZZ(bzero)
 {
 	struct mem_context context;
@@ -218,6 +246,13 @@ FUZZ(memcmp)
 {
 	struct mem_context context;
 	context.function = FUNC_MEMCMP;
+	utest_mem_suite(500, 128, &context, true);
+}
+
+FUZZ(memceq)
+{
+	struct mem_context context;
+	context.function = FUNC_MEMEQ;
 	utest_mem_suite(500, 128, &context, true);
 }
 
