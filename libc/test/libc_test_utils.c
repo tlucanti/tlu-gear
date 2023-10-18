@@ -223,42 +223,52 @@ static void utest_ctype_callback(struct ctype_context *context)
 	case FUNC_ISALNUM:
 		context->name = "isalnum";
 		context->real = tlu_isalnum(context->c);
-		context->expected = isalnum(context->c);
+		context->expected = !!isalnum(context->c);
 		break;
 	case FUNC_ISALPHA:
 		context->name = "isalpha";
 		context->real = tlu_isalpha(context->c);
-		context->expected = isalpha(context->c);
+		context->expected = !!isalpha(context->c);
 		break;
 	case FUNC_ISLOWER:
 		context->name = "islower";
 		context->real = tlu_islower(context->c);
-		context->expected = islower(context->c);
+		context->expected = !!islower(context->c);
 		break;
 	case FUNC_ISUPPER:
 		context->name = "isupper";
 		context->real = tlu_isupper(context->c);
-		context->expected = isupper(context->c);
+		context->expected = !!isupper(context->c);
 		break;
 	case FUNC_ISPRINT:
 		context->name = "isprint";
 		context->real = tlu_isprint(context->c);
-		context->expected = isprint(context->c);
+		context->expected = !!isprint(context->c);
 		break;
 	case FUNC_ISPUNCT:
 		context->name = "ispunct";
 		context->real = tlu_ispunct(context->c);
-		context->expected = ispunct(context->c);
+		context->expected = !!ispunct(context->c);
 		break;
 	case FUNC_ISSPACE:
 		context->name = "isspace";
 		context->real = tlu_isspace(context->c);
-		context->expected = isspace(context->c);
+		context->expected = !!isspace(context->c);
 		break;
 	case FUNC_ISHEX:
 		context->name = "ishex";
 		context->real = tlu_ishex(context->c);
-		context->expected = isxdigit(context->c);
+		context->expected = !!isxdigit(context->c);
+		break;
+	case FUNC_TOLOWER:
+		context->name = "tolower";
+		context->real = tlu_tolower(context->c);
+		context->expected = tolower(context->c);
+		break;
+	case FUNC_TOUPPER:
+		context->name = "toupper";
+		context->real = tlu_toupper(context->c);
+		context->expected = toupper(context->c);
 		break;
 	default:
 		panic("unknown function");

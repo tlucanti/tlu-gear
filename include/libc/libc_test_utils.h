@@ -34,15 +34,16 @@ enum ctype_func {
 	FUNC_ISPUNCT,
 	FUNC_ISSPACE,
 	FUNC_ISHEX,
+	FUNC_TOLOWER,
+	FUNC_TOUPPER,
 };
 
 struct ctype_context {
 	enum ctype_func function;
 	const char *name;
 	unsigned char c;
-	unsigned char res;
-	bool expected;
-	bool real;
+	unsigned char expected;
+	unsigned char real;
 };
 
 void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable);

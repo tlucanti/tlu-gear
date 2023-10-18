@@ -109,6 +109,22 @@ UTEST(ishex)
 	utest_ctype_suite(&context);
 }
 
+UTEST(tolower)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_TOLOWER;
+	utest_ctype_suite(&context);
+}
+
+UTEST(toupper)
+{
+	struct ctype_context context;
+
+	context.function = FUNC_TOUPPER;
+	utest_ctype_suite(&context);
+}
+
 FUZZ(bzero)
 {
 	struct string_context context;
