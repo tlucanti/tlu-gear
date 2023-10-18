@@ -10,10 +10,13 @@ enum string_func {
 	FUNC_MEMEQ,
 	FUNC_MEMNCHR,
 	FUNC_MEMCHR,
+	FUNC_MEMCPY,
 };
 
 struct string_context {
 	enum string_func function;
+	int state;
+
 	unsigned char *expected_src;
 	unsigned char *expected_dst;
 	unsigned char *real_src;

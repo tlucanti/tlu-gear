@@ -45,6 +45,19 @@ UTEST(memceq)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(memcpy)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMCMP;
+	context.state = 0;
+	utest_string_suite(64, 64, &context, true);
+	utest_ok();
+
+	context.state = 1;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(isalnum)
 {
 	struct ctype_context context;
@@ -130,7 +143,7 @@ FUZZ(memzero)
 	struct string_context context;
 
 	context.function = FUNC_MEMZERO;
-	utest_string_suite(500, 128, &context, false);
+	utest_string_suite(512, 128, &context, false);
 }
 
 FUZZ(memset)
@@ -139,7 +152,7 @@ FUZZ(memset)
 
 	context.function = FUNC_MEMSET;
 	context.chr = 0xae;
-	utest_string_suite(500, 128, &context, false);
+	utest_string_suite(512, 128, &context, false);
 }
 
 FUZZ(memcmp)
@@ -147,7 +160,7 @@ FUZZ(memcmp)
 	struct string_context context;
 
 	context.function = FUNC_MEMCMP;
-	utest_string_suite(500, 128, &context, true);
+	utest_string_suite(512, 128, &context, true);
 }
 
 FUZZ(memceq)
@@ -155,8 +168,17 @@ FUZZ(memceq)
 	struct string_context context;
 
 	context.function = FUNC_MEMEQ;
-	utest_string_suite(500, 128, &context, true);
+	utest_string_suite(512, 128, &context, true);
 }
+
+FUZZ(memcpy)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMCMP;
+	utest_string_suite(512, 128, &context, true);
+}
+
 
 int main()
 {

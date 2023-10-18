@@ -86,6 +86,16 @@ static void utest_string_callback(struct string_context *context)
 		memset(context->expected_dst + context->offset, context->chr, context->size);
 		break;
 
+	case FUNC_MEMCPY:
+		if (context->state == 0) {
+			tlu_memcpy(context->real_dst + context->offset, context->real_src, context->size);
+			memcpy(context->expected_dst + context->offset, context->expected_src, context->size);
+		} else {
+			tlu_memcpy(context->real_dst, context->real_src + context->offset, context->size);
+			memcpy(context->expected_dst, context->expected_src + context->offset, context->size);
+		}
+		break;
+
 	case FUNC_MEMCMP:
 		real_ret = tlu_memcmp(context->real_src + context->offset,
 				      context->real_dst + context->offset,
