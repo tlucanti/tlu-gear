@@ -39,6 +39,12 @@ static jmp_buf jump_buf;
 #define print_red(format, ...) print_color(ANSI_BRED, format, ##__VA_ARGS__)
 #define print_blue(format, ...) print_color(ANSI_BLUE, format, ##__VA_ARGS__)
 
+void utest_ok(void)
+{
+	print_green("[ OK ] ");
+	fflush(stdout);
+}
+
 static void signal_handler(int sig)
 {
 	sigset_t signal_set;
@@ -118,7 +124,8 @@ static void suite_run(struct __utest *suite, const char *name)
 			print_yellow("[SKIPPED]\n");
 		} else {
 			begin->func();
-			print_green("[ OK ]\n");
+			utest_ok();
+			printf("\n");
 		}
 	}
 }
