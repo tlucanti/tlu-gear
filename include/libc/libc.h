@@ -18,3 +18,7 @@ bool tlu_ispunct(unsigned char c);
 bool tlu_isspace(unsigned char c);
 bool tlu_isupper(unsigned char c);
 bool tlu_ishex(unsigned char c);
+
+unsigned char tlu_tolower(unsigned char c);
+unsigned char tlu_toupper(unsigned char c);
+
