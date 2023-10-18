@@ -1,12 +1,12 @@
 
-.global tlu_bzero
+.global tlu_memzero
 
-# void tlu_bzero(void *ptr, size_t size);
+# void tlu_memzero(void *ptr, size_t size);
 #
 # a0 = ptr
 # a1 = size
 
-tlu_bzero:
+tlu_memzero:
 	beqz	a1, .ret	# if (size == 0) goto .ret
 
 	add	a1, a1, a0	# end = &ptr[size]

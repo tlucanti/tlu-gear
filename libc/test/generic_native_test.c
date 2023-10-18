@@ -12,11 +12,11 @@
 #include <ctype.h>
 #include <errno.h>
 
-UTEST(bzero)
+UTEST(memzero)
 {
 	struct string_context context;
 
-	context.function = FUNC_BZERO;
+	context.function = FUNC_MEMZERO;
 	utest_string_suite(64, 64, &context, true);
 }
 
@@ -125,11 +125,11 @@ UTEST(toupper)
 	utest_ctype_suite(&context);
 }
 
-FUZZ(bzero)
+FUZZ(memzero)
 {
 	struct string_context context;
 
-	context.function = FUNC_BZERO;
+	context.function = FUNC_MEMZERO;
 	utest_string_suite(500, 128, &context, false);
 }
 

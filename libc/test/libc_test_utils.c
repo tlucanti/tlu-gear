@@ -76,9 +76,9 @@ static void utest_string_callback(struct string_context *context)
 	const void *real_p, *expected_p;
 
 	switch (context->function) {
-	case FUNC_BZERO:
-		tlu_bzero(context->real_dst + context->offset, context->size);
-		bzero(context->expected_dst + context->offset, context->size);
+	case FUNC_MEMZERO:
+		tlu_memzero(context->real_dst + context->offset, context->size);
+		memset(context->expected_dst + context->offset, 0, context->size);
 		break;
 
 	case FUNC_MEMSET:

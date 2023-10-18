@@ -4,7 +4,7 @@
 
 enum string_func {
 	FUNC_NONE = 0,
-	FUNC_BZERO,
+	FUNC_MEMZERO,
 	FUNC_MEMSET,
 	FUNC_MEMCMP,
 	FUNC_MEMEQ,
