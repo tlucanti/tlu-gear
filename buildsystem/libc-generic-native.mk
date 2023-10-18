@@ -1,7 +1,7 @@
 
 TARGET = libcgn.a
 SRC = \
-      memzero.c memset.c memcmp.c memeq.c memnchr.c memchr.c \
+      memzero.c memset.c memcmp.c memeq.c memnchr.c memchr.c memcpy.c \
       \
       isalnum.c isalpha.c isdigit.c ishex.c islower.c isupper.c \
       isprint.c ispunct.c isspace.c tolower.c toupper.c
