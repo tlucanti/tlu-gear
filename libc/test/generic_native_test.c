@@ -37,7 +37,7 @@ UTEST(memcmp)
 	utest_string_suite(64, 64, &context, true);
 }
 
-UTEST(memceq)
+UTEST(memeq)
 {
 	struct string_context context;
 
@@ -49,12 +49,15 @@ UTEST(memcpy)
 {
 	struct string_context context;
 
-	context.function = FUNC_MEMCMP;
-	context.state = 0;
+	context.function = FUNC_MEMCPY;
 	utest_string_suite(64, 64, &context, true);
-	utest_ok();
+}
 
-	context.state = 1;
+UTEST(memmove)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMMOVE;
 	utest_string_suite(64, 64, &context, true);
 }
 
@@ -163,7 +166,7 @@ FUZZ(memcmp)
 	utest_string_suite(512, 128, &context, true);
 }
 
-FUZZ(memceq)
+FUZZ(memeq)
 {
 	struct string_context context;
 
@@ -175,10 +178,17 @@ FUZZ(memcpy)
 {
 	struct string_context context;
 
-	context.function = FUNC_MEMCMP;
+	context.function = FUNC_MEMCPY;
 	utest_string_suite(512, 128, &context, true);
 }
 
+FUZZ(memmove)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMMOVE;
+	utest_string_suite(512, 128, &context, true);
+}
 
 int main()
 {

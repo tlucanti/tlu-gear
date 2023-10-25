@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <limits.h>
 
+#define NEXT_STATE 1
+
 static void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
 {
 	for (size_t i = 0; i < size; ++i) {
@@ -70,7 +72,7 @@ static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t
 	}
 }
 
-static void utest_string_callback(struct string_context *context)
+static int utest_string_callback(struct string_context *context)
 {
 	int real_ret, expected_ret;
 	const void *real_p, *expected_p;
@@ -79,22 +81,57 @@ static void utest_string_callback(struct string_context *context)
 	case FUNC_MEMZERO:
 		tlu_memzero(context->real_dst + context->offset, context->size);
 		memset(context->expected_dst + context->offset, 0, context->size);
-		break;
+		return 0;
 
 	case FUNC_MEMSET:
 		tlu_memset(context->real_dst + context->offset, context->chr, context->size);
 		memset(context->expected_dst + context->offset, context->chr, context->size);
-		break;
+		return 0;
 
 	case FUNC_MEMCPY:
-		if (context->state == 0) {
+		switch (context->state) {
+		case 0:
+			tlu_memcpy(context->real_dst + context->offset, context->real_src + context->offset, context->size);
+			memcpy(context->expected_dst + context->offset, context->expected_src + context->offset, context->size);
+			return NEXT_STATE;
+		case 1:
 			tlu_memcpy(context->real_dst + context->offset, context->real_src, context->size);
 			memcpy(context->expected_dst + context->offset, context->expected_src, context->size);
-		} else {
+			return NEXT_STATE;
+		case 2:
 			tlu_memcpy(context->real_dst, context->real_src + context->offset, context->size);
 			memcpy(context->expected_dst, context->expected_src + context->offset, context->size);
-		}
+			return 0;
+		default:
+			panic("utest::memcpy invalid state");
 		break;
+		}
+
+	case FUNC_MEMMOVE:
+		switch (context->state) {
+		case 0:
+			tlu_memmove(context->real_src + context->offset, context->real_src, context->size);
+			memmove(context->expected_src + context->offset, context->expected_src, context->size);
+			return NEXT_STATE;
+		case 1:
+			tlu_memmove(context->real_src, context->real_src + context->offset, context->size);
+			memmove(context->expected_src, context->expected_src + context->offset, context->size);
+			return NEXT_STATE;
+		case 2:
+			tlu_memmove(context->real_dst + context->offset, context->real_src, context->size);
+			memmove(context->expected_dst + context->offset, context->expected_src, context->size);
+			return NEXT_STATE;
+		case 3:
+			tlu_memmove(context->real_dst, context->real_src + context->offset, context->size);
+			memmove(context->expected_dst, context->expected_src + context->offset, context->size);
+			return NEXT_STATE;
+		case 4:
+			tlu_memmove(context->real_dst + context->offset, context->real_src + context->offset, context->size);
+			memmove(context->expected_dst + context->offset, context->expected_src + context->offset, context->size);
+			return 0;
+		default:
+			panic("utest::memcpy invalid state");
+		}
 
 	case FUNC_MEMCMP:
 		real_ret = tlu_memcmp(context->real_src + context->offset,
@@ -112,7 +149,7 @@ static void utest_string_callback(struct string_context *context)
 				      context->expected_src + context->offset,
 				      context->size);
 		ASSERT_EQUAL(expected_ret, real_ret);
-		break;
+		return 0;
 
 	case FUNC_MEMEQ:
 		real_ret = tlu_memeq(context->real_src + context->offset,
@@ -132,7 +169,7 @@ static void utest_string_callback(struct string_context *context)
 				      context->size);
 		expected_ret = expected_ret == 0;
 		ASSERT_EQUAL(expected_ret, real_ret);
-		break;
+		return 0;
 
 	case FUNC_MEMNCHR:
 		real_p = tlu_memnchr(context->real_src + context->offset,
@@ -148,7 +185,7 @@ static void utest_string_callback(struct string_context *context)
 		expected_p = memchr(context->expected_src + context->offset, 0,
 				    context->size);
 		ASSERT_EQUAL_PTR(expected_p, real_p);
-		break;
+		return 0;
 
 	case FUNC_MEMCHR:
 		BUG_ON(NULL == memchr(context->expected_src + context->offset,
@@ -165,52 +202,54 @@ static void utest_string_callback(struct string_context *context)
 		expected_p =
 			rawmemchr(context->expected_src + context->offset, 0);
 		ASSERT_EQUAL_PTR(expected_p, real_p);
-		break;
+		return 0;
 
 	default:
 		panic("unknown function");
 	}
+	BUG("should not be there");
+	__unreachable();
 }
 
-void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
+static int utest_string_suite_run(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
 {
 	unsigned char *expected_src, *expected_dst;
 	unsigned char *real_src, *real_dst;
 	size_t alloc_size;
-	const size_t offset_start = 10;
 	bool err = false;
+	int ret;
+	const size_t padding = 16;
 
 	utest_progress_start();
 
 	for (size_t size = 0; size <= max_size; ++size) {
-		for (size_t offset = offset_start; offset < max_offset; ++offset) {
-			utest_progress(size * (max_offset - offset_start) + offset - offset_start, (max_size + 1) * (max_offset - offset_start));
+		for (size_t offset = 0; offset < max_offset; ++offset) {
+			utest_progress(size * max_offset + offset, (max_size + 1) * max_offset);
 
-			alloc_size = offset_start + offset + size + offset_start;
-			BUG_ON(offset + offset_start >= alloc_size, "offset is too big");
+			alloc_size = padding + offset + size + padding;
+			BUG_ON(offset + padding + size >= alloc_size, "offset is too big");
 			utest_generate_memory(&expected_src, &real_src, alloc_size, printable);
 			utest_generate_memory(&expected_dst, &real_dst, alloc_size, printable);
 
-			context->real_src = real_src;
-			context->real_dst = real_dst;
-			context->expected_src = expected_src;
-			context->expected_dst = expected_dst;
-			context->real_dst = real_dst;
+			context->real_src = real_src + padding;
+			context->real_dst = real_dst + padding;
+			context->expected_src = expected_src + padding;
+			context->expected_dst = expected_dst + padding;
 
 			context->size = size;
 			context->offset = offset;
 			context->needle = utest_random_range(context->offset, max(context->size, context->offset));
 
-			utest_string_callback(context);
+			ret = utest_string_callback(context);
 
 			if (utest_validate_memory(expected_src, real_src, alloc_size)) {
-				printf("src valdation error with ");
+				printf("src valdation error (state %d) with ", context->state);
 				printf("size=%lu, ", size);
 				printf("offset=%lu\n", ((uintptr_t)real_src + offset) % 8);
 				err = true;
 			}
 			if (utest_validate_memory(expected_dst, real_dst, alloc_size)) {
-				printf("src valdation error with ");
+				printf("dst valdation error with ");
 				printf("size=%lu, ", size);
 				printf("offset=%lu\n", ((uintptr_t)real_src + offset) % 8);
 				err = true;
@@ -225,6 +264,19 @@ void utest_string_suite(size_t max_size, size_t max_offset, struct string_contex
 	}
 
 	utest_progress_done();
+	return ret;
+}
+
+void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
+{
+	context->state = 0;
+	while (true) {
+		if (utest_string_suite_run(max_size, max_offset, context, printable) != NEXT_STATE) {
+			break;
+		}
+		utest_ok();
+		context->state++;
+	}
 }
 
 static void utest_ctype_callback(struct ctype_context *context)

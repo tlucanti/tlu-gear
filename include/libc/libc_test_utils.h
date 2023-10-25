@@ -11,6 +11,7 @@ enum string_func {
 	FUNC_MEMNCHR,
 	FUNC_MEMCHR,
 	FUNC_MEMCPY,
+	FUNC_MEMMOVE,
 };
 
 struct string_context {
