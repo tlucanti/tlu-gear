@@ -45,6 +45,22 @@ UTEST(memeq)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(memchr)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMCHR;
+	utest_string_suite(64, 64, &context, true);
+}
+
+UTEST(memnchr)
+{
+	struct string_context context;
+
+	context.function = FUNC_MEMNCHR;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(memcpy)
 {
 	struct string_context context;

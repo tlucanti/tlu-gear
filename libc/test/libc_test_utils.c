@@ -74,7 +74,7 @@ static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t
 
 static int utest_string_callback(struct string_context *context)
 {
-	int real_ret, expected_ret;
+	intmax_t real_ret, expected_ret;
 	const void *real_p, *expected_p;
 
 	switch (context->function) {
@@ -178,31 +178,69 @@ static int utest_string_callback(struct string_context *context)
 		expected_p = memchr(context->expected_src + context->offset,
 				    context->expected_src[context->needle],
 				    context->size);
-		ASSERT_EQUAL_PTR(expected_p, real_p);
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
+			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
 
 		real_p = tlu_memnchr(context->real_src + context->offset, 0,
 				     context->size);
 		expected_p = memchr(context->expected_src + context->offset, 0,
 				    context->size);
-		ASSERT_EQUAL_PTR(expected_p, real_p);
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
+			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
 		return 0;
 
 	case FUNC_MEMCHR:
 		BUG_ON(NULL == memchr(context->expected_src + context->offset,
 				      context->expected_src[context->needle],
-				      context->size));
+				      context->size + 1));
 
 		real_p = tlu_memchr(context->real_src + context->offset,
 				    context->real_src[context->needle]);
 		expected_p = rawmemchr(context->expected_src + context->offset,
 				       context->expected_src[context->needle]);
-		ASSERT_EQUAL_PTR(expected_p, real_p);
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
+			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
 
 		real_p = tlu_memchr(context->real_src + context->offset, 0);
-		expected_p =
-			rawmemchr(context->expected_src + context->offset, 0);
+		expected_p = rawmemchr(context->expected_src + context->offset, 0);
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
+			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
+		return 0;
+
+	case FUNC_STRLEN:
+		BUG_ON(NULL == memchr(context->expected_src + context->offset,
+				      context->expected_src[context->needle],
+				      context->size));
+
+		real_ret = tlu_strlen((char *)context->real_src + context->offset);
+		expected_ret = strlen((char *)context->expected_src + context->offset);
+		ASSERT_EQUAL_PTR(expected_p, real_p);
+
+		real_ret = tlu_strlen((char *)context->real_src + context->offset);
+		expected_ret = strlen((char *)context->expected_src + context->offset);
 		ASSERT_EQUAL_PTR(expected_p, real_p);
 		return 0;
+
 
 	default:
 		panic("unknown function");
