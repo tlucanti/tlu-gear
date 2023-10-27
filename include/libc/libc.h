@@ -12,6 +12,8 @@ const void *tlu_memchr(const void *vp, unsigned char c);
 void tlu_memcpy(void *dst, const void *src, size_t size);
 void tlu_memmove(void *dst, const void *src, size_t size);
 
+size_t tlu_strlen(const char *s);
+
 bool tlu_isalnum(unsigned char c);
 bool tlu_isalpha(unsigned char c);
 bool tlu_isdigit(unsigned char c);
