@@ -77,6 +77,14 @@ UTEST(memmove)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(strlen)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRLEN;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(isalnum)
 {
 	struct ctype_context context;

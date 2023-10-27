@@ -230,15 +230,15 @@ static int utest_string_callback(struct string_context *context)
 	case FUNC_STRLEN:
 		BUG_ON(NULL == memchr(context->expected_src + context->offset,
 				      context->expected_src[context->needle],
-				      context->size));
+				      context->size + 1));
 
 		real_ret = tlu_strlen((char *)context->real_src + context->offset);
 		expected_ret = strlen((char *)context->expected_src + context->offset);
-		ASSERT_EQUAL_PTR(expected_p, real_p);
+		ASSERT_EQUAL(expected_ret, real_ret);
 
 		real_ret = tlu_strlen((char *)context->real_src + context->offset);
 		expected_ret = strlen((char *)context->expected_src + context->offset);
-		ASSERT_EQUAL_PTR(expected_p, real_p);
+		ASSERT_EQUAL(expected_ret, real_ret);
 		return 0;
 
 
