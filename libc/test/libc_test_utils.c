@@ -228,9 +228,10 @@ static int utest_string_callback(struct string_context *context)
 		return 0;
 
 	case FUNC_STRLEN:
+		context->expected_src[context->needle] = 0;
+		context->real_src[context->needle] = 0;
 		BUG_ON(NULL == memchr(context->expected_src + context->offset,
-				      context->expected_src[context->needle],
-				      context->size + 1));
+				      0, context->size + 1));
 
 		real_ret = tlu_strlen((char *)context->real_src + context->offset);
 		expected_ret = strlen((char *)context->expected_src + context->offset);
@@ -238,6 +239,25 @@ static int utest_string_callback(struct string_context *context)
 
 		real_ret = tlu_strlen((char *)context->real_src + context->offset);
 		expected_ret = strlen((char *)context->expected_src + context->offset);
+		ASSERT_EQUAL(expected_ret, real_ret);
+		return 0;
+
+	case FUNC_STRCMP:
+		context->expected_src[context->needle] = 0;
+		context->real_src[context->needle] = 0;
+		BUG_ON(NULL == memchr(context->expected_src + context->offset,
+				      0, context->size + 1));
+
+		real_ret = tlu_strcmp((char *)context->real_src + context->offset,
+				      (char *)context->real_dst + context->offset);
+		expected_ret = strcmp((char *)context->expected_src + context->offset,
+				      (char *)context->expected_dst + context->offset);
+		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+
+		real_ret = tlu_strcmp((char *)context->real_src + context->offset,
+				      (char *)context->real_src + context->offset);
+		expected_ret = strcmp((char *)context->expected_src + context->offset,
+				      (char *)context->expected_src + context->offset);
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return 0;
 

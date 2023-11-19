@@ -85,6 +85,14 @@ UTEST(strlen)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(strcmp)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRCMP;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(isalnum)
 {
 	struct ctype_context context;

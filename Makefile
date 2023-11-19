@@ -6,7 +6,7 @@ BUILD   = build
 
 CFLAGS  = -fdiagnostics-color=always -g3 -O0
 CFLAGS += -D DEBUG
-CFLAGS += -Wall -Wextra
+CFLAGS += -Wall -Wextra -Werror
 CC = clang
 LD = clang
 AR = ar rcs
