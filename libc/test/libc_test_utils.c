@@ -261,6 +261,26 @@ static int utest_string_callback(struct string_context *context)
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return 0;
 
+	case FUNC_STREQ:
+		context->expected_src[context->needle] = 0;
+		context->real_src[context->needle] = 0;
+		BUG_ON(NULL == memchr(context->expected_src + context->offset,
+				      0, context->size + 1));
+
+		real_ret = tlu_streq((char *)context->real_src + context->offset,
+				     (char *)context->real_dst + context->offset);
+		expected_ret = strcmp((char *)context->expected_src + context->offset,
+				      (char *)context->expected_dst + context->offset);
+		expected_ret = (expected_ret == 0);
+		ASSERT_EQUAL(expected_ret, real_ret);
+
+		real_ret = tlu_streq((char *)context->real_src + context->offset,
+				     (char *)context->real_src + context->offset);
+		expected_ret = strcmp((char *)context->expected_src + context->offset,
+				      (char *)context->expected_src + context->offset);
+		expected_ret = (expected_ret == 0);
+		ASSERT_EQUAL(expected_ret, real_ret);
+		return 0;
 
 	default:
 		panic("unknown function");
