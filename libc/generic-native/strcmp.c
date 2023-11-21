@@ -7,6 +7,6 @@ int tlu_strcmp(const char *a, const char *b)
 		++a;
 		++b;
 	}
-	return *a - *b;
+	return (unsigned char)*a - (unsigned char)*b;
 }
 
