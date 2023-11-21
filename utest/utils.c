@@ -9,7 +9,7 @@
 
 void utest_random_init(uint32_t seed)
 {
-	if (seed ==  0) {
+	if (seed == 0) {
 		srandom(time(NULL));
 	} else {
 		srandom(seed);

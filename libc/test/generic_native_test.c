@@ -195,7 +195,7 @@ FUZZ(memcmp)
 	struct string_context context;
 
 	context.function = FUNC_MEMCMP;
-	utest_string_suite(512, 128, &context, true);
+	utest_string_suite(512, 128, &context, false);
 }
 
 FUZZ(memeq)
@@ -203,7 +203,7 @@ FUZZ(memeq)
 	struct string_context context;
 
 	context.function = FUNC_MEMEQ;
-	utest_string_suite(512, 128, &context, true);
+	utest_string_suite(512, 128, &context, false);
 }
 
 FUZZ(memcpy)
@@ -211,7 +211,7 @@ FUZZ(memcpy)
 	struct string_context context;
 
 	context.function = FUNC_MEMCPY;
-	utest_string_suite(512, 128, &context, true);
+	utest_string_suite(512, 128, &context, false);
 }
 
 FUZZ(memmove)
@@ -219,7 +219,23 @@ FUZZ(memmove)
 	struct string_context context;
 
 	context.function = FUNC_MEMMOVE;
-	utest_string_suite(512, 128, &context, true);
+	utest_string_suite(512, 128, &context, false);
+}
+
+FUZZ(strlen)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRLEN;
+	utest_string_suite(512, 128, &context, false);
+}
+
+FUZZ(strcmp)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRCMP;
+	utest_string_suite(512, 128, &context, false);
 }
 
 int main()

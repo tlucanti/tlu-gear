@@ -158,8 +158,8 @@ static int utest_string_callback(struct string_context *context)
 		expected_ret = memcmp(context->expected_src + context->offset,
 				      context->expected_dst + context->offset,
 				      context->size);
-		expected_ret = expected_ret == 0;
-		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+		expected_ret = (expected_ret == 0);
+		ASSERT_EQUAL(expected_ret, real_ret);
 
 		real_ret = tlu_memeq(context->real_src + context->offset,
 				     context->real_src + context->offset,
@@ -167,7 +167,7 @@ static int utest_string_callback(struct string_context *context)
 		expected_ret = memcmp(context->expected_src + context->offset,
 				      context->expected_src + context->offset,
 				      context->size);
-		expected_ret = expected_ret == 0;
+		expected_ret = (expected_ret == 0);
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return 0;
 
