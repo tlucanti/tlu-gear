@@ -14,6 +14,7 @@ void tlu_memmove(void *dst, const void *src, size_t size);
 
 size_t tlu_strlen(const char *s);
 int tlu_strcmp(const char *a, const char *b);
+bool tlu_streq(const char *a, const char *b);
 
 bool tlu_isalnum(unsigned char c);
 bool tlu_isalpha(unsigned char c);
