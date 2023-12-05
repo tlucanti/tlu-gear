@@ -101,6 +101,14 @@ UTEST(streq)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(strchr)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRCHR;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(isalnum)
 {
 	struct ctype_context context;
@@ -254,9 +262,18 @@ FUZZ(streq)
 	utest_string_suite(512, 128, &context, false);
 }
 
+FUZZ(strchr)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRCHR;
+	utest_string_suite(512, 128, &context, false);
+}
+
 int main(int argc, const char **argv)
 {
 	(void)argc;
-	utest_random_init(0);
+	utest_random_init(1);
 	unittest(argv);
 }
+
