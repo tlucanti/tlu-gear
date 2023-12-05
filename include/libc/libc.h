@@ -16,6 +16,7 @@ size_t tlu_strlen(const char *s);
 int tlu_strcmp(const char *a, const char *b);
 bool tlu_streq(const char *a, const char *b);
 char *tlu_strchr(const char *str, char c);
+char *tlu_strrchr(const char *str, char c);
 
 bool tlu_isalnum(unsigned char c);
 bool tlu_isalpha(unsigned char c);
