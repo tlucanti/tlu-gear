@@ -328,6 +328,36 @@ static int utest_string_callback(struct string_context *context)
 		}
 		return ret;
 
+	case FUNC_STRRCHR:
+		esrc[context->needle] = 0;
+		rsrc[context->needle] = 0;
+		BUG_ON(NULL == memchr(esrc + offset, esrc[context->needle], size + 1));
+
+		switch (context->state) {
+		case 0:
+			real_p = tlu_strrchr(rsrc + offset, rsrc[context->needle]);
+			expected_p = strrchr(esrc + offset, esrc[context->needle]);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_p = tlu_strrchr(rsrc + offset, 0);
+			expected_p = strrchr(esrc + offset, 0);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::strrchr: invalid state");
+		}
+
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
+			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
+		return ret;
+
+
 	default:
 		BUG("utest::string_suite: unknown function");
 	}
