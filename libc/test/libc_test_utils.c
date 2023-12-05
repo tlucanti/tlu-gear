@@ -16,7 +16,21 @@
 #include <errno.h>
 #include <limits.h>
 
-#define NEXT_STATE 1
+enum state_machine {
+	NEXT_STATE = 1,
+	NEXT_OFFSET = 2,
+	NEXT_OFFSET_OR_STATE = 3,
+};
+
+static void *utest_malloc(size_t size)
+{
+	void *p;
+
+	p = malloc(size);
+	panic_on(p == NULL, "out of memory");
+	memset(p, 0xff, size);
+	return p;
+}
 
 static void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size)
 {
@@ -49,15 +63,10 @@ static int utest_validate_memory(unsigned char *expected, unsigned char *real, s
 	return EFAULT;
 }
 
-static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t size, bool printable)
+static void utest_generate_memory(unsigned char *m1, unsigned char *m2, size_t size, bool printable)
 {
 	const char *alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	unsigned char c;
-
-	*m1 = malloc(size);
-	*m2 = malloc(size);
-
-	panic_on(*m1 == NULL || *m2 == NULL, "out of memory");
 
 	for (size_t i = 0; i < size; ++i) {
 		if (printable) {
@@ -67,8 +76,8 @@ static void utest_generate_memory(unsigned char **m1, unsigned char **m2, size_t
 			c = (unsigned char)utest_random();
 		}
 
-		(*m1)[i] = c;
-		(*m2)[i] = c;
+		m1[i] = c;
+		m2[i] = c;
 	}
 }
 
@@ -76,217 +85,253 @@ static int utest_string_callback(struct string_context *context)
 {
 	intmax_t real_ret, expected_ret;
 	const void *real_p, *expected_p;
+	int ret;
+
+	char *rsrc = (char *)context->real_src;
+	char *rdst = (char *)context->real_dst;
+	char *esrc = (char *)context->expected_src;
+	char *edst = (char *)context->expected_dst;
+	size_t size = context->size;
+	size_t offset = context->offset;
 
 	switch (context->function) {
 	case FUNC_MEMZERO:
-		tlu_memzero(context->real_dst + context->offset, context->size);
-		memset(context->expected_dst + context->offset, 0, context->size);
-		return 0;
+		tlu_memzero(rdst + offset, size);
+		memset(edst + offset, 0, size);
+		return NEXT_OFFSET;
 
 	case FUNC_MEMSET:
-		tlu_memset(context->real_dst + context->offset, context->chr, context->size);
-		memset(context->expected_dst + context->offset, context->chr, context->size);
-		return 0;
+		tlu_memset(rdst + offset, context->chr, size);
+		memset(edst + offset, context->chr, size);
+		return NEXT_OFFSET;
 
 	case FUNC_MEMCPY:
 		switch (context->state) {
 		case 0:
-			tlu_memcpy(context->real_dst + context->offset, context->real_src + context->offset, context->size);
-			memcpy(context->expected_dst + context->offset, context->expected_src + context->offset, context->size);
-			return NEXT_STATE;
+			tlu_memcpy(rdst + offset, rsrc, size);
+			memcpy(edst + offset, esrc, size);
+			return NEXT_OFFSET_OR_STATE;
 		case 1:
-			tlu_memcpy(context->real_dst + context->offset, context->real_src, context->size);
-			memcpy(context->expected_dst + context->offset, context->expected_src, context->size);
-			return NEXT_STATE;
-		case 2:
-			tlu_memcpy(context->real_dst, context->real_src + context->offset, context->size);
-			memcpy(context->expected_dst, context->expected_src + context->offset, context->size);
-			return 0;
+			tlu_memcpy(rdst, rsrc + offset, size);
+			memcpy(edst, esrc + offset, size);
+			return NEXT_OFFSET;
 		default:
-			panic("utest::memcpy invalid state");
-		break;
+			BUG("utest::memcpy: invalid state");
 		}
+		break;
 
 	case FUNC_MEMMOVE:
 		switch (context->state) {
 		case 0:
-			tlu_memmove(context->real_src + context->offset, context->real_src, context->size);
-			memmove(context->expected_src + context->offset, context->expected_src, context->size);
-			return NEXT_STATE;
+			tlu_memmove(rdst + offset, rsrc, size);
+			memmove(edst + offset, esrc, size);
+			return NEXT_OFFSET_OR_STATE;
 		case 1:
-			tlu_memmove(context->real_src, context->real_src + context->offset, context->size);
-			memmove(context->expected_src, context->expected_src + context->offset, context->size);
-			return NEXT_STATE;
+			tlu_memmove(rdst, rsrc + offset, size);
+			memmove(edst, esrc + offset, size);
+			return NEXT_OFFSET_OR_STATE;
 		case 2:
-			tlu_memmove(context->real_dst + context->offset, context->real_src, context->size);
-			memmove(context->expected_dst + context->offset, context->expected_src, context->size);
-			return NEXT_STATE;
+			tlu_memmove(rdst, rdst + offset, size);
+			memmove(edst, edst + offset, size);
+			return NEXT_OFFSET_OR_STATE;
 		case 3:
-			tlu_memmove(context->real_dst, context->real_src + context->offset, context->size);
-			memmove(context->expected_dst, context->expected_src + context->offset, context->size);
-			return NEXT_STATE;
-		case 4:
-			tlu_memmove(context->real_dst + context->offset, context->real_src + context->offset, context->size);
-			memmove(context->expected_dst + context->offset, context->expected_src + context->offset, context->size);
-			return 0;
+			tlu_memmove(rdst + offset, rdst, size);
+			memmove(edst + offset, edst, size);
+			return NEXT_OFFSET;
 		default:
-			panic("utest::memcpy invalid state");
+			BUG("utest::memmove: invalid state");
 		}
+		BUG("utest:memmove: should not be there");
 
 	case FUNC_MEMCMP:
-		real_ret = tlu_memcmp(context->real_src + context->offset,
-				      context->real_dst + context->offset,
-				      context->size);
-		expected_ret = memcmp(context->expected_src + context->offset,
-				      context->expected_dst + context->offset,
-				      context->size);
-		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_memcmp(rsrc + offset, rdst, size);
+			expected_ret = memcmp(esrc + offset, edst, size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_ret = tlu_memcmp(rsrc, rdst + offset, size);
+			expected_ret = memcmp(esrc, edst + offset, size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			real_ret = tlu_memcmp(rsrc + offset, rsrc + offset, size);
+			expected_ret = memcmp(esrc + offset, esrc + offset, size);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::memcmp: invalid state");
+		}
 
-		real_ret = tlu_memcmp(context->real_src + context->offset,
-				      context->real_src + context->offset,
-				      context->size);
-		expected_ret = memcmp(context->expected_src + context->offset,
-				      context->expected_src + context->offset,
-				      context->size);
-		ASSERT_EQUAL(expected_ret, real_ret);
-		return 0;
+		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
+		return ret;
 
 	case FUNC_MEMEQ:
-		real_ret = tlu_memeq(context->real_src + context->offset,
-				     context->real_dst + context->offset,
-				     context->size);
-		expected_ret = memcmp(context->expected_src + context->offset,
-				      context->expected_dst + context->offset,
-				      context->size);
-		expected_ret = (expected_ret == 0);
-		ASSERT_EQUAL(expected_ret, real_ret);
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_memeq(rsrc + offset, rdst, size);
+			expected_ret = memcmp(esrc + offset, edst, size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_ret = tlu_memeq(rsrc, rdst + offset, size);
+			expected_ret = memcmp(esrc, edst + offset, size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			real_ret = tlu_memeq(rsrc + offset, rsrc + offset, size);
+			expected_ret = memcmp(esrc + offset, esrc + offset, size);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::memeq: invalid state");
+		}
 
-		real_ret = tlu_memeq(context->real_src + context->offset,
-				     context->real_src + context->offset,
-				     context->size);
-		expected_ret = memcmp(context->expected_src + context->offset,
-				      context->expected_src + context->offset,
-				      context->size);
 		expected_ret = (expected_ret == 0);
 		ASSERT_EQUAL(expected_ret, real_ret);
-		return 0;
+		return ret;
 
 	case FUNC_MEMNCHR:
-		real_p = tlu_memnchr(context->real_src + context->offset,
-				     context->real_src[context->needle],
-				     context->size);
-		expected_p = memchr(context->expected_src + context->offset,
-				    context->expected_src[context->needle],
-				    context->size);
-		if (expected_p == NULL) {
-			ASSERT_NULL(real_p);
-		} else {
-			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
-			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
-			ASSERT_EQUAL(expected_ret, real_ret);
+		switch (context->state) {
+		case 0:
+			real_p = tlu_memnchr(rsrc + offset, rsrc[context->needle], size);
+			expected_p = memchr(esrc + offset, esrc[context->needle], size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_p = tlu_memnchr(rsrc + offset, 0, size);
+			expected_p = memchr(esrc + offset, 0, size);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::memnchr: invalid state");
 		}
 
-		real_p = tlu_memnchr(context->real_src + context->offset, 0,
-				     context->size);
-		expected_p = memchr(context->expected_src + context->offset, 0,
-				    context->size);
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
-			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
+			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
-		return 0;
+		return ret;
 
 	case FUNC_MEMCHR:
-		BUG_ON(NULL == memchr(context->expected_src + context->offset,
-				      context->expected_src[context->needle],
-				      context->size + 1));
+		BUG_ON(NULL == memchr(esrc + offset, esrc[context->needle], size + 1));
 
-		real_p = tlu_memchr(context->real_src + context->offset,
-				    context->real_src[context->needle]);
-		expected_p = rawmemchr(context->expected_src + context->offset,
-				       context->expected_src[context->needle]);
+		real_p = tlu_memchr(rsrc + offset, rsrc[context->needle]);
+		expected_p = rawmemchr(esrc + offset, esrc[context->needle]);
+
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
-			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
+			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
+			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
-
-		real_p = tlu_memchr(context->real_src + context->offset, 0);
-		expected_p = rawmemchr(context->expected_src + context->offset, 0);
-		if (expected_p == NULL) {
-			ASSERT_NULL(real_p);
-		} else {
-			real_ret = (uintptr_t)expected_p - (uintptr_t)context->expected_src;
-			expected_ret = (uintptr_t)real_p - (uintptr_t)context->real_src;
-			ASSERT_EQUAL(expected_ret, real_ret);
-		}
-		return 0;
+		return NEXT_OFFSET;
 
 	case FUNC_STRLEN:
-		context->expected_src[context->needle] = 0;
-		context->real_src[context->needle] = 0;
-		BUG_ON(NULL == memchr(context->expected_src + context->offset,
-				      0, context->size + 1));
+		esrc[context->needle] = 0;
+		rsrc[context->needle] = 0;
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
-		real_ret = tlu_strlen((char *)context->real_src + context->offset);
-		expected_ret = strlen((char *)context->expected_src + context->offset);
+		real_ret = tlu_strlen(rsrc + offset);
+		expected_ret = strlen(esrc + offset);
 		ASSERT_EQUAL(expected_ret, real_ret);
-
-		real_ret = tlu_strlen((char *)context->real_src + context->offset);
-		expected_ret = strlen((char *)context->expected_src + context->offset);
-		ASSERT_EQUAL(expected_ret, real_ret);
-		return 0;
+		return NEXT_OFFSET;
 
 	case FUNC_STRCMP:
-		context->expected_src[context->needle] = 0;
-		context->real_src[context->needle] = 0;
-		BUG_ON(NULL == memchr(context->expected_src + context->offset,
-				      0, context->size + 1));
+		esrc[context->needle] = 0;
+		rsrc[context->needle] = 0;
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
-		real_ret = tlu_strcmp((char *)context->real_src + context->offset,
-				      (char *)context->real_dst + context->offset);
-		expected_ret = strcmp((char *)context->expected_src + context->offset,
-				      (char *)context->expected_dst + context->offset);
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_strcmp(rsrc + offset, rdst);
+			expected_ret = strcmp(esrc + offset, edst);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_ret = tlu_strcmp(rsrc, rdst + offset);
+			expected_ret = strcmp(esrc, edst + offset);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			real_ret = tlu_strcmp(rsrc + offset, rsrc + offset);
+			expected_ret = strcmp(esrc + offset, esrc + offset);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::strcmp: invalid state");
+		}
+
 		ASSERT_EQUAL_SIGN(expected_ret, real_ret);
-
-		real_ret = tlu_strcmp((char *)context->real_src + context->offset,
-				      (char *)context->real_src + context->offset);
-		expected_ret = strcmp((char *)context->expected_src + context->offset,
-				      (char *)context->expected_src + context->offset);
-		ASSERT_EQUAL(expected_ret, real_ret);
-		return 0;
+		return ret;
 
 	case FUNC_STREQ:
-		context->expected_src[context->needle] = 0;
-		context->real_src[context->needle] = 0;
-		BUG_ON(NULL == memchr(context->expected_src + context->offset,
-				      0, context->size + 1));
+		esrc[context->needle] = 0;
+		rsrc[context->needle] = 0;
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
-		real_ret = tlu_streq((char *)context->real_src + context->offset,
-				     (char *)context->real_dst + context->offset);
-		expected_ret = strcmp((char *)context->expected_src + context->offset,
-				      (char *)context->expected_dst + context->offset);
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_streq(rsrc + offset, rdst);
+			expected_ret = strcmp(esrc + offset, edst);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_ret = tlu_streq(rsrc, rdst + offset);
+			expected_ret = strcmp(esrc, edst + offset);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			real_ret = tlu_streq(rsrc + offset, rsrc + offset);
+			expected_ret = strcmp(esrc + offset, esrc + offset);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::strcmp: invalid state");
+		}
+
 		expected_ret = (expected_ret == 0);
 		ASSERT_EQUAL(expected_ret, real_ret);
+		return ret;
 
-		real_ret = tlu_streq((char *)context->real_src + context->offset,
-				     (char *)context->real_src + context->offset);
-		expected_ret = strcmp((char *)context->expected_src + context->offset,
-				      (char *)context->expected_src + context->offset);
-		expected_ret = (expected_ret == 0);
-		ASSERT_EQUAL(expected_ret, real_ret);
-		return 0;
+	case FUNC_STRCHR:
+		esrc[context->needle] = 0;
+		rsrc[context->needle] = 0;
+		BUG_ON(NULL == memchr(esrc + offset, esrc[context->needle], size + 1));
+
+		switch (context->state) {
+		case 0:
+			real_p = tlu_strchr(rsrc + offset, rsrc[context->needle]);
+			expected_p = strchr(esrc + offset, esrc[context->needle]);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_p = tlu_strchr(rsrc + offset, 0);
+			expected_p = strchr(esrc + offset, 0);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::strchr: invalid state");
+		}
+
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
+			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
+		return ret;
 
 	default:
-		panic("unknown function");
+		BUG("utest::string_suite: unknown function");
 	}
-	BUG("should not be there");
-	__unreachable();
+	BUG("utest:string_suite: should not be there");
 }
 
 static int utest_string_suite_run(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
@@ -294,50 +339,76 @@ static int utest_string_suite_run(size_t max_size, size_t max_offset, struct str
 	unsigned char *expected_src, *expected_dst;
 	unsigned char *real_src, *real_dst;
 	size_t alloc_size;
+	size_t offset;
 	bool err = false;
 	int ret;
-	const size_t padding = 16;
+	const size_t padding = 512;
 
 	utest_progress_start();
 
 	for (size_t size = 0; size <= max_size; ++size) {
-		for (size_t offset = 0; offset < max_offset; ++offset) {
-			utest_progress(size * max_offset + offset, (max_size + 1) * max_offset);
+		offset = 0;
+next_offset:
+		BUG_ON(offset > size);
+		utest_progress(size, max_size + 1);
 
-			alloc_size = padding + offset + size + padding;
-			BUG_ON(offset + padding + size >= alloc_size, "offset is too big");
-			utest_generate_memory(&expected_src, &real_src, alloc_size, printable);
-			utest_generate_memory(&expected_dst, &real_dst, alloc_size, printable);
+		alloc_size = padding + offset + size + padding;
+		real_src = utest_malloc(alloc_size);
+		real_dst = utest_malloc(alloc_size);
+		expected_src = utest_malloc(alloc_size);
+		expected_dst = utest_malloc(alloc_size);
 
-			context->real_src = real_src + padding;
-			context->real_dst = real_dst + padding;
-			context->expected_src = expected_src + padding;
-			context->expected_dst = expected_dst + padding;
+		utest_generate_memory(real_src + padding,
+				      expected_src + padding,
+				      size, printable);
+		utest_generate_memory(real_dst + padding,
+				      expected_dst + padding,
+				      size, printable);
 
-			context->size = size;
-			context->offset = offset;
-			context->needle = utest_random_range(context->offset, max(context->size, context->offset));
+		context->real_src = real_src + padding + offset;
+		context->real_dst = real_dst + padding + offset;
+		context->expected_src = expected_src + padding + offset;
+		context->expected_dst = expected_dst + padding + offset;
 
-			ret = utest_string_callback(context);
+		context->size = size;
+		context->offset = offset;
+		context->needle = utest_random_range(offset, size);
 
-			if (utest_validate_memory(expected_src, real_src, alloc_size)) {
-				printf("src valdation error (state %d) with ", context->state);
-				printf("size=%lu, ", size);
-				printf("offset=%lu\n", ((uintptr_t)real_src + offset) % 8);
-				err = true;
+		ret = utest_string_callback(context);
+
+		if (utest_validate_memory(expected_src, real_src, alloc_size)) {
+			printf("src valdation error (state %d) with ", context->state);
+			printf("size=%lu, ", size);
+			printf("offset=%lu (%lu)\n", offset, offset % 8);
+			err = true;
+		}
+		if (utest_validate_memory(expected_dst, real_dst, alloc_size)) {
+			printf("dst valdation error (state %d) with ", context->state);
+			printf("size=%lu, ", size);
+			printf("offset=%lu (%lu)\n", offset, offset % 8);
+			err = true;
+		}
+		ASSERT_FALSE(err);
+
+		free(expected_src);
+		free(expected_dst);
+		free(real_src);
+		free(real_dst);
+
+		switch (ret) {
+		case NEXT_STATE:
+			return NEXT_STATE;
+		case NEXT_OFFSET_OR_STATE:
+			ret = NEXT_STATE;
+			fallthrough;
+		case NEXT_OFFSET:
+			offset += 1;
+			if (offset <= size && offset <= max_offset) {
+				goto next_offset;
 			}
-			if (utest_validate_memory(expected_dst, real_dst, alloc_size)) {
-				printf("dst valdation error with ");
-				printf("size=%lu, ", size);
-				printf("offset=%lu\n", ((uintptr_t)real_src + offset) % 8);
-				err = true;
-			}
-			ASSERT_FALSE(err);
-
-			free(expected_src);
-			free(expected_dst);
-			free(real_src);
-			free(real_dst);
+			break;
+		default:
+			BUG("utest::string_suite: invalid return state");
 		}
 	}
 

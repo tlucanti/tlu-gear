@@ -16,6 +16,7 @@ enum string_func {
 	FUNC_STRLEN,
 	FUNC_STRCMP,
 	FUNC_STREQ,
+	FUNC_STRCHR,
 };
 
 struct string_context {
