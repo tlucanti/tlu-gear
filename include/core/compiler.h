@@ -46,8 +46,12 @@
 # define unlikely(expr) __builtin_expect(!!(expr), 0)
 #endif
 
-#ifndef __unreachable
-# define __unreachable() __builtin_unreachable()
+#ifndef unreachable
+# define unreachable() __builtin_unreachable()
+#endif
+
+#ifndef fallthrough
+# define fallthrough __attribute__((__fallthrough__))
 #endif
 
 #endif /* _CORE_COMPILER_H_ */

@@ -9,8 +9,8 @@
 #include <core/compiler.h>
 
 #ifndef DEBUG
-#define __panic(...) abort()
-#define __bug(...) /* empty */
+#define __panic(...) abort(); unreachable()
+#define __bug(...) abort(); unreachable()
 #else
 #define __panic_reason(name, reason) \
 	__panic_impl(name, __FILE__, __LINE__, reason)
@@ -18,21 +18,21 @@
 #define ___panic_switch(a1, a2, a3, ...) a3
 #define __panic_switch(...) \
 	___panic_switch(__VA_ARGS__, __panic_reason, __panic_pure)
-#define __panic(...) __panic_switch(__VA_ARGS__)(__VA_ARGS__)
+#define __panic(...) __panic_switch(__VA_ARGS__)(__VA_ARGS__); unreachable()
 #define __bug(...) __panic("BUG", ##__VA_ARGS__)
 #endif
 
 /**
  * usage:
  *  panic() - to abort program
- *  panic("message") to abort program and print reason
+ *  panic("message") to abort program and print the reason
  */
 #define panic(...) __panic("panic", ##__VA_ARGS__)
 
 /**
  * usage:
- *  panic() - to abort program
- *  panic("message") to abort program and print reason
+ *  panic_on(expr) - to abort program conditionally
+ *  panic_on("message") to abort program conditionally and print the reason
  */
 #define panic_on(expr, ...)                 \
 	do {                                \

@@ -5,6 +5,9 @@
 #include <core/compiler.h>
 #include <utest/internal.h>
 
+#define CONFIG_UTEST_FIRST_FAIL true
+#define CONFIG_UTEST_CATCH_SEGFAULT false
+
 #ifndef CONFIG_UTEST_CATCH_SEGFAULT
 # define CONFIG_UTEST_CATCH_SEGFAULT true
 #endif
@@ -15,7 +18,7 @@
 # define CONFIG_UTEST_FIRST_FAIL false
 #endif
 
-void unittest(void);
+void unittest(const char **argv);
 
 #define UTEST(name) __UTEST_IMPL(name, false)
 #define UTEST_SKIP(name) __UTEST_IMPL(name, true)

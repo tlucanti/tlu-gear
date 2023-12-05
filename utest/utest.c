@@ -13,6 +13,7 @@
 #include <inttypes.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <string.h>
 
 static struct __utest utest_init __UTEST_ATTR = { .name = NULL,
 						  .func = NULL,
@@ -95,7 +96,21 @@ static struct __utest *get_utest_end(struct __utest *end)
 	return end;
 }
 
-static void suite_run(struct __utest *suite, const char *name)
+static bool do_skip_utest(const char *name, const char **keep_list)
+{
+	if (keep_list == NULL) {
+		return false;
+	}
+	while (*keep_list) {
+		if (!strcmp(name, *keep_list)) {
+			return false;
+		}
+		++keep_list;
+	}
+	return true;
+}
+
+static void suite_run(struct __utest *suite, const char *name, const char **keep_list)
 {
 	struct __utest *begin = get_utest_begin(suite);
 	struct __utest *end = get_utest_end(suite);
@@ -120,7 +135,7 @@ static void suite_run(struct __utest *suite, const char *name)
 		printf("%s %d/%d: %s: ", name, i, nr_test, begin->name);
 		fflush(stdout);
 
-		if (begin->skip) {
+		if (begin->skip || do_skip_utest(begin->name, keep_list)) {
 			print_yellow("[SKIPPED]\n");
 		} else {
 			begin->func();
@@ -130,10 +145,16 @@ static void suite_run(struct __utest *suite, const char *name)
 	}
 }
 
-void unittest(void)
+void unittest(const char **argv)
 {
-	suite_run(&utest_init, "TEST");
-	suite_run(&fuzz_init, "FUZZ");
+	if (argv == NULL || argv[1] == NULL) {
+		argv = NULL;
+	} else {
+		argv = &argv[1];
+	}
+
+	suite_run(&utest_init, "TEST", argv);
+	suite_run(&fuzz_init, "FUZZ", argv);
 }
 
 __cold __noret
@@ -141,8 +162,12 @@ static void test_failed(const char *file, unsigned long line)
 {
 	printf("\n[ASSERT FAILED]: %s:%lu\n", file, line);
 	fflush(stdout);
-	longjmp(jump_buf, 1);
-	__unreachable();
+	if (CONFIG_UTEST_FIRST_FAIL) {
+		abort();
+	} else {
+		longjmp(jump_buf, 1);
+	}
+	unreachable();
 }
 
 static void print_bool(bool v)

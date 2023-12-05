@@ -57,7 +57,5 @@ void __panic_impl(const char *name, const char *file, unsigned long line, const 
 	putstr("\n");
 
 	abort();
-	__unreachable();
-
 }
 

@@ -254,8 +254,9 @@ FUZZ(streq)
 	utest_string_suite(512, 128, &context, false);
 }
 
-int main()
+int main(int argc, const char **argv)
 {
+	(void)argc;
 	utest_random_init(0);
-	unittest();
+	unittest(argv);
 }
