@@ -117,6 +117,14 @@ UTEST(strrchr)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(sstartswith)
+{
+	struct string_context context;
+
+	context.function = FUNC_SSTARTSWITH;
+	utest_string_suite(64, 64, &context, true);
+}
+
 UTEST(isalnum)
 {
 	struct ctype_context context;
@@ -283,6 +291,14 @@ FUZZ(strrchr)
 	struct string_context context;
 
 	context.function = FUNC_STRRCHR;
+	utest_string_suite(512, 128, &context, false);
+}
+
+FUZZ(sstartswith)
+{
+	struct string_context context;
+
+	context.function = FUNC_SSTARTSWITH;
 	utest_string_suite(512, 128, &context, false);
 }
 

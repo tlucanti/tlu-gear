@@ -357,6 +357,57 @@ static int utest_string_callback(struct string_context *context)
 		}
 		return ret;
 
+	case FUNC_SSTARTSWITH:
+
+#define __sstartswitch(str, pattern) (strncmp(str, pattern, strlen(pattern)) == 0)
+		esrc[size] = '\0';
+		rsrc[size] = '\0';
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
+
+		real_ret = 0;
+		expected_ret = 0;
+
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			esrc[context->needle] = '\0';
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			rsrc[context->needle] = '\0';
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			rsrc[context->needle] = '\0';
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			esrc[context->needle] = '\0';
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 3:
+			context->expected_src[context->needle] += 1;
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			context->real_src[context->needle] += 1;
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+
+		case 4:
+			context->real_src[context->needle] += 1;
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			context->expected_src[context->needle] += 1;
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::strcmp: invalid state");
+		}
+
+		ASSERT_EQUAL(expected_ret, real_ret);
+		return ret;
 
 	default:
 		BUG("utest::string_suite: unknown function");

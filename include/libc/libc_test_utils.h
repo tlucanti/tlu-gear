@@ -18,6 +18,7 @@ enum string_func {
 	FUNC_STREQ,
 	FUNC_STRCHR,
 	FUNC_STRRCHR,
+	FUNC_SSTARTSWITH,
 };
 
 struct string_context {
