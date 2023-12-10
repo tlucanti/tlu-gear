@@ -18,6 +18,7 @@ $(eval OBJ = $(addprefix $(BUILD)/,$(SRC:.c=.o)))
 $(eval TARGETS = $(TARGETS) $(BUILD)/$(TARGET)))
 
 $(BUILD)/%.o: $(DIR)/%.c
+	@mkdir -p $$(dir $$@)
 	@echo "CC $$@"
 	@$(CC) $(FLAGS) -c $$< -o $$@
 
@@ -42,11 +43,13 @@ $(BUILD)/$(TARGET): $(OBJ)
 	@$(AR) $(BUILD)/$(TARGET) $(OBJ)
 
 $(BUILD)/%.o: $(DIR)/%.c
+	@mkdir -p $$(dir $$@)
 	@echo CC $$@
 	@$(CC) $(FLAGS) -c $$< -o $$@
 
 endef
 
+#mkdir -p $$(dir $$@)
 #	@echo LIB TARGET $(BUILD)/$(TARGET)
 #	@echo 'sp>'$(TARGET)'<sp'
 #	@echo TARGET $(TARGET)
