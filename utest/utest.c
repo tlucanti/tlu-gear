@@ -132,7 +132,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 		if (CONFIG_UTEST_CATCH_SEGFAULT && setjmp(jump_buf)) {
 			continue;
 		}
-		printf("%s %d/%d: %s: ", name, i, nr_test, begin->name);
+		printf("%s %d/%d: %s:\t", name, i, nr_test, begin->name);
 		fflush(stdout);
 
 		if (begin->skip || do_skip_utest(begin->name, keep_list)) {

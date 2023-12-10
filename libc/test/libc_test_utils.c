@@ -388,11 +388,11 @@ next_offset:
 		expected_src = utest_malloc(alloc_size);
 		expected_dst = utest_malloc(alloc_size);
 
-		utest_generate_memory(real_src + padding,
-				      expected_src + padding,
+		utest_generate_memory(real_src + padding + offset,
+				      expected_src + padding + offset,
 				      size, printable);
-		utest_generate_memory(real_dst + padding,
-				      expected_dst + padding,
+		utest_generate_memory(real_dst + padding + offset,
+				      expected_dst + padding + offset,
 				      size, printable);
 
 		context->real_src = real_src + padding + offset;
