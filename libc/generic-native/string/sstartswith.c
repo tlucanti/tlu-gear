@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/string.h>
 
 bool tlu_sstartswith(const char *str, const char *pattern)
 {

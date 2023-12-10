@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/mem.h>
 
 int tlu_memcmp(const void *va, const void *vb, size_t size)
 {

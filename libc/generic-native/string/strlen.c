@@ -1,5 +1,6 @@
 
-#include <libc/libc.h>
+#include <libc/string.h>
+#include <libc/mem.h>
 
 size_t tlu_strlen(const char *s)
 {

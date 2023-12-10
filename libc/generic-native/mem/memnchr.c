@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/mem.h>
 
 const void *tlu_memnchr(const void *vp, unsigned char c, size_t n)
 {

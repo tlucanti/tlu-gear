@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/mem.h>
 
 bool tlu_memeq(const void *va, const void *vb, size_t size)
 {

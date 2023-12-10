@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/string.h>
 
 int tlu_strcmp(const char *a, const char *b)
 {

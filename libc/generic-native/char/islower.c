@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/char.h>
 
 bool tlu_islower(unsigned char c)
 {

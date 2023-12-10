@@ -5,7 +5,10 @@
 #include <core/panic.h>
 #include <core/math.h>
 
-#include <libc/libc.h>
+#include <libc/mem.h>
+#include <libc/string.h>
+#include <libc/char.h>
+
 #include <libc/libc_test_utils.h>
 #include <utest/utest.h>
 #include <utest/utils.h>

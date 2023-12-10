@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/mem.h>
 
 void tlu_memzero(void *vptr, size_t size)
 {

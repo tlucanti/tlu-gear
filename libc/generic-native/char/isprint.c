@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/char.h>
 
 bool tlu_isprint(unsigned char c)
 {

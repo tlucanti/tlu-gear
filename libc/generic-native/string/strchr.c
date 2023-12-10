@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/string.h>
 
 char *tlu_strchr(const char *str, char c)
 {

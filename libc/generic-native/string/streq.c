@@ -1,5 +1,5 @@
 
-#include <libc/libc.h>
+#include <libc/string.h>
 
 bool tlu_streq(const char *a, const char *b)
 {
