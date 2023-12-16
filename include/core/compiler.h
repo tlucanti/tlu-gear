@@ -54,5 +54,13 @@
 # define fallthrough __attribute__((__fallthrough__))
 #endif
 
+#ifndef typeof
+# define typeof __typeof
+#endif
+
+#ifndef typeof_unqual
+# define typeof_unqual __typeof
+#endif
+
 #endif /* _CORE_COMPILER_H_ */
 
