@@ -62,10 +62,13 @@ struct ctype_context {
 enum lexical_func {
 	FUNC_NUMTOS,
 	FUNC_UNUMTOS,
+	FUNC_NUMTOS_BASE,
+	FUNC_UNUMTOS_BASE,
 };
 
 struct lexical_context {
 	enum lexical_func function;
+	int state;
 	intmax_t number;
 	uintmax_t unumber;
 	char *expected;

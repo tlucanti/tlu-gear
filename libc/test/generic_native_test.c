@@ -317,6 +317,22 @@ UTEST(unumtos)
 	utest_lexical_suite(10000, &context);
 }
 
+UTEST(numtos_base)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_NUMTOS_BASE;
+	utest_lexical_suite(10000, &context);
+}
+
+UTEST(unumtos_base)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_UNUMTOS_BASE;
+	utest_lexical_suite(10000, &context);
+}
+
 FUZZ(numtos)
 {
 	struct lexical_context context;
@@ -330,6 +346,22 @@ FUZZ(unumtos)
 	struct lexical_context context;
 
 	context.function = FUNC_UNUMTOS;
+	utest_lexical_suite(1000000, &context);
+}
+
+FUZZ(numtos_base)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_NUMTOS_BASE;
+	utest_lexical_suite(1000000, &context);
+}
+
+FUZZ(unumtos_base)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_UNUMTOS_BASE;
 	utest_lexical_suite(1000000, &context);
 }
 

@@ -22,8 +22,9 @@
 
 enum state_machine {
 	NEXT_STATE = 1,
-	NEXT_OFFSET = 2,
-	NEXT_OFFSET_OR_STATE = 3,
+	NEXT_OFFSET,
+	NEXT_OFFSET_OR_STATE,
+	STATE_DONE,
 };
 
 static void *utest_malloc(size_t size)
@@ -482,7 +483,8 @@ next_offset:
 
 		switch (ret) {
 		case NEXT_STATE:
-			return NEXT_STATE;
+			ret = NEXT_STATE;
+			break;
 		case NEXT_OFFSET_OR_STATE:
 			ret = NEXT_STATE;
 			fallthrough;
@@ -589,23 +591,66 @@ void utest_ctype_suite(struct ctype_context *context)
 	}
 }
 
-void utest_lexical_callback(struct lexical_context *context)
+static int utest_lexical_callback(struct lexical_context *context)
 {
 	switch (context->function) {
 	case FUNC_NUMTOS:
 		numtos(context->real, context->number);
 		sprintf(context->expected, "%jd", context->number);
-		break;
+		return STATE_DONE;
+
 	case FUNC_UNUMTOS:
 		unumtos(context->real, context->unumber);
 		sprintf(context->expected, "%ju", context->unumber);
-		break;
+		return STATE_DONE;
+
+	case FUNC_NUMTOS_BASE:
+		switch (context->state) {
+		case 0:
+			numtos_base(context->real, context->number, 10);
+			sprintf(context->expected, "%jd", context->number);
+			return NEXT_STATE;
+		case 1:
+			if (context->number >= 0) {
+				numtos_base(context->real, context->number, 8);
+				sprintf(context->expected, "%jo", context->number);
+			}
+			return NEXT_STATE;
+		case 2:
+			if (context->number >= 0) {
+				numtos_base(context->real, context->number, 16);
+				sprintf(context->expected, "%jx", context->number);
+			}
+			return STATE_DONE;
+		default:
+			BUG("utest::numtos_base: invalid state");
+		}
+
+	case FUNC_UNUMTOS_BASE:
+		switch (context->state) {
+		case 0:
+			numtos_base(context->real, context->number, 10);
+			sprintf(context->expected, "%jd", context->number);
+			return NEXT_STATE;
+		case 1:
+			unumtos_base(context->real, context->number, 8);
+			sprintf(context->expected, "%jo", context->number);
+			return NEXT_STATE;
+		case 2:
+			unumtos_base(context->real, context->number, 16);
+			sprintf(context->expected, "%jx", context->number);
+			return STATE_DONE;
+		default:
+			BUG("utest::unumtos_base: invalid state");
+		}
+
 	default:
 		BUG("utest::lexical_suite: unknown function");
 	}
+	BUG("utest:lexical_suite: should not be there");
 }
 
-void utest_lexical_suite(long max_iter, struct lexical_context *context)
+static int utest_lexical_suite_run(long max_iter, struct lexical_context *context)
 {
 	const uintmax_t edge_values[] = {
 		  0,
@@ -622,7 +667,7 @@ void utest_lexical_suite(long max_iter, struct lexical_context *context)
 
 	char *real;
 	char *expected;
-	int ret;
+	int ret, err;
 
 	utest_progress_start();
 
@@ -650,16 +695,29 @@ void utest_lexical_suite(long max_iter, struct lexical_context *context)
 			context->number = context->unumber;
 		}
 
-		utest_lexical_callback(context);
-		ret = utest_validate_memory((unsigned char *)expected,
+		ret = utest_lexical_callback(context);
+		err = utest_validate_memory((unsigned char *)expected,
 					    (unsigned char *)real,
 					    lexical_test_size);
-		ASSERT_FALSE(ret);
+		ASSERT_FALSE(err);
 
 		free(expected);
 		free(real);
 	}
 
 	utest_progress_done();
+	return ret;
+}
+
+void utest_lexical_suite(long max_iter, struct lexical_context *context)
+{
+	context->state = 0;
+	while (true) {
+		if (utest_lexical_suite_run(max_iter, context) != NEXT_STATE) {
+			break;
+		}
+		utest_ok();
+		context->state++;
+	}
 }
 
