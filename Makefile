@@ -20,12 +20,11 @@ include $(BS_ROOT)/build.mk
 
 include $(BS_ROOT)/libcore.mk
 include $(BS_ROOT)/libutest.mk
+include $(BS_ROOT)/libbench.mk
 include $(BS_ROOT)/libc-generic-native.mk
 
 include $(BS_ROOT)/utest-libc-generic-native.mk
+include $(BS_ROOT)/bench-libc-generic-native.mk
 
-build_all: $(BUILD) $(TARGETS)
+build_all: $(TARGETS)
 
-$(BUILD):
-	@echo MK $(BUILD)
-	@mkdir -p $(BUILD)
