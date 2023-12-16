@@ -2,6 +2,8 @@
 #ifndef _LIBC_LIBC_TEST_UTILS_H_
 #define _LIBC_LIBC_TEST_UTILS_H_
 
+#include <stdint.h>
+
 enum string_func {
 	FUNC_NONE = 0,
 	FUNC_MEMZERO,
@@ -57,8 +59,22 @@ struct ctype_context {
 	unsigned char real;
 };
 
+enum lexical_func {
+	FUNC_NUMTOS,
+	FUNC_UNUMTOS,
+};
+
+struct lexical_context {
+	enum lexical_func function;
+	intmax_t number;
+	uintmax_t unumber;
+	char *expected;
+	char *real;
+};
+
 void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable);
 void utest_ctype_suite(struct ctype_context *context);
+void utest_lexical_suite(long max_iter, struct lexical_context *context);
 
 #endif /* _LIBC_LIBC_TEST_UTILS_H_ */
 

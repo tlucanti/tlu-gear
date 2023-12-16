@@ -301,6 +301,38 @@ FUZZ(sstartswith)
 	utest_string_suite(512, 128, &context, false);
 }
 
+UTEST(numtos)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_NUMTOS;
+	utest_lexical_suite(10000, &context);
+}
+
+UTEST(unumtos)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_UNUMTOS;
+	utest_lexical_suite(10000, &context);
+}
+
+FUZZ(numtos)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_NUMTOS;
+	utest_lexical_suite(1000000, &context);
+}
+
+FUZZ(unumtos)
+{
+	struct lexical_context context;
+
+	context.function = FUNC_UNUMTOS;
+	utest_lexical_suite(1000000, &context);
+}
+
 int main(int argc, const char **argv)
 {
 	(void)argc;

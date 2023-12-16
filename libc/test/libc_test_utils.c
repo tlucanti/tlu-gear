@@ -8,6 +8,7 @@
 #include <libc/mem.h>
 #include <libc/string.h>
 #include <libc/char.h>
+#include <libc/lexical.h>
 
 #include <libc/libc_test_utils.h>
 #include <utest/utest.h>
@@ -362,7 +363,7 @@ static int utest_string_callback(struct string_context *context)
 
 	case FUNC_SSTARTSWITH:
 
-#define __sstartswitch(str, pattern) (strncmp(str, pattern, strlen(pattern)) == 0)
+#define __sstartswith(str, pattern) (strncmp(str, pattern, strlen(pattern)) == 0)
 		esrc[size] = '\0';
 		rsrc[size] = '\0';
 		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
@@ -373,27 +374,27 @@ static int utest_string_callback(struct string_context *context)
 		switch (context->state) {
 		case 0:
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 1:
 			esrc[context->needle] = '\0';
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
 			rsrc[context->needle] = '\0';
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 2:
 			rsrc[context->needle] = '\0';
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
 			esrc[context->needle] = '\0';
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 3:
 			context->expected_src[context->needle] += 1;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
 			context->real_src[context->needle] += 1;
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
@@ -401,7 +402,7 @@ static int utest_string_callback(struct string_context *context)
 		case 4:
 			context->real_src[context->needle] += 1;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswitch(rsrc + offset, esrc + offset);
+			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
 			context->expected_src[context->needle] += 1;
 			ret = NEXT_OFFSET;
 			break;
@@ -566,7 +567,7 @@ static void utest_ctype_callback(struct ctype_context *context)
 		context->expected = toupper(context->c);
 		break;
 	default:
-		panic("unknown function");
+		BUG("utest::ctype_suite: unknown function");
 	}
 }
 
@@ -586,5 +587,79 @@ void utest_ctype_suite(struct ctype_context *context)
 		}
 		ASSERT_EQUAL(context->expected, context->real);
 	}
+}
+
+void utest_lexical_callback(struct lexical_context *context)
+{
+	switch (context->function) {
+	case FUNC_NUMTOS:
+		numtos(context->real, context->number);
+		sprintf(context->expected, "%jd", context->number);
+		break;
+	case FUNC_UNUMTOS:
+		unumtos(context->real, context->unumber);
+		sprintf(context->expected, "%ju", context->unumber);
+		break;
+	default:
+		BUG("utest::lexical_suite: unknown function");
+	}
+}
+
+void utest_lexical_suite(long max_iter, struct lexical_context *context)
+{
+	const uintmax_t edge_values[] = {
+		  0,
+		  1,		-1,
+		  CHAR_MAX,	CHAR_MIN,
+		  SHRT_MAX,	SHRT_MIN,
+		  INT_MAX,	INT_MIN,
+		  LONG_MAX,	LONG_MIN,
+		  INTMAX_MAX,	INTMAX_MIN
+	};
+	const size_t padding = 16;
+	const size_t number_size = 100;
+	const size_t lexical_test_size = padding + number_size + padding;
+
+	char *real;
+	char *expected;
+	int ret;
+
+	utest_progress_start();
+
+	max_iter += ARRAY_SIZE(edge_values);
+	for (long i = 0; i < max_iter; ++i) {
+		utest_progress(i, max_iter);
+
+		real = utest_malloc(lexical_test_size);
+		expected = utest_malloc(lexical_test_size);
+
+		context->real = real + padding;
+		context->expected = expected + padding;
+
+		if (i < (long)ARRAY_SIZE(edge_values)) {
+			context->unumber = edge_values[i];
+			context->number = edge_values[i];
+		} else if (i < max_iter * 4 / 10) {
+			context->unumber = utest_random_range(0, 100);
+			context->number = utest_random_range(0, 200) - 100;
+		} else if (i < max_iter * 7 / 10) {
+			context->unumber = utest_random_range(0, 10000);
+			context->number = utest_random_range(0, 20000) - 10000;
+		} else {
+			context->unumber = utest_random();
+			context->number = context->unumber;
+		}
+
+		utest_lexical_callback(context);
+		ret = utest_validate_memory((unsigned char *)expected,
+					    (unsigned char *)real,
+					    lexical_test_size);
+		ASSERT_FALSE(ret);
+
+		free(expected);
+		free(real);
+	}
+
+	utest_progress_done();
 }
 
