@@ -15,17 +15,16 @@ static int __numtos_base(char *s, intmax_t num, unsigned short base, bool upper)
 		*s = '-';
 		ret += 1;
 
-		s += ret;
 		if (upper) {
-			ret += unumtos_base_upper(s, -(num / base), base);
-
-			s += ret;
-			ret += unumtos_base_upper(s, -(num % base), base);
+			if (num <= -base) {
+				ret += unumtos_base_upper(s + ret, -(num / base), base);
+			}
+			ret += unumtos_base_upper(s + ret, -(num % base), base);
 		} else {
-			ret += unumtos_base(s, -(num / base), base);
-
-			s += ret;
-			ret += unumtos_base(s, -(num % base), base);
+			if (num <= -base) {
+				ret += unumtos_base(s + ret, -(num / base), base);
+			}
+			ret += unumtos_base(s + ret, -(num % base), base);
 		}
 	} else {
 		if (upper) {

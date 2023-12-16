@@ -28,7 +28,7 @@ static int __unumtos_base(char *s, uintmax_t num, unsigned short base,
 		num /= base;
 	}
 
-	tlu_memcpy(s, tmp + idx, printed);
+	tlu_memcpy(s, tmp + idx, printed + 1);
 	return printed;
 }
 
