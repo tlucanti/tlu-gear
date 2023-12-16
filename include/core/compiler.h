@@ -62,5 +62,7 @@
 # define typeof_unqual __typeof
 #endif
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
+
 #endif /* _CORE_COMPILER_H_ */
 
