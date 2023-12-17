@@ -64,6 +64,8 @@ enum lexical_func {
 	FUNC_UNUMTOS,
 	FUNC_NUMTOS_BASE,
 	FUNC_UNUMTOS_BASE,
+	FUNC_NUMTOS_BASE_UPPER,
+	FUNC_UNUMTOS_BASE_UPPER,
 };
 
 struct lexical_context {

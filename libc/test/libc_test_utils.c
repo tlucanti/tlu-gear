@@ -625,6 +625,7 @@ static int utest_lexical_callback(struct lexical_context *context)
 		default:
 			BUG("utest::numtos_base: invalid state");
 		}
+		BUG("utest::numtos_base: should not be here");
 
 	case FUNC_UNUMTOS_BASE:
 		switch (context->state) {
@@ -643,11 +644,26 @@ static int utest_lexical_callback(struct lexical_context *context)
 		default:
 			BUG("utest::unumtos_base: invalid state");
 		}
+		BUG("utest::unumtos_base: should not be here");
+
+	case FUNC_NUMTOS_BASE_UPPER:
+		if (context->number >= 0) {
+			numtos_base_upper(context->real, context->number, 16);
+			sprintf(context->expected, "%jX", context->number);
+		}
+		return STATE_DONE;
+
+	case FUNC_UNUMTOS_BASE_UPPER:
+		if (context->number >= 0) {
+			unumtos_base_upper(context->real, context->number, 16);
+			sprintf(context->expected, "%jX", context->number);
+		}
+		return STATE_DONE;
 
 	default:
 		BUG("utest::lexical_suite: unknown function");
 	}
-	BUG("utest:lexical_suite: should not be there");
+	BUG("utest::lexical_suite: should not be there");
 }
 
 static int utest_lexical_suite_run(long max_iter, struct lexical_context *context)
