@@ -19,12 +19,15 @@ include $(BS_ROOT)/common.mk
 include $(BS_ROOT)/build.mk
 
 include $(BS_ROOT)/libcore.mk
+include $(BS_ROOT)/libcgn.mk
+
 include $(BS_ROOT)/libutest.mk
 include $(BS_ROOT)/libbench.mk
-include $(BS_ROOT)/libc-generic-native.mk
+include $(BS_ROOT)/libio.mk
 
-include $(BS_ROOT)/utest-libc-generic-native.mk
-include $(BS_ROOT)/bench-libc-generic-native.mk
+include $(BS_ROOT)/utest-libc.mk
+include $(BS_ROOT)/bench-libc.mk
+include $(BS_ROOT)/utest-io.mk
 
 build_all: $(TARGETS)
 

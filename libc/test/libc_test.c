@@ -1,15 +1,7 @@
 
-#include <core/color.h>
-#include <core/panic.h>
-
 #include <libc/libc_test_utils.h>
 #include <utest/utest.h>
 #include <utest/utils.h>
-
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
 
 UTEST(memzero)
 {

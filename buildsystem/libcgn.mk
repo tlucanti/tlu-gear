@@ -20,7 +20,7 @@ FLAGS = -I include/
 DEPS =
 DIR = libc/generic-native
 
-LIBC_GENERIC_NATIVE_TARGET = $(BUILD)/libcgn.a
+LIBC_TARGET = $(BUILD)/libcgn.a
 
 $(eval $(call build_library,\
 	$(TARGET),\
