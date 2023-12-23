@@ -6,7 +6,7 @@
 static int __unumtos_base(char *s, uintmax_t num, unsigned short base,
 			  const char *digits)
 {
-	char tmp[sizeof(num) * 8 + 1] __aligned(8);
+	char tmp[MAX_NUMBER_LEN] __aligned(8);
 	int idx = ARRAY_SIZE(tmp) - 1;
 	int printed = 0;
 
