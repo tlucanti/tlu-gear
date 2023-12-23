@@ -9,7 +9,7 @@ CFLAGS += -D DEBUG
 CFLAGS += -Wall -Wextra -Werror
 CC = gcc
 LD = gcc
-AR = ar rcs
+AR = ar rcsT
 
 TARGETS =
 

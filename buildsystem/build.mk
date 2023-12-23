@@ -40,7 +40,7 @@ $(eval OBJ = $(addprefix $(BUILD)/,$(SRC:.c=.o)))
 
 $(BUILD)/$(TARGET): $(OBJ)
 	@echo AR $(TARGET)
-	@$(AR) $(BUILD)/$(TARGET) $(OBJ)
+	@$(AR) $(BUILD)/$(TARGET) $(OBJ) $(DEPS)
 
 $(BUILD)/%.o: $(DIR)/%.c
 	@mkdir -p $$(dir $$@)

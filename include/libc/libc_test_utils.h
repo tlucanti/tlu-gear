@@ -2,6 +2,8 @@
 #ifndef _LIBC_LIBC_TEST_UTILS_H_
 #define _LIBC_LIBC_TEST_UTILS_H_
 
+#include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 enum string_func {
