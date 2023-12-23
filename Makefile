@@ -19,6 +19,7 @@ include $(BS_ROOT)/common.mk
 include $(BS_ROOT)/build.mk
 
 include $(BS_ROOT)/libcore.mk
+include $(BS_ROOT)/libsyscall.mk
 include $(BS_ROOT)/libcgn.mk
 
 include $(BS_ROOT)/libutest.mk

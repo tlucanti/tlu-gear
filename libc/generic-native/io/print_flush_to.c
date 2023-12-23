@@ -1,6 +1,6 @@
 
 #include <libc/io.h>
-#include <libc/syscalls.h>
+#include <libc/syscall.h>
 
 void print_flush_to(file_stream_t *stream)
 {
