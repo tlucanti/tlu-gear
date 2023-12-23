@@ -6,7 +6,7 @@ SRC = \
 	print_flush.c print_flush_to.c
 FLAGS = -I include/
 DEPS = $(LIBC_TARGET)
-DIR = libc/io/
+DIR = libc/$(TYPE)/io
 
 LIBIO_TARGET = $(BUILD)/libio.a
 
