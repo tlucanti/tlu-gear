@@ -38,7 +38,7 @@ $(eval DIR = $(strip $5))
 
 $(eval OBJ = $(addprefix $(BUILD)/,$(SRC:.c=.o)))
 
-$(BUILD)/$(TARGET): $(OBJ)
+$(BUILD)/$(TARGET): $(DEPS) $(OBJ)
 	@echo AR $(TARGET)
 	@$(AR) $(BUILD)/$(TARGET) $(OBJ) $(DEPS)
 
