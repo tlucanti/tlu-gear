@@ -1,4 +1,6 @@
 
+*.o
+
 /build
 /riscv
 compile_commands.json
