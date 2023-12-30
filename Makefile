@@ -1,6 +1,7 @@
 
 BUILD = build
 CFLAGS = -Wall -Wextra -I include
+CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 
 CC = gcc
 LD = gcc
@@ -54,8 +55,10 @@ endef
 
 include .config
 
-include libc/$(CONFIG_LIBC_TYPE)/Makefile
+include core/Makefile
 include utest/Makefile
+
+include libc/$(CONFIG_LIBC_TYPE)/Makefile
 
 include libc/test/Makefile
 

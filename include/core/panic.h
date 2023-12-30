@@ -8,7 +8,7 @@
 
 #include <core/compiler.h>
 
-#ifndef DEBUG
+#ifndef CONFIG_DEBUG
 #define __panic(...) abort(); unreachable()
 #define __bug(...) abort(); unreachable()
 #else
