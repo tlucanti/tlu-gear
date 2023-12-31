@@ -57,6 +57,7 @@ include .config
 
 include core/Makefile
 include utest/Makefile
+include bench/Makefile
 
 include libc/$(CONFIG_LIBC_TYPE)/syscall/Makefile
 include libc/$(CONFIG_LIBC_TYPE)/mem/Makefile
@@ -66,6 +67,7 @@ include libc/$(CONFIG_LIBC_TYPE)/lexical/Makefile
 include libc/$(CONFIG_LIBC_TYPE)/io/Makefile
 
 include libc/test/Makefile
+include libc/perf/Makefile
 
 build_all: $(BUILD) $(targets)
 .PHONY: build_all
