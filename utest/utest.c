@@ -1,5 +1,6 @@
 
 #include <utest/utest.h>
+#include <utest/utils.h>
 #include <core/color.h>
 #include <core/panic.h>
 #include <core/compiler.h>
@@ -26,23 +27,9 @@ static struct __utest fuzz_init __FUZZ_ATTR = { .name = NULL,
 
 static jmp_buf jump_buf;
 
-#define print_color(color, format, ...)                                   \
-	do {                                                              \
-		if (CONFIG_UTEST_COLOR_OUTPUT && isatty(STDOUT_FILENO)) { \
-			printf(color format ANSI_NORMAL, ##__VA_ARGS__);  \
-		} else {                                                  \
-			printf(format, ##__VA_ARGS__);                    \
-		}                                                         \
-	} while (false)
-
-#define print_green(format, ...) print_color(ANSI_BGREEN, format, ##__VA_ARGS__)
-#define print_yellow(format, ...) print_color(ANSI_BYELLOW, format, ##__VA_ARGS__)
-#define print_red(format, ...) print_color(ANSI_BRED, format, ##__VA_ARGS__)
-#define print_blue(format, ...) print_color(ANSI_BLUE, format, ##__VA_ARGS__)
-
 void utest_ok(void)
 {
-	print_green("[ OK ] ");
+	utest_print_green("[ OK ] ");
 	fflush(stdout);
 }
 
@@ -58,13 +45,13 @@ static void signal_handler(int sig)
 
 	switch (sig) {
 	case SIGSEGV:
-		print_red("SEGMENTATION FAULT\n");
+		utest_print_red("SEGMENTATION FAULT\n");
 		goto jmp;
 	case SIGBUS:
-		print_red("BUS ERROR\n");
+		utest_print_red("BUS ERROR\n");
 		goto jmp;
 	case SIGABRT:
-		print_red("PANIC\n");
+		utest_print_red("PANIC\n");
 		goto jmp;
 	default:
 		panic("unknown error");
@@ -136,7 +123,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 		fflush(stdout);
 
 		if (begin->skip || do_skip_utest(begin->name, keep_list)) {
-			print_yellow("[SKIPPED]\n");
+			utest_print_yellow("[SKIPPED]\n");
 		} else {
 			begin->func();
 			utest_ok();
@@ -173,55 +160,55 @@ static void test_failed(const char *file, unsigned long line)
 static void print_bool(bool v)
 {
 	if (v == true) {
-		print_blue("true");
+		utest_print_blue("true");
 	} else {
-		print_blue("false");
+		utest_print_blue("false");
 	}
 }
 
 static void print_int(intmax_t v)
 {
 	if (v == 0) {
-		print_blue("zero");
+		utest_print_blue("zero");
 	} else {
-		print_blue("%" PRIdMAX, v);
+		utest_print_blue("%" PRIdMAX, v);
 	}
 }
 
 static void print_ptr(const void *v)
 {
 	if (v == NULL) {
-		print_blue("NULL");
+		utest_print_blue("NULL");
 	} else {
-		print_blue("%p", v);
+		utest_print_blue("%p", v);
 	}
 }
 
 static void print_sign(intmax_t v)
 {
 	if (v > 0) {
-		print_blue("positive value");
+		utest_print_blue("positive value");
 	} else if (v < 0) {
-		print_blue("negative value");
+		utest_print_blue("negative value");
 	} else {
-		print_blue("zero");
+		utest_print_blue("zero");
 	}
 }
 
 void __assert_fail_impl(const char *file, unsigned long line)
 {
-	print_red("[FAIL]\n");
-	print_yellow("should not be here");
+	utest_print_red("[FAIL]\n");
+	utest_print_yellow("should not be here");
 	test_failed(file, line);
 }
 
 void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long line)
 {
 	if (unlikely(exp != real)) {
-		print_red("[FAIL]\n");
-		print_yellow("expected ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected ");
 		print_bool(exp);
-		print_yellow(", got ");
+		utest_print_yellow(", got ");
 		print_bool(real);
 	} else {
 		return;
@@ -233,16 +220,16 @@ void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long lin
 void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line)
 {
 	if (unlikely(eq && exp != real)) {
-		print_red("[FAIL]\n");
-		print_yellow("expected ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected ");
 		print_int(exp);
-		print_yellow(", got ");
+		utest_print_yellow(", got ");
 		print_int(real);
 	} else if (unlikely(!eq && exp == real)) {
-		print_red("[FAIL]\n");
-		print_yellow("got ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("got ");
 		print_int(real);
-		print_yellow(", but didnt expect");
+		utest_print_yellow(", but didnt expect");
 	} else {
 		return;
 	}
@@ -253,16 +240,16 @@ void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, un
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, unsigned long line)
 {
 	if (unlikely(eq && exp != real)) {
-		print_red("[FAIL]\n");
-		print_yellow("expected ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected ");
 		print_ptr(exp);
-		print_yellow(", got ");
+		utest_print_yellow(", got ");
 		print_ptr(real);
 	} else if (unlikely(!eq && exp == real)) {
-		print_red("[FAIL]\n");
-		print_yellow("got ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("got ");
 		print_ptr(real);
-		print_yellow(", but didnt expect");
+		utest_print_yellow(", but didnt expect");
 	} else {
 		return;
 	}
@@ -273,16 +260,16 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 void __assert_sign_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line)
 {
 	if (unlikely(eq && sign(exp) != sign(real))) {
-		print_red("[FAIL]\n");
-		print_yellow("expected ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected ");
 		print_sign(exp);
-		print_yellow(", got ");
+		utest_print_yellow(", got ");
 		print_sign(real);
 	} else if (unlikely(!eq && sign(exp) == sign(real))) {
-		print_red("[FAIL]\n");
-		print_yellow("got ");
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("got ");
 		print_sign(real);
-		print_yellow(", but expected ");
+		utest_print_yellow(", but expected ");
 		print_sign(exp);
 	} else {
 		return;

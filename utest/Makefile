@@ -2,7 +2,7 @@
 obj-utest	=
 obj-utest	+= utest.o utils.o
 
-deps-utest	=
+deps-utest	= $(target-libcore)
 
 target-utest	= build/libutest.a
 
