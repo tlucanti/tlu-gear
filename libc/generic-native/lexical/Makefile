@@ -5,7 +5,7 @@ obj-liblexical	+= numtos.o
 obj-liblexical	+= unumtos_base.o
 obj-liblexical	+= unumtos.o
 
-deps-liblexical	=
+deps-liblexical	= $(target-libmem)
 
 target-liblexical= build/liblexical.a
 

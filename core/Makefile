@@ -1,15 +1,15 @@
 
-obj-core	=
-obj-core	+= panic.o
+obj-libcore	=
+obj-libcore	+= panic.o
 
-deps-core	=
+deps-libcore	=
 
-target-core	= build/libcore.a
+target-libcore	= build/libcore.a
 
 $(eval $(call build_library,\
-	$(target-core),\
-	$(obj-core),\
-	$(deps-core),\
+	$(target-libcore),\
+	$(obj-libcore),\
+	$(deps-libcore),\
 	core,\
 ))
 
