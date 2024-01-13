@@ -18,8 +18,8 @@ enum lexical_func {
 struct lexical_context {
 	enum lexical_func function;
 	int state;
-	intmax_t number;
-	uintmax_t unumber;
+	int64_t number;
+	uint64_t unumber;
 	char *expected;
 	char *real;
 };

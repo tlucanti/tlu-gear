@@ -3,7 +3,7 @@
 #include <libc/lexical.h>
 #include <core/compiler.h>
 
-int putnum_to(file_stream_t *stream, intmax_t x)
+int putnum_to(file_stream_t *stream, int64_t x)
 {
 	int ret;
 

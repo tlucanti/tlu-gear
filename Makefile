@@ -1,10 +1,16 @@
 
 BUILD = build
-CFLAGS = -Wall -Wextra -Werror -fdiagnostics-color=always
+CFLAGS =
 CFLAGS += -I include
+
+#include cflags.mk
 
 CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)
+
+#ifeq CONFIG_DEBUG(CONFIG_DEBUG,1)
+CFLAGS += -O0 -g3 -fno-inline
+#endif
 
 CC = gcc
 LD = gcc
@@ -73,6 +79,7 @@ include libc/test/mem/Makefile
 include libc/test/string/Makefile
 include libc/test/char/Makefile
 include libc/test/lexical/Makefile
+include libc/test/io/Makefile
 include libc/perf/Makefile
 
 build_all: $(BUILD) $(targets)

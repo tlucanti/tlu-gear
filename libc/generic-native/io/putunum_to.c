@@ -3,7 +3,7 @@
 #include <libc/lexical.h>
 #include <core/compiler.h>
 
-int putunum_to(file_stream_t *stream, uintmax_t x)
+int putunum_to(file_stream_t *stream, uint64_t x)
 {
 	int ret;
 	if (unlikely(stream->offset + MAX_NUMBER_LEN >= FILE_BUFFER_SIZE)) {

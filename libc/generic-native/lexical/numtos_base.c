@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 
-static int __numtos_base(char *s, intmax_t num, unsigned short base, bool upper)
+static int __numtos_base(char *s, int64_t num, unsigned short base, bool upper)
 {
 	int ret = 0;
 
@@ -37,12 +37,12 @@ static int __numtos_base(char *s, intmax_t num, unsigned short base, bool upper)
 	return ret;
 }
 
-int numtos_base(char *s, intmax_t num, unsigned short base)
+int numtos_base(char *s, int64_t num, unsigned short base)
 {
 	return __numtos_base(s, num, base, false);
 }
 
-int numtos_base_upper(char *s, intmax_t num, unsigned short base)
+int numtos_base_upper(char *s, int64_t num, unsigned short base)
 {
 	return __numtos_base(s, num, base, true);
 }

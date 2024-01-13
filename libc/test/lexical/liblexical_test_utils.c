@@ -88,14 +88,19 @@ static int utest_lexical_callback(struct lexical_context *context)
 
 static int utest_lexical_suite_run(long max_iter, struct lexical_context *context)
 {
-	const uintmax_t edge_values[] = {
+	const uint64_t edge_values[] = {
 		  0,
 		  1,		-1,
 		  CHAR_MAX,	CHAR_MIN,
+		  UCHAR_MAX,
 		  SHRT_MAX,	SHRT_MIN,
+		  USHRT_MAX,
 		  INT_MAX,	INT_MIN,
+		  UINT_MAX,
 		  LONG_MAX,	LONG_MIN,
-		  INTMAX_MAX,	INTMAX_MIN
+		  ULONG_MAX,
+		  INT64_MAX,	INT64_MIN,
+		  UINT64_MAX,
 	};
 	const size_t padding = 16;
 	const size_t number_size = 100;
