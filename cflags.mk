@@ -1,0 +1,96 @@
+
+# general options
+CFLAGS += -Wall
+CFLAGS += -Wextra
+CFLAGS += -Werror
+CFLAGS += -Wdeclaration-after-statement
+CFLAGS += -Wundef
+
+# general warning options
+CFLAGS += -Wnull-dereference
+CFLAGS += -Winit-self
+CFLAGS += -Wno-implicit-int
+CFLAGS += -Wno-implicit-function-declaration
+CFLAGS += -Wmain
+CFLAGS += -Wunused-parameter
+CFLAGS += -Wunused
+CFLAGS += -Wuninitialized
+CFLAGS += -Wunknown-pragmas
+CFLAGS += -Walloca
+CFLAGS += -Warith-conversion
+CFLAGS += -Wduplicated-branches
+CFLAGS += -Wduplicated-cond
+CFLAGS += -Wfloat-equal
+CFLAGS += -Wunsafe-loop-optimizations
+CFLAGS += -Wpointer-arith
+CFLAGS += -Wbad-function-cast
+CFLAGS += -Wcast-qual
+CFLAGS += -Wcast-align=strict
+CFLAGS += -Wwrite-strings
+CFLAGS += -Wconversion
+CFLAGS += -Wdangling-else
+CFLAGS += -Wdate-time
+CFLAGS += -Wjump-misses-init
+CFLAGS += -Wsign-conversion
+CFLAGS += -Wfloat-conversion
+CFLAGS += -Wlogical-op
+CFLAGS += -Wno-aggressive-loop-optimizations
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wold-style-definition
+CFLAGS += -Wmissing-prototypes
+#CFLAGS += -Wmissing-variable-declarations
+CFLAGS += -Wmissing-declarations
+CFLAGS += -Wredundant-decls
+#CFLAGS += -Winvalid-utf8
+CFLAGS += -Wvla
+CFLAGS += -Wstack-protector
+CFLAGS += -Wunsuffixed-float-constants
+
+# extra warning options
+CFLAGS += -Wformat-overflow=2
+CFLAGS += -Wformat-nonliteral
+CFLAGS += -Wformat-security
+CFLAGS += -Wformat-signedness
+CFLAGS += -Wformat-truncation=2
+CFLAGS += -Wformat-y2k
+CFLAGS += -Wimplicit-fallthrough
+#CFLAGS += -Wreturn-mismatch
+CFLAGS += -Wswitch-default
+CFLAGS += -Wswitch-enum
+#CFLAGS += -Wtrivial-auto-var-init
+CFLAGS += -Wunused-const-variable=2
+CFLAGS += -Wstrict-overflow=5
+CFLAGS += -Wstringop-overflow=4
+#CFLAGS += -Wstrict-flex-arrays
+CFLAGS += -Wsuggest-attribute=pure
+CFLAGS += -Wsuggest-attribute=const
+CFLAGS += -Wsuggest-attribute=noreturn
+CFLAGS += -Wsuggest-attribute=malloc
+#CFLAGS += -Wsuggest-attribute=returns_nonnull
+CFLAGS += -Wsuggest-attribute=format
+CFLAGS += -Wsuggest-attribute=cold
+CFLAGS += -Wmissing-noreturn
+CFLAGS += -Wmissing-format-attribute
+#CFLAGS += -Walloc-size
+CFLAGS += -Walloc-zero
+#CFLAGS += -Wcalloc-transposed-args
+CFLAGS += -Wmemset-transposed-args
+CFLAGS += -Warray-bounds=2
+CFLAGS += -Wattribute-alias=2
+#CFLAGS += -Wbidi-chars=any
+CFLAGS += -Wzero-length-bounds
+#CFLAGS += -Wsystem-headers
+CFLAGS += -Wtrampolines
+#CFLAGS += -Wtraditional-conversion
+CFLAGS += -Wshadow
+CFLAGS += -Wunused-macros
+CFLAGS += -Wpacked
+#CFLAGS += -Wpadded
+CFLAGS += -Winline
+CFLAGS += -Wlong-long
+CFLAGS += -Wvector-operation-performance
+CFLAGS += -Wdisabled-optimization
+
+# non compile options
+CFLAGS += -fdiagnostics-color=always
+

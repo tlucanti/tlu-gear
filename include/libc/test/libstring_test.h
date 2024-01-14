@@ -21,9 +21,6 @@ enum string_func {
 
 void utest_string_suite(size_t max_size, size_t max_offset,
 		     	struct string_context *context, bool printable);
-int utest_mem_suite_run(size_t max_size, size_t max_offset,
-			struct mem_context *context, bool printable,
-			int (*callback)(struct mem_context *));
 
 #endif /* _LIBC_TEST_LIBSTRING_TEST_H_ */
 

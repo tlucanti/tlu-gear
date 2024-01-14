@@ -58,12 +58,12 @@ static void utest_ctype_callback(struct ctype_context *context)
 	case FUNC_TOLOWER:
 		context->name = "tolower";
 		context->real = tlu_tolower(context->c);
-		context->expected = tolower(context->c);
+		context->expected = (unsigned char)tolower(context->c);
 		break;
 	case FUNC_TOUPPER:
 		context->name = "toupper";
 		context->real = tlu_toupper(context->c);
-		context->expected = toupper(context->c);
+		context->expected = (unsigned char)toupper(context->c);
 		break;
 	default:
 		BUG("utest::ctype_suite: unknown function");

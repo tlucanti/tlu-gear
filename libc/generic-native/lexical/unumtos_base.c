@@ -3,12 +3,12 @@
 #include <libc/mem.h>
 #include <core/panic.h>
 
-static int __unumtos_base(char *s, uint64_t num, unsigned short base,
+static unsigned int __unumtos_base(char *s, uint64_t num, unsigned short base,
 			  const char *digits)
 {
 	char tmp[MAX_NUMBER_LEN] __aligned(8);
 	int idx = ARRAY_SIZE(tmp) - 1;
-	int printed = 0;
+	unsigned int printed = 0;
 
 	panic_on(base > 32 || base == 1, "base can be from 2 to 32");
 
@@ -32,14 +32,14 @@ static int __unumtos_base(char *s, uint64_t num, unsigned short base,
 	return printed;
 }
 
-int unumtos_base(char *s, uint64_t num, unsigned short base)
+unsigned int unumtos_base(char *s, uint64_t num, unsigned short base)
 {
 	static const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 	return __unumtos_base(s, num, base, digits);
 }
 
-int unumtos_base_upper(char *s, uint64_t num, unsigned short base)
+unsigned int unumtos_base_upper(char *s, uint64_t num, unsigned short base)
 {
 	static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

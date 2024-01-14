@@ -11,10 +11,10 @@ extern file_stream_t tlu_stdout;
 extern file_stream_t tlu_stderr;
 extern file_stream_t tlu_stdin;
 
-int putnum(int64_t x);
-int putunum(uint64_t x);
-int putnum_to(file_stream_t *stream, int64_t x);
-int putunum_to(file_stream_t *stream, uint64_t x);
+unsigned int putnum(int64_t x);
+unsigned int putunum(uint64_t x);
+unsigned int putnum_to(file_stream_t *stream, int64_t x);
+unsigned int putunum_to(file_stream_t *stream, uint64_t x);
 
 void print_flush(void);
 void print_flush_to(file_stream_t *stream);

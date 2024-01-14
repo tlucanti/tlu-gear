@@ -16,13 +16,13 @@ void utest_progress(unsigned long current, unsigned long total);
 void utest_progress_done(void);
 void utest_ok(void);
 
-int utest_print_color(const char *color, const char *format, ...);
-int utest_print_red(const char *format, ...);
-int utest_print_green(const char *format, ...);
-int utest_print_yellow(const char *format, ...);
-int utest_print_blue(const char *format, ...);
-int utest_print_magenta(const char *format, ...);
-int utest_print_cyan(const char *format, ...);
+__printf(2, 3) int utest_print_color(const char *color, const char *format, ...);
+__printf(1, 2) int utest_print_red(const char *format, ...);
+__printf(1, 2) int utest_print_green(const char *format, ...);
+__printf(1, 2) int utest_print_yellow(const char *format, ...);
+__printf(1, 2) int utest_print_blue(const char *format, ...);
+__printf(1, 2) int utest_print_magenta(const char *format, ...);
+__printf(1, 2) int utest_print_cyan(const char *format, ...);
 
 #define print_purple print_magenta
 

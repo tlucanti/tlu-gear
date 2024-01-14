@@ -29,8 +29,8 @@ static int utest_string_callback(struct string_context *context)
 		rsrc[context->needle] = 0;
 		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
-		real_ret = tlu_strlen(rsrc + offset);
-		expected_ret = strlen(esrc + offset);
+		real_ret = (intmax_t)tlu_strlen(rsrc + offset);
+		expected_ret = (intmax_t)strlen(esrc + offset);
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return NEXT_OFFSET;
 
@@ -114,8 +114,8 @@ static int utest_string_callback(struct string_context *context)
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
-			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			expected_ret = (intptr_t)expected_p - (intptr_t)esrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
 		return ret;
@@ -143,8 +143,8 @@ static int utest_string_callback(struct string_context *context)
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
-			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			expected_ret = (intptr_t)expected_p - (intptr_t)esrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
 		return ret;
@@ -180,18 +180,18 @@ static int utest_string_callback(struct string_context *context)
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 3:
-			context->expected_src[context->needle] += 1;
+			context->expected_src[context->needle]++;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
 			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
-			context->real_src[context->needle] += 1;
+			context->real_src[context->needle]++;
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 
 		case 4:
-			context->real_src[context->needle] += 1;
+			context->real_src[context->needle]++;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
 			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
-			context->expected_src[context->needle] += 1;
+			context->expected_src[context->needle]++;
 			ret = NEXT_OFFSET;
 			break;
 		default:

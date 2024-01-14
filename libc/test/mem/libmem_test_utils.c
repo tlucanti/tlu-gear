@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #ifndef rawmemchr
-# define rawmemchr(s, c) memchr(s, c, -1)
+# define rawmemchr(s, c) memchr(s, c, (size_t)-1)
 #endif
 
 static int utest_mem_callback(struct mem_context *context)
@@ -129,7 +129,7 @@ static int utest_mem_callback(struct mem_context *context)
 	case FUNC_MEMNCHR:
 		switch (context->state) {
 		case 0:
-			real_p = tlu_memnchr(rsrc + offset, rsrc[context->needle], size);
+			real_p = tlu_memnchr(rsrc + offset, (unsigned char)rsrc[context->needle], size);
 			expected_p = memchr(esrc + offset, esrc[context->needle], size);
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
@@ -145,8 +145,8 @@ static int utest_mem_callback(struct mem_context *context)
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
-			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			expected_ret = (intptr_t)expected_p - (intptr_t)esrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
 		return ret;
@@ -154,14 +154,14 @@ static int utest_mem_callback(struct mem_context *context)
 	case FUNC_MEMCHR:
 		BUG_ON(NULL == memchr(esrc + offset, esrc[context->needle], size + 1));
 
-		real_p = tlu_memchr(rsrc + offset, rsrc[context->needle]);
+		real_p = tlu_memchr(rsrc + offset, (unsigned char)rsrc[context->needle]);
 		expected_p = rawmemchr(esrc + offset, esrc[context->needle]);
 
 		if (expected_p == NULL) {
 			ASSERT_NULL(real_p);
 		} else {
-			expected_ret = (uintptr_t)expected_p - (uintptr_t)esrc;
-			real_ret = (uintptr_t)real_p - (uintptr_t)rsrc;
+			expected_ret = (intptr_t)expected_p - (intptr_t)esrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
 			ASSERT_EQUAL(expected_ret, real_ret);
 		}
 		return NEXT_OFFSET;
@@ -214,9 +214,9 @@ next_offset:
 		context->offset = offset;
 		context->needle = utest_random_range(offset, size);
 		if (printable) {
-			context->chr = utest_random_range('a', 'z');
+			context->chr = (unsigned char)utest_random_range('a', 'z');
 		} else {
-			context->chr = utest_random();
+			context->chr = (unsigned char)utest_random();
 		}
 
 		ret = callback(context);

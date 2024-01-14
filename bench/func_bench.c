@@ -1,11 +1,12 @@
 
+#include <core/panic.h>
+#include <core/barrier.h>
+#include <bench/bench.h>
+
+#include <stdio.h>
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
-#include <core/panic.h>
-#include <core/barrier.h>
-
-#include <stdio.h>
 
 sig_atomic_t should_stop;
 

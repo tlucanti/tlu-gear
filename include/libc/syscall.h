@@ -1,5 +1,5 @@
 
-#include <stddef.h>
+#include <stdint.h>
 
-size_t tlu_write(int fd, const void *buf, size_t size);
+int64_t tlu_write(int fd, const void *buf, uint64_t size);
 

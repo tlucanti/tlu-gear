@@ -35,6 +35,9 @@ struct mem_context {
 
 void utest_mem_suite(size_t max_size, size_t max_offset,
 		     struct mem_context *context, bool printable);
+int utest_mem_suite_run(size_t max_size, size_t max_offset,
+			struct mem_context *context, bool printable,
+			int (*callback)(struct mem_context *));
 
 #endif /* _LIBC_TEST_LIBMEM_TEST_H_ */
 

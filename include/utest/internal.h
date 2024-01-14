@@ -2,6 +2,8 @@
 #ifndef _UTEST_INTERNAL_H_
 #define _UTEST_INTERNAL_H_
 
+#include <core/compiler.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -13,7 +15,7 @@ struct __utest {
 };
 
 #define __UTEST_MAGIC 0xB00B5
-#define __FUZZ_MAGIC 0xDEADD0LL
+#define __FUZZ_MAGIC 0xDEADD0L
 #define __UTEST_ATTR __used __aligned(1) __section(".utest")
 #define __FUZZ_ATTR __used __aligned(1) __section(".fuzz")
 
@@ -43,7 +45,7 @@ struct __utest {
 #define __assert_ptr(exp, real, eq) __assert_ptr_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_sign(exp, real, eq) __assert_sign_impl(exp, real, eq, __FILE__, __LINE__)
 
-void __assert_fail_impl(const char *file, unsigned long line);
+__cold __noret void __assert_fail_impl(const char *file, unsigned long line);
 void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long line);
 void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line);
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, unsigned long line);

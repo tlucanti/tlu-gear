@@ -37,10 +37,9 @@ static void putnum(unsigned long n)
 		n /= 10;
 	}
 
-	write(2, buf + i + 1, 24 - i);
+	write(2, buf + i + 1, (size_t)(24 - i));
 }
 
-__cold __noret
 void __panic_impl(const char *name, const char *file, unsigned long line, const char *reason)
 {
 	putstr("\n[");

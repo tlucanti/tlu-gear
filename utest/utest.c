@@ -101,9 +101,9 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 {
 	struct __utest *begin = get_utest_begin(suite);
 	struct __utest *end = get_utest_end(suite);
-	int i = 1;
+	long i = 1;
 
-	const int nr_test = end - begin;
+	const long nr_test = end - begin;
 
 	if (CONFIG_UTEST_CATCH_SEGFAULT) {
 		signal(SIGSEGV, signal_handler);
@@ -119,7 +119,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 		if (CONFIG_UTEST_CATCH_SEGFAULT && setjmp(jump_buf)) {
 			continue;
 		}
-		printf("%s %d/%d: %s:\t", name, i, nr_test, begin->name);
+		printf("%s %ld/%ld: %s:\t", name, i, nr_test, begin->name);
 		fflush(stdout);
 
 		if (begin->skip || do_skip_utest(begin->name, keep_list)) {

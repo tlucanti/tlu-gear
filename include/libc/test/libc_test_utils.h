@@ -12,11 +12,10 @@ enum suite_state_machine {
 	STATE_DONE,
 };
 
-void utest_print_compare(unsigned char *data, unsigned char *cmp, size_t size);
 void utest_generate_memory(unsigned char *m1, unsigned char *m2, size_t size, bool printable);
-int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size);
-int utest_validate_memory_differ(unsigned char *expected, size_t exp_size,
-				 unsigned char *real, size_t real_size);
+int utest_validate_memory(const unsigned char *expected, const unsigned char *real, size_t size);
+int utest_validate_memory_differ(const unsigned char *expected, size_t exp_size,
+				 const unsigned char *real, size_t real_size);
 
 int utest_dup(int fd);
 void utest_pipe(int fd[2]);

@@ -3,9 +3,9 @@
 #include <libc/lexical.h>
 #include <core/compiler.h>
 
-int putunum_to(file_stream_t *stream, uint64_t x)
+unsigned int putunum_to(file_stream_t *stream, uint64_t x)
 {
-	int ret;
+	unsigned int ret;
 	if (unlikely(stream->offset + MAX_NUMBER_LEN >= FILE_BUFFER_SIZE)) {
 		print_flush_to(stream);
 	}

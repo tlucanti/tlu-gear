@@ -50,6 +50,7 @@
 		}                           \
 	} while (false)
 
-void __panic_impl(const char *name, const char *file, unsigned long line, const char *reason);
+__cold __noret void __panic_impl(const char *name, const char *file,
+				 unsigned long line, const char *reason);
 
 #endif /* _CORE_PANIC_ */

@@ -2,7 +2,7 @@
 obj-libbench	=
 obj-libbench 	= func_bench.o
 
-deps-libbench	=
+deps-libbench	= $(target-libcore)
 
 target-libbench	= build/libbench.a
 

@@ -4,6 +4,7 @@
 #include <core/math.h>
 #include <core/color.h>
 #include <utest/utils.h>
+#include <libc/test/libc_test_utils.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -41,8 +42,8 @@ static void utest_print_compare(const unsigned char *data, size_t data_size,
 
 }
 
-int utest_validate_memory_differ(unsigned char *expected, size_t exp_size,
-				 unsigned char *real, size_t real_size)
+int utest_validate_memory_differ(const unsigned char *expected, size_t exp_size,
+				 const unsigned char *real, size_t real_size)
 {
 	if (exp_size != real_size) {
 		utest_print_red("size differ\n");
@@ -59,7 +60,7 @@ int utest_validate_memory_differ(unsigned char *expected, size_t exp_size,
 	return TLU_EFAULT;
 }
 
-int utest_validate_memory(unsigned char *expected, unsigned char *real, size_t size)
+int utest_validate_memory(const unsigned char *expected, const unsigned char *real, size_t size)
 {
 	return utest_validate_memory_differ(expected, size, real, size);
 }
@@ -71,7 +72,7 @@ void utest_generate_memory(unsigned char *m1, unsigned char *m2, size_t size, bo
 
 	for (size_t i = 0; i < size; ++i) {
 		if (printable) {
-			c = alphabet[utest_random_range(0, strlen(alphabet) - 1)];
+			c = (unsigned char)alphabet[utest_random_range(0, strlen(alphabet) - 1)];
 			BUG_ON(!isalnum(c), "bad byte generated");
 		} else {
 			c = (unsigned char)utest_random();

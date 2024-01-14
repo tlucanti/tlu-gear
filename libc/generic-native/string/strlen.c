@@ -4,6 +4,6 @@
 
 size_t tlu_strlen(const char *s)
 {
-	return (char *)tlu_memchr(s, 0) - s;
+	return (size_t)((const char *)tlu_memchr(s, 0) - s);
 }
 

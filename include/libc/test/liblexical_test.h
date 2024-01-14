@@ -24,7 +24,7 @@ struct lexical_context {
 	char *real;
 };
 
-void utest_lexical_suite(long max_iter, struct lexical_context *context);
+void utest_lexical_suite(unsigned long max_iter, struct lexical_context *context);
 
 #endif /* _LIBC_TEST_LIBLEXICAL_TEST_H_ */
 

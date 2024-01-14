@@ -19,12 +19,13 @@ static void memset_callback(void *vcontext)
 	struct context *context = vcontext;
 
 	if (context->libc) {
-		memset(context->memory, context->size, 0xff);
+		memset(context->memory, 0xff, context->size);
 	} else {
-		tlu_memset(context->memory, context->size, 0xff);
+		tlu_memset(context->memory, 0xff, context->size);
 	}
 }
-int main()
+
+int main(void)
 {
 	struct context context;
 

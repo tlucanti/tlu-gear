@@ -1,7 +1,7 @@
 
 #include <libc/string.h>
 
-char *tlu_strrchr(const char *str, char c)
+const char *tlu_strrchr(const char *str, char c)
 {
 	const char *ret = NULL;
 
@@ -16,6 +16,6 @@ char *tlu_strrchr(const char *str, char c)
 		}
 	}
 
-	return (char *)ret;
+	return ret;
 }
 

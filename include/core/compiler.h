@@ -38,6 +38,14 @@
 # define __section(__sec) __attribute__((__section__(__sec)))
 #endif
 
+#ifndef __printf
+# define __printf(a, b) __attribute__((__format__(printf, a, b)))
+#endif
+
+#ifndef __scanf
+# define __scanf(a, b) __attribute__((__format__(scanf, a, b)))
+#endif
+
 #ifndef likely
 # define likely(expr) __builtin_expect(!!(expr), 1)
 #endif

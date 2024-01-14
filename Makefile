@@ -3,7 +3,7 @@ BUILD = build
 CFLAGS =
 CFLAGS += -I include
 
-#include cflags.mk
+include cflags.mk
 
 CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)

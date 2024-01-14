@@ -1,6 +1,7 @@
 
 #include <core/panic.h>
 #include <core/color.h>
+#include <utest/utils.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -48,7 +49,7 @@ static char *read_buf(int fd, size_t size, ssize_t *ret)
 	return buf;
 }
 
-char *utest_read_all(int fd, size_t *nr_read)
+char *utest_read_all(int fd, size_t *p_read)
 {
 	const size_t read_size = 1;
 
@@ -64,11 +65,11 @@ char *utest_read_all(int fd, size_t *nr_read)
 			break;
 		}
 
-		cur_buf = merge_memory(cur_buf, cur_size, next, nr_read);
-		cur_size += nr_read;
+		cur_buf = merge_memory(cur_buf, cur_size, next, (size_t)nr_read);
+		cur_size += (size_t)nr_read;
 	}
 
-	*nr_read = cur_size;
+	*p_read = cur_size;
 	return cur_buf;
 }
 
@@ -76,7 +77,7 @@ char *utest_read_all(int fd, size_t *nr_read)
 void utest_random_init(uint32_t seed)
 {
 	if (seed == 0) {
-		srandom(time(NULL));
+		srandom((unsigned int)time(NULL));
 	} else {
 		srandom(seed);
 	}
@@ -84,8 +85,8 @@ void utest_random_init(uint32_t seed)
 
 uint64_t utest_random(void)
 {
-	uint64_t r1 = random();
-	uint64_t r2 = random();
+	uint64_t r1 = (uint64_t)random();
+	uint64_t r2 = (uint64_t)random();
 
 	return r1 | (r2 << 32u);
 }
@@ -135,7 +136,8 @@ void utest_progress_done(void)
 	fflush(stdout);
 }
 
-int __utest_print_color(const char *color, const char *format, va_list ap)
+__printf(2, 0)
+static int __utest_print_color(const char *color, const char *format, va_list ap)
 {
 	int ret = 0;
 

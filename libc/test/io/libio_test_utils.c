@@ -20,14 +20,14 @@ struct pipe_fd {
 	};
 };
 
-static int utest_io_callback(struct io_context *context)
+static void utest_io_callback(struct io_context *context)
 {
-	int64_t num = context->generated;
+	uint64_t num = context->generated;
 
 	switch (context->function) {
 	case FUNC_PUTNUM_TO:
-		putnum_to(&context->io_stream, num);
-		fprintf(context->libc_stream, "%" PRId64, num);
+		putnum_to(&context->io_stream, (int64_t)num);
+		fprintf(context->libc_stream, "%" PRId64, (int64_t)num);
 
 		print_flush_to(&context->io_stream);
 		fflush(context->libc_stream);
@@ -79,7 +79,7 @@ void utest_io_case(uint64_t val, struct io_context *context)
 
 void utest_io_suite(unsigned long nr_iter, struct io_context *context)
 {
-	int64_t num;
+	uint64_t num;
 	int ret;
 
 	context->state = 0;
