@@ -83,6 +83,25 @@ void utest_generate_memory(unsigned char *m1, unsigned char *m2, size_t size, bo
 	}
 }
 
+void utest_print_memory(const unsigned char *a, size_t size)
+{
+	for (size_t i = 0; i < size; ++i) {
+		if (a[i] == '\0') {
+			printf(" \\0");
+		} else if (a[i] == ' ') {
+			printf(" \\s");
+		} else if (a[i] == '\t') {
+			printf(" \\t");
+		} else if ((isalnum(a[i]) || ispunct(a[i])) && !isspace(a[i])) {
+			printf("  %c", a[i]);
+		} else {
+			printf("\\%02hhx", a[i]);
+		}
+	}
+	printf("\n");
+}
+
+
 void utest_pipe(int fd[2])
 {
 	int ret = pipe(fd);

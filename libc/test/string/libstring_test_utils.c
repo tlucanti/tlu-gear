@@ -10,6 +10,33 @@
 #include <string.h>
 #include <stdio.h>
 
+static bool sstartswith(const char *str, const char *pattern)
+{
+	size_t ss = strlen(str);
+	size_t ps = strlen(pattern);
+
+	if (ss < ps) {
+		return false;
+	}
+	return strstr(str, pattern) == str;
+}
+
+static bool sendswith(const char *str, const char *pattern)
+{
+	size_t a = strlen(str);
+	size_t b = strlen(pattern);
+
+	if (b > a) {
+		return false;
+	}
+	return strncmp(str + a - b, pattern, b + 1) == 0;
+}
+
+static void memzero(void *str, size_t len)
+{
+	memset(str, 0, len);
+}
+
 static int utest_string_callback(struct string_context *context)
 {
 	intmax_t real_ret, expected_ret;
@@ -150,10 +177,8 @@ static int utest_string_callback(struct string_context *context)
 		return ret;
 
 	case FUNC_SSTARTSWITH:
-
-#define __sstartswith(str, pattern) (strncmp(str, pattern, strlen(pattern)) == 0)
-		esrc[size] = '\0';
-		rsrc[size] = '\0';
+		memzero(esrc + size, 2);
+		memzero(rsrc + size, 2);
 		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
 		real_ret = 0;
@@ -161,28 +186,28 @@ static int utest_string_callback(struct string_context *context)
 
 		switch (context->state) {
 		case 0:
-			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
+			real_ret = tlu_sstartswith(rsrc, esrc);
+			expected_ret = sstartswith(rsrc, esrc);
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 1:
 			esrc[context->needle] = '\0';
-			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
+			real_ret = tlu_sstartswith(rsrc + offset, esrc);
+			expected_ret = sstartswith(rsrc + offset, esrc);
 			rsrc[context->needle] = '\0';
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 2:
 			rsrc[context->needle] = '\0';
-			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
+			real_ret = tlu_sstartswith(rsrc, esrc + offset);
+			expected_ret = sstartswith(rsrc, esrc + offset);
 			esrc[context->needle] = '\0';
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 3:
 			context->expected_src[context->needle]++;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = sstartswith(rsrc + offset, esrc + offset);
 			context->real_src[context->needle]++;
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
@@ -190,12 +215,65 @@ static int utest_string_callback(struct string_context *context)
 		case 4:
 			context->real_src[context->needle]++;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = __sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = sstartswith(rsrc + offset, esrc + offset);
 			context->expected_src[context->needle]++;
 			ret = NEXT_OFFSET;
 			break;
 		default:
-			BUG("utest::strcmp: invalid state");
+			BUG("utest::sstartswith: invalid state");
+		}
+		ASSERT_EQUAL(expected_ret, real_ret);
+		return ret;
+
+	case FUNC_SENDSWITH:
+		memzero(esrc + size, 2);
+		memzero(rsrc + size, 2);
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
+
+		real_ret = 0;
+		expected_ret = 0;
+
+		switch (context->state) {
+		case 0:
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
+			expected_ret = sendswith(rsrc + offset, esrc + offset);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			esrc[context->needle] = '\0';
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
+			expected_ret = sendswith(rsrc + offset, esrc + offset);
+			rsrc[context->needle] = '\0';
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			rsrc[context->needle] = '\0';
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
+			expected_ret = sendswith(rsrc + offset, esrc + offset);
+			esrc[context->needle] = '\0';
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 3:
+			context->expected_src[context->needle]++;
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
+			expected_ret = sendswith(rsrc + offset, esrc + offset);
+			context->real_src[context->needle]++;
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+
+		case 4:
+			context->real_src[context->needle]++;
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
+			expected_ret = sendswith(rsrc + offset, esrc + offset);
+			context->expected_src[context->needle]++;
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::sendswith: invalid state");
+		}
+
+		if (expected_ret != real_ret) {
+			printf("\n");
 		}
 
 		ASSERT_EQUAL(expected_ret, real_ret);

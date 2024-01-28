@@ -52,6 +52,14 @@ UTEST(sstartswith)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(sendswith)
+{
+	struct string_context context;
+
+	context.function = FUNC_SENDSWITH;
+	utest_string_suite(64, 64, &context, true);
+}
+
 FUZZ(strlen)
 {
 	struct string_context context;
@@ -100,10 +108,19 @@ FUZZ(sstartswith)
 	utest_string_suite(512, 128, &context, false);
 }
 
+FUZZ(sendswith)
+{
+	struct string_context context;
+
+	context.function = FUNC_SENDSWITH;
+	utest_string_suite(512, 128, &context, false);
+}
+
+
 int main(int argc, const char **argv)
 {
 	(void)argc;
-	utest_random_init(0);
+	utest_random_init(1);
 	unittest(argv);
 }
 

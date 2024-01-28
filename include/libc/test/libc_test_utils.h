@@ -16,6 +16,7 @@ void utest_generate_memory(unsigned char *m1, unsigned char *m2, size_t size, bo
 int utest_validate_memory(const unsigned char *expected, const unsigned char *real, size_t size);
 int utest_validate_memory_differ(const unsigned char *expected, size_t exp_size,
 				 const unsigned char *real, size_t real_size);
+void utest_print_memory(const unsigned char *a, size_t size);
 
 int utest_dup(int fd);
 void utest_pipe(int fd[2]);

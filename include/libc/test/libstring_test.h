@@ -15,6 +15,7 @@ enum string_func {
 	FUNC_STRCHR,
 	FUNC_STRRCHR,
 	FUNC_SSTARTSWITH,
+	FUNC_SENDSWITH,
 };
 
 #define string_context mem_context
