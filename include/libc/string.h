@@ -11,6 +11,7 @@ bool tlu_streq(const char *a, const char *b);
 const char *tlu_strchr(const char *str, char c);
 const char *tlu_strrchr(const char *str, char c);
 bool tlu_sstartswith(const char *str, const char *pattern);
+bool tlu_sendswith(const char *str, const char *pattern);
 
 #endif /* _LIBC_STRING_H_ */
 

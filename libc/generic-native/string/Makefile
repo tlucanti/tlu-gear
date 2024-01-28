@@ -1,6 +1,7 @@
 
 obj-libstring	=
 obj-libstring	+= sstartswith.o
+obj-libstring	+= sendswith.o
 obj-libstring	+= strchr.o
 obj-libstring	+= strcmp.o
 obj-libstring	+= streq.o
