@@ -61,6 +61,7 @@ jmp:
 	longjmp(jump_buf, sig);
 }
 
+__no_sanitize_address
 static struct __utest *get_utest_begin(struct __utest *begin)
 {
 	unsigned long magic = begin->magic;
@@ -72,6 +73,7 @@ static struct __utest *get_utest_begin(struct __utest *begin)
 	return ++begin;
 }
 
+__no_sanitize_address
 static struct __utest *get_utest_end(struct __utest *end)
 {
 	unsigned long magic = end->magic;

@@ -1,16 +1,20 @@
 
 BUILD = build
 CFLAGS =
+LDFLAGS =
 CFLAGS += -I include
 
-include cflags.mk
+#include cflags.mk
 
 CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)
 
+SANITIZE = -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
+
 #ifeq CONFIG_DEBUG(CONFIG_DEBUG,1)
 CFLAGS += -O0 -g3 -fno-inline
 #endif
+CFLAGS += $(SANITIZE)
 
 CC = gcc
 LD = gcc
@@ -57,7 +61,7 @@ $(eval obj-y = $(obj-y) $(obj))
 
 $(target): $(deps) $(obj)
 	@echo LD $(basename $(target).elf)
-	@$(LD) -o $(target) $(obj) $(deps)
+	@$(LD) -o $(target) $(obj) $(deps) $(SANITIZE)
 
 endef
 
