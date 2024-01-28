@@ -12,7 +12,7 @@ CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)
 SANITIZE = -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
 
 #ifeq CONFIG_DEBUG(CONFIG_DEBUG,1)
-CFLAGS += -O0 -g3 -fno-inline
+CFLAGS += -O0 -g3 -fno-inline -fdiagnostics-color=always
 #endif
 CFLAGS += $(SANITIZE)
 
@@ -85,6 +85,10 @@ include libc/test/char/Makefile
 include libc/test/lexical/Makefile
 include libc/test/io/Makefile
 include libc/perf/Makefile
+
+include container/cstring/Makefile
+
+include container/test/cstring/Makefile
 
 build_all: $(BUILD) $(targets)
 .PHONY: build_all
