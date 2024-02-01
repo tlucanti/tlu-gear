@@ -8,13 +8,15 @@
 
 #include <core/compiler.h>
 
+extern bool silent_panic;
+
 #ifndef CONFIG_DEBUG
 #define __panic(...) abort(); unreachable()
 #define __bug(...) abort(); unreachable()
 #else
 #define __panic_reason(name, reason) \
-	__panic_impl(name, __FILE__, __LINE__, reason)
-#define __panic_pure(name) __panic_impl(name, __FILE__, __LINE__, NULL)
+	__panic_impl(name, __FILE__, __FUNCTION__, __LINE__, reason)
+#define __panic_pure(name) __panic_impl(name, __FILE__, __FUNCTION__, __LINE__, NULL)
 #define ___panic_switch(a1, a2, a3, ...) a3
 #define __panic_switch(...) \
 	___panic_switch(__VA_ARGS__, __panic_reason, __panic_pure)
@@ -51,6 +53,7 @@
 	} while (false)
 
 __cold __noret void __panic_impl(const char *name, const char *file,
-				 unsigned long line, const char *reason);
+				 const char *function, unsigned long line,
+				 const char *reason);
 
 #endif /* _CORE_PANIC_ */

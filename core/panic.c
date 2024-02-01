@@ -4,6 +4,8 @@
 #include <core/compiler.h>
 #include <core/panic.h>
 
+bool silent_panic = false;
+
 static size_t lenstr(const char *s)
 {
 	size_t n = 0;
@@ -40,20 +42,28 @@ static void putnum(unsigned long n)
 	write(2, buf + i + 1, (size_t)(24 - i));
 }
 
-void __panic_impl(const char *name, const char *file, unsigned long line, const char *reason)
+void __panic_impl(const char *name, const char *file, const char *function, unsigned long line, const char *reason)
 {
-	putstr("\n[");
-	putstr(name);
-	putstr("]: ");
-	putstr(file);
-	putstr(":");
-	putnum(line);
+	if (!silent_panic) {
+		putstr("\n[");
+		putstr(name);
+		putstr("]: ");
+		putstr(file);
+		putstr(":");
+		putnum(line);
 
-	if (reason != NULL) {
-		putstr("\nreason: ");
-		putstr(reason);
+		if (reason != NULL) {
+			putstr("\n");
+			putstr(function);
+			putstr(": ");
+			putstr(reason);
+		} else {
+			putstr(" (function: ");
+			putstr(function);
+			putstr(")");
+		}
+		putstr("\n");
 	}
-	putstr("\n");
 
 	abort();
 }
