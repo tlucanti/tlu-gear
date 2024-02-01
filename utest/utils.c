@@ -25,7 +25,7 @@ void *utest_malloc(size_t size)
 	void *p;
 
 	p = malloc(size);
-	panic_on(p == NULL, "utest_malloc: out of memory");
+	panic_on(p == NULL, "out of memory");
 
 	memset(p, 0xff, size);
 	return p;
@@ -44,7 +44,7 @@ static char *read_buf(int fd, size_t size, ssize_t *ret)
 	char *buf = utest_malloc(size);
 
 	*ret = read(fd, buf, size);
-	panic_on(*ret < 0, "read_buf: read error");
+	panic_on(*ret < 0, "read error");
 
 	return buf;
 }

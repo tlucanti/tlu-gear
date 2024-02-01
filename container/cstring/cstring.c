@@ -9,7 +9,7 @@
 #include <libc/mem.h>
 #include <libc/string.h>
 
-#define nosys panic("not implemented");
+#define nosys panic("TODO: not implemented");
 
 #define CLEAR_LAST_2_BITS (~(unsigned long)0x3u)
 
@@ -29,7 +29,7 @@ static int __check_realloc(struct cstring *cstring, unsigned long want_size)
 	data = tlu_malloc(want_size);
 	if (unlikely(data == NULL)) {
 #if CONFIG_CONTAINER_ALLOC_FAIL == 1
-		panic("cstring::__check_realloc: no memory to allocate");
+		panic("(cstring): no memory to allocate");
 #else
 		return TLU_ENOMEM;
 #endif
@@ -50,7 +50,7 @@ int cstring_init(struct cstring *cstring, const char *init)
 	cstring->data = tlu_malloc(cstring->size + 1);
 	if (unlikely(cstring->data == NULL)) {
 #if CONFIG_CONTAINER_ALLOC_FAIL == 1
-		panic("cstring::cstring_init: no memory to allocate");
+		panic("(cstring): no memory to allocate");
 #else
 		return TLU_ENOMEM;
 #endif
@@ -73,14 +73,14 @@ unsigned long cstring_size(const struct cstring *cstring)
 
 char cstring_at(const struct cstring *cstring, unsigned long pos)
 {
-	panic_on(pos >= cstring->size, "cstring_at: out of bounds");
+	panic_on(pos >= cstring->size, "(cstring): out of bounds");
 
 	return cstring->data[pos];
 }
 
 void cstring_set(struct cstring *cstring, unsigned long pos, char c)
 {
-	panic_on(pos >= cstring->size, "cstring_set: out of bounds");
+	panic_on(pos >= cstring->size, "(cstring): out of bounds");
 
 	cstring->data[pos] = c;
 }
@@ -186,41 +186,49 @@ unsigned long cstring_rfind(const struct cstring *cstring, const char *pattern)
 
 bool cstring_isalpha(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 bool cstring_isdigit(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 bool cstring_isalnum(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 bool cstring_islower(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 bool cstring_isupper(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 bool cstring_isspace(const struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 void cstring_tolwer(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 void cstring_toupper(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
@@ -246,26 +254,33 @@ void cstring_remove_suffix(struct cstring *cstring, const char *pattern)
 __may_alloc
 int cstring_replace(struct cstring *cstring, const char *from, const char *to)
 {
+	(void)cstring;
+	(void)from;
+	(void)to;
 	nosys;
 }
 
 void cstring_lstrip(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 void cstring_rstrip(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 void cstring_strip(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 
 void cstring_reverse(struct cstring *cstring)
 {
+	(void)cstring;
 	nosys;
 }
 

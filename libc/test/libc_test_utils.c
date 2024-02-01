@@ -106,6 +106,6 @@ void utest_pipe(int fd[2])
 {
 	int ret = pipe(fd);
 
-	panic_on(ret == -1, "utest_pipe: pipe failed");
+	panic_on(ret == -1, "pipe failed");
 }
 
