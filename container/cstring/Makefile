@@ -2,7 +2,7 @@
 obj-cstring-container	=
 obj-cstring-container	+= cstring.o
 
-deps-cstring-container	= $(target-libmem) $(target-libstring)
+deps-cstring-container	= $(target-libcore) $(target-utest) $(target-libmem) $(target-libstring)
 
 target-cstring-container	= build/cstring-container.a
 

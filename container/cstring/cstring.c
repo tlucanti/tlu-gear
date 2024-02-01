@@ -63,7 +63,7 @@ int cstring_init(struct cstring *cstring, const char *init)
 
 void cstring_destroy(struct cstring *cstring)
 {
-	tlu_free(cstring);
+	tlu_free(cstring->data);
 }
 
 unsigned long cstring_size(const struct cstring *cstring)

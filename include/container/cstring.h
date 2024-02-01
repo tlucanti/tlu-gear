@@ -63,13 +63,13 @@ bool cstring_isspace(const struct cstring *cstring);
  * cstring formattings
  */
 void cstring_tolwer(struct cstring *cstring);
-void cstring_toupper(const struct cstring *cstring);
-void cstring_remove_prefix(const struct cstring *cstring, const char *pattern);
-void cstring_remove_suffix(const struct cstring *cstring, const char *pattern);
-__may_alloc int cstring_replace(const struct cstring *cstring, const char *from, const char *to);
-void cstring_lstrip(const struct cstring *cstring);
-void cstring_rstrip(const struct cstring *cstring);
-void cstring_reverse(const struct cstring *cstring);
+void cstring_toupper(struct cstring *cstring);
+void cstring_remove_prefix(struct cstring *cstring, const char *pattern);
+void cstring_remove_suffix(struct cstring *cstring, const char *pattern);
+__may_alloc int cstring_replace(struct cstring *cstring, const char *from, const char *to);
+void cstring_lstrip(struct cstring *cstring);
+void cstring_rstrip(struct cstring *cstring);
+void cstring_reverse(struct cstring *cstring);
 
 #endif /* _CONTAINER_CSTRING_H_ */
 
