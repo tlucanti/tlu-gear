@@ -6,6 +6,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <setjmp.h>
 
 struct __utest {
 	const char *name;
@@ -13,6 +14,8 @@ struct __utest {
 	unsigned long magic;
 	int skip;
 };
+
+extern jmp_buf __fall_buf;
 
 #define __UTEST_MAGIC 0xB00B5
 #define __FUZZ_MAGIC 0xDEADD0L
@@ -44,12 +47,29 @@ struct __utest {
 #define __assert_equal(exp, real, eq) __assert_eq_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_ptr(exp, real, eq) __assert_ptr_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_sign(exp, real, eq) __assert_sign_impl(exp, real, eq, __FILE__, __LINE__)
+#define __assert_panic(exp, fall)                                           \
+	do {                                                                \
+		int __first_time, __was_panic;                              \
+                                                                            \
+		__assert_panic_prepare();                                   \
+		__first_time = 1;                                           \
+		__was_panic = setjmp(__fall_buf);                           \
+                                                                            \
+		if (__first_time) {                                         \
+			__first_time = 0;                                   \
+			(exp);                                              \
+		}                                                           \
+                                                                            \
+		__assert_panic_fini(__was_panic, fall, __FILE__, __LINE__); \
+	} while (false)
 
 __cold __noret void __assert_fail_impl(const char *file, unsigned long line);
 void __assert_bool_impl(bool exp, bool real, const char *file, unsigned long line);
 void __assert_eq_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line);
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, unsigned long line);
 void __assert_sign_impl(intmax_t exp, intmax_t real, bool eq, const char *file, unsigned long line);
+void __assert_panic_prepare(void);
+void __assert_panic_fini(int was_panic, int fall, const char *file, unsigned long line);
 
 #endif /* _UTEST_INTERNAL_H_ */
 

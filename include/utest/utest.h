@@ -42,5 +42,8 @@ void unittest(const char **argv);
 #define ASSERT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, true)
 #define ASSERT_NOT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, false)
 
+#define ASSERT_NO_PANIC(exp) __assert_panic(exp, false)
+#define ASSERT_PANIC(exp) __assert_panic(exp, true)
+
 #endif /* _UTEST_UTEST_H_ */
 

@@ -26,6 +26,8 @@ static struct __utest fuzz_init __FUZZ_ATTR = { .name = NULL,
 						.skip = false };
 
 static jmp_buf jump_buf;
+jmp_buf __fall_buf;
+static void (*abrt_handler)(int);
 
 void utest_ok(void)
 {
@@ -59,6 +61,13 @@ static void signal_handler(int sig)
 
 jmp:
 	longjmp(jump_buf, sig);
+}
+
+static void panic_fall_handler(int sig)
+{
+	if (sig == SIGABRT) {
+		longjmp(__fall_buf, 1);
+	}
 }
 
 __no_sanitize_address
@@ -108,9 +117,10 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 	const long nr_test = end - begin;
 
 	if (CONFIG_UTEST_CATCH_SEGFAULT) {
-		signal(SIGSEGV, signal_handler);
-		signal(SIGBUS, signal_handler);
-		signal(SIGABRT, signal_handler);
+		panic_on(SIG_ERR == signal(SIGSEGV, signal_handler) ||
+			 SIG_ERR == signal(SIGBUS, signal_handler) ||
+			 SIG_ERR == signal(SIGABRT, signal_handler),
+			 "signal error");
 	}
 
 	for (; begin != end; ++begin, ++i) {
@@ -278,5 +288,29 @@ void __assert_sign_impl(intmax_t exp, intmax_t real, bool eq, const char *file, 
 	}
 
 	test_failed(file, line);
+}
+
+void __assert_panic_prepare(void)
+{
+	abrt_handler = signal(SIGABRT, panic_fall_handler);
+	panic_on(abrt_handler == SIG_ERR, "signal error");
+	silent_panic = true;
+}
+
+void __assert_panic_fini(int was_panic, int fall, const char *file, unsigned long line)
+{
+	panic_on(signal(SIGABRT, abrt_handler) == SIG_ERR, "signal error");
+
+	silent_panic = false;
+	if (was_panic && !fall) {
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected no panic, but panicked");
+		test_failed(file, line);
+
+	} else if (!was_panic && fall) {
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected panic, but did not panicked");
+		test_failed(file, line);
+	}
 }
 
