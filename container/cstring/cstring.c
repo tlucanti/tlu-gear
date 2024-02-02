@@ -11,8 +11,6 @@
 
 #define nosys panic("TODO: not implemented");
 
-#define CLEAR_LAST_2_BITS (~(unsigned long)0x3u)
-
 __may_alloc
 static int __check_realloc(struct cstring *cstring, unsigned long want_size)
 {
@@ -22,9 +20,8 @@ static int __check_realloc(struct cstring *cstring, unsigned long want_size)
 		return 0;
 	}
 
-	want_size = cstring->alloc + want_size;
-	want_size &= CLEAR_LAST_2_BITS;
-	want_size += 16;
+	want_size = cstring->alloc + want_size + 16;
+	want_size -= want_size % 16;
 
 	data = tlu_malloc(want_size);
 	if (unlikely(data == NULL)) {
@@ -37,6 +34,9 @@ static int __check_realloc(struct cstring *cstring, unsigned long want_size)
 
 	tlu_memcpy(data, cstring->data, cstring->size + 1);
 	cstring->alloc = want_size;
+
+	tlu_free(cstring->data);
+	cstring->data = data;
 
 	return 0;
 }
@@ -66,21 +66,36 @@ void cstring_destroy(struct cstring *cstring)
 	tlu_free(cstring->data);
 }
 
+const char *cstring_data(const struct cstring *cstring)
+{
+	return cstring->data;
+}
+
 unsigned long cstring_size(const struct cstring *cstring)
 {
 	return cstring->size;
 }
 
-char cstring_at(const struct cstring *cstring, unsigned long pos)
+char cstring_at(const struct cstring *cstring, long pos)
 {
-	panic_on(pos >= cstring->size, "(cstring): out of bounds");
+	if (pos < 0) {
+		panic_on((unsigned long)(-pos) > cstring->size, "(cstring): out of bounds");
+		pos = cstring->size + pos;
+	} else {
+		panic_on((unsigned long)pos >= cstring->size, "(cstring): out of bounds");
+	}
 
 	return cstring->data[pos];
 }
 
-void cstring_set(struct cstring *cstring, unsigned long pos, char c)
+void cstring_set(struct cstring *cstring, long pos, char c)
 {
-	panic_on(pos >= cstring->size, "(cstring): out of bounds");
+	if (pos < 0) {
+		panic_on((unsigned long)(-pos) > cstring->size, "(cstring): out of bounds");
+		pos = cstring->size + pos;
+	} else {
+		panic_on((unsigned long)pos >= cstring->size, "(cstring): out of bounds");
+	}
 
 	cstring->data[pos] = c;
 }
@@ -94,6 +109,7 @@ int cstring_append(struct cstring *cstring, char c)
 
 	cstring->data[cstring->size] = c;
 	cstring->size++;
+	cstring->data[cstring->size] = '\0';
 
 	return 0;
 }

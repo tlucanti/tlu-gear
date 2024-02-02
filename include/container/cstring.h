@@ -29,15 +29,17 @@ void cstring_destroy(struct cstring *cstring);
 /**
  * string informaion
  */
+const char *cstring_data(const struct cstring *cstring);
 unsigned long cstring_size(const struct cstring *cstring);
-char cstring_at(const struct cstring *cstring, unsigned long pos);
+char cstring_at(const struct cstring *cstring, long pos);
 
 /**
  * string moditication
  */
-void cstring_set(struct cstring *cstring, unsigned long pos, char c);
+void cstring_set(struct cstring *cstring, long pos, char c);
 __may_alloc int cstring_append(struct cstring *cstring, char c);
 __may_alloc int cstring_extend(struct cstring *cstring, const char *other);
+__may_alloc int cstring_pop(struct cstring *cstring, unsigned long nr);
 
 /**
  * string lookups
