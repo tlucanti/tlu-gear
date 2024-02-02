@@ -6,6 +6,7 @@
 #include <core/compiler.h>
 #include <core/math.h>
 
+#include <ctype.h>
 #include <sys/types.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -128,7 +129,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 			continue;
 		}
 
-		if (CONFIG_UTEST_CATCH_SEGFAULT && setjmp(jump_buf)) {
+		if (setjmp(jump_buf)) {
 			continue;
 		}
 		printf("%s %ld/%ld: %s:\t", name, i, nr_test, begin->name);
@@ -141,6 +142,13 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 			utest_ok();
 			printf("\n");
 		}
+	}
+
+	if (CONFIG_UTEST_CATCH_SEGFAULT) {
+		panic_on(SIG_ERR == signal(SIGSEGV, SIG_DFL) ||
+			 SIG_ERR == signal(SIGBUS, SIG_DFL) ||
+			 SIG_ERR == signal(SIGABRT, SIG_DFL),
+			 "signal error");
 	}
 }
 
@@ -193,6 +201,15 @@ static void print_ptr(const void *v)
 		utest_print_blue("NULL");
 	} else {
 		utest_print_blue("%p", v);
+	}
+}
+
+static void print_str(const char *v)
+{
+	if (v == NULL) {
+		utest_print_blue("(nil)");
+	} else {
+		utest_print_blue("\"%s\"", v);
 	}
 }
 
@@ -261,6 +278,45 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 		utest_print_red("[FAIL]\n");
 		utest_print_yellow("got ");
 		print_ptr(real);
+		utest_print_yellow(", but didnt expect");
+	} else {
+		return;
+	}
+
+	test_failed(file, line);
+}
+
+void __assert_str_impl(const char *exp, const char *real, bool eq, const char *file, unsigned long line)
+{
+	bool str_eq = !strcmp(exp, real);
+	size_t size_exp = strlen(exp);
+	size_t size_real = strlen(real);
+
+	if (unlikely(eq && !str_eq)) {
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("expected: ");
+
+		print_str(exp);
+		utest_print_yellow("\ngot:      ");
+
+		utest_print_blue("\"");
+		for (size_t i = 0; i < size_real; ++i) {
+			if (i >= size_exp || exp[i] != real[i]) {
+				if (isalnum(real[i])) {
+					utest_print_red("%c", real[i]);
+				} else {
+					utest_print_red(".");
+				}
+			} else {
+				utest_print_blue("%c", real[i]);
+			}
+		}
+		utest_print_blue("\"");
+		printf("\n");
+	} else if (unlikely(!eq && str_eq)) {
+		utest_print_red("[FAIL]\n");
+		utest_print_yellow("got ");
+		print_str(real);
 		utest_print_yellow(", but didnt expect");
 	} else {
 		return;

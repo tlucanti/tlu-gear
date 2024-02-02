@@ -39,6 +39,9 @@ void unittest(const char **argv);
 #define ASSERT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, true)
 #define ASSERT_NOT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, false)
 
+#define ASSERT_EQUAL_STR(exp, real) __assert_str(exp, real, true)
+#define ASSERT_NOT_EQUAL_STR(exp, real) __assert_str(exp, real, false)
+
 #define ASSERT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, true)
 #define ASSERT_NOT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, false)
 
