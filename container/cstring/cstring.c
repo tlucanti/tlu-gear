@@ -9,21 +9,15 @@
 #include <libc/mem.h>
 #include <libc/string.h>
 
+#define CONFIG_CONTAINER_ALLOC_FAIL 1
 #define nosys panic("TODO: not implemented");
 
 __may_alloc
-static int __check_realloc(struct cstring *cstring, unsigned long want_size)
+static int __do_realloc(struct cstring *cstring, unsigned long exact_size)
 {
 	char *data;
 
-	if (likely(cstring->alloc >= want_size)) {
-		return 0;
-	}
-
-	want_size = cstring->alloc + want_size + 16;
-	want_size -= want_size % 16;
-
-	data = tlu_malloc(want_size);
+	data = tlu_malloc(exact_size);
 	if (unlikely(data == NULL)) {
 #if CONFIG_CONTAINER_ALLOC_FAIL == 1
 		panic("(cstring): no memory to allocate");
@@ -33,12 +27,48 @@ static int __check_realloc(struct cstring *cstring, unsigned long want_size)
 	}
 
 	tlu_memcpy(data, cstring->data, cstring->size + 1);
-	cstring->alloc = want_size;
+	cstring->alloc = exact_size;
 
 	tlu_free(cstring->data);
 	cstring->data = data;
 
 	return 0;
+}
+
+__may_alloc
+static int check_realloc_more(struct cstring *cstring, unsigned long want_size)
+{
+	if (likely(cstring->alloc >= want_size)) {
+		return 0;
+	}
+
+	if (cstring->alloc + want_size >= 4000) {
+		want_size = cstring->alloc + want_size + 4096;
+		want_size -= want_size % 4096;
+	} else {
+		want_size = cstring->alloc + want_size + 64;
+		want_size -= want_size % 64;
+	}
+
+	return __do_realloc(cstring, want_size);
+}
+
+__may_alloc
+static int check_realloc_less(struct cstring *cstring, unsigned long want_size)
+{
+	if (likely(cstring->alloc <= 64 || cstring->alloc / want_size < 4)) {
+		return 0;
+	}
+
+	if (cstring->alloc + want_size >= 4000) {
+		want_size = cstring->alloc + want_size + 4096;
+		want_size -= want_size % 4096;
+	} else {
+		want_size = cstring->alloc + want_size + 64;
+		want_size -= want_size % 64;
+	}
+
+	return __do_realloc(cstring, want_size);
 }
 
 __may_alloc
@@ -76,6 +106,11 @@ unsigned long cstring_size(const struct cstring *cstring)
 	return cstring->size;
 }
 
+unsigned long cstring_alloc(const struct cstring *cstring)
+{
+	return cstring->alloc;
+}
+
 char cstring_at(const struct cstring *cstring, long pos)
 {
 	if (pos < 0) {
@@ -103,8 +138,11 @@ void cstring_set(struct cstring *cstring, long pos, char c)
 __may_alloc
 int cstring_append(struct cstring *cstring, char c)
 {
-	if (unlikely(__check_realloc(cstring, cstring->size + 1))) {
-		return TLU_ENOMEM;
+	int err;
+
+	err = check_realloc_more(cstring, cstring->size + 1);
+	if (unlikely(err)) {
+		return err;
 	}
 
 	cstring->data[cstring->size] = c;
@@ -115,18 +153,66 @@ int cstring_append(struct cstring *cstring, char c)
 }
 
 __may_alloc
+int cstring_appfront(struct cstring *cstring, char c)
+{
+	(void)cstring;
+	(void)c;
+	nosys;
+}
+
+__may_alloc
 int cstring_extend(struct cstring *cstring, const char *other)
 {
 	unsigned long size = tlu_strlen(other);
+	int err;
 
-	if (unlikely(__check_realloc(cstring, cstring->alloc + size))) {
-		return TLU_ENOMEM;
+	err = check_realloc_more(cstring, cstring->size + size);
+	if (unlikely(err)) {
+		return err;
 	}
 
 	tlu_memcpy(cstring->data + cstring->size, other, size + 1);
 	cstring->size += size;
 
 	return 0;
+}
+
+__may_alloc
+int cstring_extfront(struct cstring *cstring, const char *other)
+{
+	(void)cstring;
+	(void)other;
+	nosys;
+}
+
+__may_alloc
+int cstring_remove_suffix(struct cstring *cstring, unsigned long size)
+{
+	int err;
+
+	if (size >= cstring->size) {
+		cstring->size = 0;
+		err = __do_realloc(cstring, 64);
+		cstring->data[0] = '\0';
+	} else {
+		cstring->size = cstring->size - size;
+		err = check_realloc_less(cstring, cstring->size);
+		cstring->data[cstring->size] = '\0';
+	}
+
+	if (unlikely(err)) {
+		return err;
+	} else {
+		return 0;
+	}
+}
+
+__may_alloc
+int cstring_remove_prefix(struct cstring *cstring, unsigned long size)
+{
+	(void)cstring;
+	(void)size;
+	nosys;
 }
 
 bool cstring_contains(const struct cstring *cstring, const char *pattern)
@@ -246,25 +332,6 @@ void cstring_toupper(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
-}
-
-void cstring_remove_prefix(struct cstring *cstring, const char *pattern)
-{
-	if (tlu_sstartswith(cstring->data, pattern)) {
-		unsigned long len = tlu_strlen(pattern);
-
-		tlu_memmove(cstring->data, cstring->data + len, cstring->size - len);
-	}
-}
-
-void cstring_remove_suffix(struct cstring *cstring, const char *pattern)
-{
-	if (tlu_sendswith(cstring->data, pattern)) {
-		unsigned long len = tlu_strlen(pattern);
-
-		cstring->size -= len;
-		cstring->data[cstring->size] = '\0';
-	}
 }
 
 __may_alloc
