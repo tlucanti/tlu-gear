@@ -11,8 +11,8 @@
 extern bool silent_panic;
 
 #ifndef CONFIG_DEBUG
-#define __panic(...) abort(); unreachable()
-#define __bug(...) abort(); unreachable()
+#define __panic(...) abort()
+#define __bug(...) abort()
 #else
 #define __panic_reason(name, reason) \
 	__panic_impl(name, __FILE__, __FUNCTION__, __LINE__, reason)
@@ -20,7 +20,7 @@ extern bool silent_panic;
 #define ___panic_switch(a1, a2, a3, ...) a3
 #define __panic_switch(...) \
 	___panic_switch(__VA_ARGS__, __panic_reason, __panic_pure)
-#define __panic(...) __panic_switch(__VA_ARGS__)(__VA_ARGS__); unreachable()
+#define __panic(...) __panic_switch(__VA_ARGS__)(__VA_ARGS__)
 #define __bug(...) __panic("BUG", ##__VA_ARGS__)
 #endif
 

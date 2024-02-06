@@ -1,20 +1,29 @@
 
+include .config
+
 BUILD = build
 CFLAGS =
 LDFLAGS =
 CFLAGS += -I include
 
-#include cflags.mk
+include cflags.mk
 
 CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)
+CFLAGS += -D CONFIG_CONTAINER_ALLOC_FAIL=$(CONFIG_CONTAINER_ALLOC_FAIL)
 
-SANITIZE = -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
+#SANITIZE = -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
 
-#ifeq CONFIG_DEBUG(CONFIG_DEBUG,1)
-CFLAGS += -O0 -g3 -fno-inline -fdiagnostics-color=always
-#endif
+ifeq ($(CONFIG_DEBUG),1)
+CFLAGS += -O0 -g3 -fno-inline
+MESSAGE = "build in debug mode"
+else
+CFLAGS += -O3 -g0
+MESSAGE = "build in release mode"
+endif
+ifeq ($(CONFIG_SANITIZE),1)
 CFLAGS += $(SANITIZE)
+endif
 
 CC = gcc
 LD = gcc
@@ -66,8 +75,6 @@ $(target): $(deps) $(obj)
 endef
 
 
-include .config
-
 include core/Makefile
 include utest/Makefile
 include bench/Makefile
@@ -89,10 +96,11 @@ include libc/perf/Makefile
 include container/cstring/Makefile
 include container/cvector/Makefile
 
-include container/test/cstring/Makefile
+include container/cstring/test/Makefile
 include container/cvector/test/Makefile
 
 build_all: $(BUILD) $(targets)
+	echo $(MESSAGE)
 .PHONY: build_all
 
 clean_all:

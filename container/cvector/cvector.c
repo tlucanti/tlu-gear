@@ -1,9 +1,6 @@
 
 #include <container/cvector.h>
 
-#define CONFIG_CONTAINER_ALLOC_FAIL 1
-#define nosys panic("TODO: not implemented");
-
 __may_alloc
 int cvector_init(struct cvector *cvector, unsigned long element_size, unsigned long size)
 {
@@ -58,6 +55,6 @@ void *cvector_at(const struct cvector *cvector, long pos)
 		panic_on((unsigned long)pos >= cvector->size, "(cvector): out of bounds");
 	}
 
-	return cvector->data + pos * cvector->element_size;
+	return (char *)cvector->data + pos * cvector->element_size;
 }
 

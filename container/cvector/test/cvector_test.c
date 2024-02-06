@@ -4,14 +4,6 @@
 #include <container/cvector.h>
 #include <utest/utest.h>
 
-#define type_check(type, var) (void)((type)NULL == (var))
-#define util_cvector_cmp(__cstr, __s)                        \
-	do {                                                 \
-		type_check(const struct cvector *, __cstr);  \
-		type_check(const char *, __s);               \
-		ASSERT_EQUAL_STR(__s, cvector_data(__cstr)); \
-	} while (false)
-
 UTEST(cvector_init)
 {
 	struct cvector a, b = CVECTOR_INIT(sizeof(int));
@@ -76,9 +68,9 @@ UTEST(cvector_at)
 	struct cvector a, b = CVECTOR_INIT(sizeof(int));
 
 	cvector_init(&a, sizeof(long), 3);
-	((long *)cvector_data(&a))[0] = 1;
-	((long *)cvector_data(&a))[1] = 2;
-	((long *)cvector_data(&a))[2] = 3;
+	((long *)a.data)[0] = 1;
+	((long *)a.data)[1] = 2;
+	((long *)a.data)[2] = 3;
 
 	ASSERT_EQUAL(1, *(long *)cvector_at(&a, 0));
 	ASSERT_EQUAL(2, *(long *)cvector_at(&a, 1));

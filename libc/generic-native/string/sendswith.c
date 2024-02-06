@@ -1,5 +1,6 @@
 
 #include <libc/string.h>
+#include <libc/mem.h>
 #include <stdio.h>
 
 bool tlu_sendswith(const char *str, const char *pattern)

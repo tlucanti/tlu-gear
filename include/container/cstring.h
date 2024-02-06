@@ -14,10 +14,12 @@ struct cstring {
 
 #define CSTRING_INIT() (struct cstring){.data = NULL, .size=0, .alloc = 0};
 
-#if CONFIG_CONTAINER_ALLOC_FAIL && !defined(__may_alloc)
-# define __may_alloc __must_check
-#else
-# define __may_alloc /* empty */
+#ifndef __may_alloc
+# if !CONFIG_CONTAINER_ALLOC_FAIL
+#  define __may_alloc __must_check
+# else
+#  define __may_alloc /* empty */
+# endif
 #endif
 
 /**
@@ -55,8 +57,8 @@ __may_alloc int cstring_subs(const struct cstring *src, const struct cstring *ds
  * string lookups
  */
 bool cstring_contains(const struct cstring *cstring, const char *pattern);
-bool cstring_starts_with(const struct cstring *cstring, const char *pattern);
-bool cstring_ends_with(const struct cstring *cstring, const char *pattern);
+bool cstring_startswith(const struct cstring *cstring, const char *pattern);
+bool cstring_endswith(const struct cstring *cstring, const char *pattern);
 unsigned long cstring_count(const struct cstring *cstring, const char *pattern);
 unsigned long cstring_find(const struct cstring *cstring, const char *pattern);
 unsigned long cstring_rfind(const struct cstring *cstring, const char *pattern);

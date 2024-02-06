@@ -21,10 +21,12 @@ struct cvector {
 		.element_size = __els, .size = 0, .alloc = 0, .data = NULL \
 	};
 
-#if CONFIG_CONTAINER_ALLOC_FAIL && !defined(__may_alloc)
-# define __may_alloc __must_check
-#else
-# define __may_alloc /* empty */
+#ifndef __may_alloc
+# if !CONFIG_CONTAINER_ALLOC_FAIL
+#  define __may_alloc __must_check
+# else
+#  define __may_alloc /* empty */
+# endif
 #endif
 
 /**

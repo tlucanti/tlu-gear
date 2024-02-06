@@ -10,7 +10,7 @@
 #include <libc/string.h>
 
 #define CONFIG_CONTAINER_ALLOC_FAIL 1
-#define nosys panic("TODO: not implemented");
+#define nosys (void)*(int *)NULL;
 
 __may_alloc
 static int __do_realloc(struct cstring *cstring, unsigned long exact_size)
@@ -158,6 +158,7 @@ int cstring_appfront(struct cstring *cstring, char c)
 	(void)cstring;
 	(void)c;
 	nosys;
+	return 0;
 }
 
 __may_alloc
@@ -183,6 +184,7 @@ int cstring_extfront(struct cstring *cstring, const char *other)
 	(void)cstring;
 	(void)other;
 	nosys;
+	return 0;
 }
 
 __may_alloc
@@ -213,6 +215,7 @@ int cstring_remove_prefix(struct cstring *cstring, unsigned long size)
 	(void)cstring;
 	(void)size;
 	nosys;
+	return 0;
 }
 
 bool cstring_contains(const struct cstring *cstring, const char *pattern)
@@ -290,36 +293,43 @@ bool cstring_isalpha(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 bool cstring_isdigit(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 bool cstring_isalnum(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 bool cstring_islower(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
+
 }
 
 bool cstring_isupper(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 bool cstring_isspace(const struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 void cstring_tolwer(struct cstring *cstring)
@@ -341,6 +351,7 @@ int cstring_replace(struct cstring *cstring, const char *from, const char *to)
 	(void)from;
 	(void)to;
 	nosys;
+	return 0;
 }
 
 __may_alloc
@@ -348,6 +359,7 @@ int cstring_lstrip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 __may_alloc
@@ -355,6 +367,7 @@ int cstring_rstrip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 __may_alloc
@@ -362,6 +375,7 @@ int cstring_strip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
+	return 0;
 }
 
 void cstring_reverse(struct cstring *cstring)

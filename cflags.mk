@@ -27,11 +27,11 @@ CFLAGS += -Wbad-function-cast
 CFLAGS += -Wcast-qual
 CFLAGS += -Wcast-align=strict
 CFLAGS += -Wwrite-strings
-CFLAGS += -Wconversion
+#CFLAGS += -Wconversion
 CFLAGS += -Wdangling-else
 CFLAGS += -Wdate-time
 CFLAGS += -Wjump-misses-init
-CFLAGS += -Wsign-conversion
+#CFLAGS += -Wsign-conversion
 CFLAGS += -Wfloat-conversion
 CFLAGS += -Wlogical-op
 CFLAGS += -Wno-aggressive-loop-optimizations

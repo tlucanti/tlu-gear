@@ -134,7 +134,7 @@ UTEST(csrting_append)
 UTEST(cstring_extend)
 {
 	struct cstring a, b;
-	char *ext = "12345";
+	const char *ext = "12345";
 	char buf[1000 * 5 + 1] = {};
 
 	cstring_init(&a, "xyz");
@@ -157,7 +157,7 @@ UTEST(cstring_extend)
 UTEST(cstring_remove_suffix)
 {
 	struct cstring a, b;
-	char *ext = "12345";
+	const char *ext = "12345";
 	char c[2] = {};
 	char bufa[1000 + 1] = {};
 	char bufb[1000 * 5 + 1] = {};
