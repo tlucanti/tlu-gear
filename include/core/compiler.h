@@ -2,6 +2,9 @@
 #ifndef _CORE_COMPILER_H_
 #define _CORE_COMPILER_H_
 
+#define __DEBATING __unused
+#define __TODO __unused
+
 #ifndef __always_inline
 # define __always_inline inline __attribute__((__always_inline__))
 #endif

@@ -2,6 +2,7 @@
 #ifndef _LIBC_ALLOCATOR_H_
 #define _LIBC_ALLOCATOR_H_
 
+#include <stdlib.h>
 #include <malloc.h>
 
 static inline void *tlu_malloc(unsigned long size)

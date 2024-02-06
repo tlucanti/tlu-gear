@@ -5,6 +5,9 @@
 #include <stdbool.h>
 
 #include <core/compiler.h>
+#include <core/panic.h>
+#include <libc/allocator.h>
+#include <libc/mem.h>
 
 struct cvector {
 	unsigned long element_size;
@@ -24,20 +27,17 @@ struct cvector {
 # define __may_alloc /* empty */
 #endif
 
-#define __DEBATING __unused
-#define __TODO __unused
-
 /**
  * constructors and destructors
  */
-__may_alloc int cvector_init(struct cvector *cvector, unsigned long element_size);
+__may_alloc int cvector_init(struct cvector *cvector, unsigned long element_size, unsigned long size);
 void cvector_destroy(struct cvector *cvector);
 
 /**
- * string informaion
+ * vector informaion
  */
-const void *cvector_data(const struct cvector *cvector);
 unsigned long cvector_element_size(const struct cvector *cvector);
+const void *cvector_data(const struct cvector *cvector);
 unsigned long cvector_size(const struct cvector *cvector);
 unsigned long cvector_alloc(const struct cvector *cvector);
 void *cvector_at(const struct cvector *cvector, long pos);
