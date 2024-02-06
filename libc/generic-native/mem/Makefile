@@ -8,6 +8,7 @@ obj-libmem	+= memmove.o
 obj-libmem	+= memnchr.o
 obj-libmem	+= memset.o
 obj-libmem	+= memzero.o
+obj-libmem	+= memcnt.o
 
 deps-libmem	=
 
