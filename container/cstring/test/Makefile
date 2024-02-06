@@ -10,6 +10,6 @@ $(eval $(call build_executable,\
 	$(target-cstring-container-test),\
 	$(obj-cstring-container-test),\
 	$(deps-cstring-container-test),\
-	container/test/cstring\
+	container/cstring/test\
 ))
 

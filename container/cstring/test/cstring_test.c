@@ -154,7 +154,7 @@ UTEST(cstring_extend)
 	cstring_destroy(&b);
 }
 
-UTEST(cstring_remove_prefix)
+UTEST(cstring_remove_suffix)
 {
 	struct cstring a, b;
 	char *ext = "12345";
