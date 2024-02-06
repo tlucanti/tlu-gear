@@ -20,9 +20,6 @@ struct cstring {
 # define __may_alloc /* empty */
 #endif
 
-#define __DEBATING __unused
-#define __TODO __unused
-
 /**
  * constructors and destructors
  */
@@ -61,7 +58,7 @@ bool cstring_contains(const struct cstring *cstring, const char *pattern);
 bool cstring_starts_with(const struct cstring *cstring, const char *pattern);
 bool cstring_ends_with(const struct cstring *cstring, const char *pattern);
 unsigned long cstring_count(const struct cstring *cstring, const char *pattern);
-long cstring_find(const struct cstring *cstring, const char *pattern);
+unsigned long cstring_find(const struct cstring *cstring, const char *pattern);
 unsigned long cstring_rfind(const struct cstring *cstring, const char *pattern);
 
 /**
@@ -80,10 +77,11 @@ bool cstring_isspace(const struct cstring *cstring) __TODO;
 void cstring_tolwer(struct cstring *cstring) __TODO;
 void cstring_toupper(struct cstring *cstring) __TODO;
 __may_alloc int cstring_replace(struct cstring *cstring, const char *from, const char *to) __TODO;
-__may_alloc void cstring_lstrip(struct cstring *cstring) __TODO;
-__may_alloc void cstring_rstrip(struct cstring *cstring) __TODO;
-__may_alloc void cstring_strip(struct cstring *cstring) __TODO;
+__may_alloc int cstring_lstrip(struct cstring *cstring) __DEBATING;
+__may_alloc int cstring_rstrip(struct cstring *cstring) __DEBATING;
+__may_alloc int cstring_strip(struct cstring *cstring) __TODO;
 void cstring_reverse(struct cstring *cstring) __TODO;
+__may_alloc int cstring_multiply(struct cstring *cstring) __DEBATING;
 
 #endif /* _CONTAINER_CSTRING_H_ */
 

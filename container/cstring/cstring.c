@@ -248,7 +248,7 @@ unsigned long cstring_count(const struct cstring *cstring, const char *pattern)
 	}
 }
 
-long cstring_find(const struct cstring *cstring, const char *pattern)
+unsigned long cstring_find(const struct cstring *cstring, const char *pattern)
 {
 	const char *ret;
 
@@ -343,19 +343,22 @@ int cstring_replace(struct cstring *cstring, const char *from, const char *to)
 	nosys;
 }
 
-void cstring_lstrip(struct cstring *cstring)
+__may_alloc
+int cstring_lstrip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
 }
 
-void cstring_rstrip(struct cstring *cstring)
+__may_alloc
+int cstring_rstrip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
 }
 
-void cstring_strip(struct cstring *cstring)
+__may_alloc
+int cstring_strip(struct cstring *cstring)
 {
 	(void)cstring;
 	nosys;
