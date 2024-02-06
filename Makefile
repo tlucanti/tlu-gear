@@ -87,8 +87,10 @@ include libc/test/io/Makefile
 include libc/perf/Makefile
 
 include container/cstring/Makefile
+include container/cvector/Makefile
 
 include container/test/cstring/Makefile
+include container/cvector/test/Makefile
 
 build_all: $(BUILD) $(targets)
 .PHONY: build_all
