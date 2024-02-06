@@ -15,6 +15,17 @@
 # define rawmemchr(s, c) memchr(s, c, (size_t)-1)
 #endif
 
+static unsigned long memcnt(void *vp, unsigned char c, size_t n)
+{
+	unsigned char *p = vp;
+	unsigned long ret = 0;
+
+	for (size_t i = 0; i < n; ++i) {
+		ret += (p[i] == c);
+	}
+	return ret;
+}
+
 static int utest_mem_callback(struct mem_context *context)
 {
 	intmax_t real_ret, expected_ret;
@@ -76,6 +87,12 @@ static int utest_mem_callback(struct mem_context *context)
 			BUG("utest::memmove: invalid state");
 		}
 		BUG("utest:memmove: should not be there");
+
+	case FUNC_MEMCNT:
+		real_ret = tlu_memcnt(rsrc + offset, (unsigned char)rsrc[context->needle], size);
+		expected_ret = memcnt(rsrc + offset, (unsigned char)rsrc[context->needle], size);
+		ASSERT_EQUAL(expected_ret, real_ret);
+		return NEXT_OFFSET;
 
 	case FUNC_MEMCMP:
 		switch (context->state) {
