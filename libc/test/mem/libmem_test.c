@@ -53,6 +53,14 @@ UTEST(memnchr)
 	utest_mem_suite(64, 64, &context, true);
 }
 
+UTEST(memnrchr)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMNRCHR;
+	utest_mem_suite(64, 64, &context, true);
+}
+
 UTEST(memcnt)
 {
 	struct mem_context context;
@@ -126,12 +134,36 @@ FUZZ(memmove)
 	utest_mem_suite(512, 128, &context, false);
 }
 
+FUZZ(memchr)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMCHR;
+	utest_mem_suite(512, 128, &context, false);
+}
+
+FUZZ(memnchr)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMNCHR;
+	utest_mem_suite(512, 128, &context, false);
+}
+
+FUZZ(memnrchr)
+{
+	struct mem_context context;
+
+	context.function = FUNC_MEMNRCHR;
+	utest_mem_suite(512, 128, &context, false);
+}
+
 FUZZ(memcnt)
 {
 	struct mem_context context;
 
 	context.function = FUNC_MEMCNT;
-	utest_mem_suite(64, 64, &context, true);
+	utest_mem_suite(512, 128, &context, false);
 }
 
 int main(int argc, const char **argv)

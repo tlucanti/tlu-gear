@@ -8,12 +8,9 @@
 #include <libc/mem.h>
 #include <libc/string.h>
 
+#define __USE_GNU
 #include <string.h>
 #include <stdio.h>
-
-#ifndef rawmemchr
-# define rawmemchr(s, c) memchr(s, c, (size_t)-1)
-#endif
 
 static unsigned long memcnt(void *vp, unsigned char c, size_t n)
 {
@@ -153,6 +150,31 @@ static int utest_mem_callback(struct mem_context *context)
 		case 1:
 			real_p = tlu_memnchr(rsrc + offset, 0, size);
 			expected_p = memchr(esrc + offset, 0, size);
+			ret = NEXT_OFFSET;
+			break;
+		default:
+			BUG("utest::memnchr: invalid state");
+		}
+
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			expected_ret = (intptr_t)expected_p - (intptr_t)esrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
+		return ret;
+
+	case FUNC_MEMNRCHR:
+		switch (context->state) {
+		case 0:
+			real_p = tlu_memnrchr(rsrc + offset, (unsigned char)rsrc[context->needle], size);
+			expected_p = memrchr(esrc + offset, esrc[context->needle], size);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			real_p = tlu_memnrchr(rsrc + offset, 0, size);
+			expected_p = memrchr(esrc + offset, 0, size);
 			ret = NEXT_OFFSET;
 			break;
 		default:
