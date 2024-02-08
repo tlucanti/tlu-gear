@@ -16,12 +16,13 @@ enum string_func {
 	FUNC_STRRCHR,
 	FUNC_SSTARTSWITH,
 	FUNC_SENDSWITH,
+	FUNC_STRSTR,
 };
 
 #define string_context mem_context
 
 void utest_string_suite(size_t max_size, size_t max_offset,
-		     	struct string_context *context, bool printable);
+			struct string_context *context, bool printable);
 
 #endif /* _LIBC_TEST_LIBSTRING_TEST_H_ */
 

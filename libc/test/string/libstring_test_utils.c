@@ -186,37 +186,24 @@ static int utest_string_callback(struct string_context *context)
 
 		switch (context->state) {
 		case 0:
-			real_ret = tlu_sstartswith(rsrc, esrc);
-			expected_ret = sstartswith(rsrc, esrc);
+			esrc[context->needle] = '\0';
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = sstartswith(rsrc + offset, esrc + offset);
+			rsrc[context->needle] = '\0';
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 1:
-			esrc[context->needle] = '\0';
-			real_ret = tlu_sstartswith(rsrc + offset, esrc);
-			expected_ret = sstartswith(rsrc + offset, esrc);
-			rsrc[context->needle] = '\0';
+			rsrc[context->needle]++;
+			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
+			expected_ret = sstartswith(rsrc + offset, esrc + offset);
+			esrc[context->needle]++;
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 2:
-			rsrc[context->needle] = '\0';
-			real_ret = tlu_sstartswith(rsrc, esrc + offset);
-			expected_ret = sstartswith(rsrc, esrc + offset);
-			esrc[context->needle] = '\0';
-			ret = NEXT_OFFSET_OR_STATE;
-			break;
-		case 3:
-			context->expected_src[context->needle]++;
+			rsrc[0]++;
 			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
 			expected_ret = sstartswith(rsrc + offset, esrc + offset);
-			context->real_src[context->needle]++;
-			ret = NEXT_OFFSET_OR_STATE;
-			break;
-
-		case 4:
-			context->real_src[context->needle]++;
-			real_ret = tlu_sstartswith(rsrc + offset, esrc + offset);
-			expected_ret = sstartswith(rsrc + offset, esrc + offset);
-			context->expected_src[context->needle]++;
+			esrc[0]++;
 			ret = NEXT_OFFSET;
 			break;
 		default:
@@ -240,32 +227,22 @@ static int utest_string_callback(struct string_context *context)
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 1:
-			esrc[context->needle] = '\0';
-			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
-			expected_ret = sendswith(rsrc + offset, esrc + offset);
-			rsrc[context->needle] = '\0';
+			real_ret = tlu_sendswith(rsrc + offset, esrc + offset + context->needle);
+			expected_ret = sendswith(rsrc + offset, esrc + offset + context->needle);
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 2:
-			rsrc[context->needle] = '\0';
-			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
-			expected_ret = sendswith(rsrc + offset, esrc + offset);
-			esrc[context->needle] = '\0';
+			esrc[context->needle]++;
+			real_ret = tlu_sendswith(rsrc, esrc + context->needle);
+			expected_ret = sendswith(rsrc, esrc + context->needle);
+			rsrc[context->needle]++;
 			ret = NEXT_OFFSET_OR_STATE;
 			break;
 		case 3:
-			context->expected_src[context->needle]++;
+			esrc[size - 1]++;
 			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
 			expected_ret = sendswith(rsrc + offset, esrc + offset);
-			context->real_src[context->needle]++;
-			ret = NEXT_OFFSET_OR_STATE;
-			break;
-
-		case 4:
-			context->real_src[context->needle]++;
-			real_ret = tlu_sendswith(rsrc + offset, esrc + offset);
-			expected_ret = sendswith(rsrc + offset, esrc + offset);
-			context->expected_src[context->needle]++;
+			rsrc[size - 1]++;
 			ret = NEXT_OFFSET;
 			break;
 		default:
@@ -279,13 +256,20 @@ static int utest_string_callback(struct string_context *context)
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return ret;
 
+	case FUNC_STRSTR:
+		memzero(esrc + size, 2);
+		memzero(rsrc + size, 2);
+		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
+
+		return 0;
+
 	default:
 		BUG("utest::string_suite: unknown function");
 	}
 	BUG("utest:string_suite: should not be there");
 }
 
-void utest_string_suite(size_t max_size, size_t max_offset, struct mem_context *context, bool printable)
+void utest_string_suite(size_t max_size, size_t max_offset, struct string_context *context, bool printable)
 {
 	int ret;
 
