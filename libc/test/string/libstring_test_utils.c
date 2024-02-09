@@ -249,10 +249,6 @@ static int utest_string_callback(struct string_context *context)
 			BUG("utest::sendswith: invalid state");
 		}
 
-		if (expected_ret != real_ret) {
-			printf("\n");
-		}
-
 		ASSERT_EQUAL(expected_ret, real_ret);
 		return ret;
 
@@ -261,7 +257,47 @@ static int utest_string_callback(struct string_context *context)
 		memzero(rsrc + size, 2);
 		BUG_ON(NULL == memchr(esrc + offset, 0, size + 1));
 
-		return 0;
+		switch (context->state) {
+		case 0:
+			real_p = tlu_strstr(rsrc + offset, esrc + offset);
+			expected_p = strstr(rsrc + offset, esrc + offset);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 1:
+			memcpy(rdst + offset, rsrc + offset + context->needle, 1);
+			real_p = tlu_strstr(rsrc + offset, rdst + offset);
+			expected_p = strstr(rsrc + offset, rdst + offset);
+			memcpy(edst + offset, esrc + offset + context->needle, 1);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 2:
+			memcpy(rdst + offset, rsrc + offset + context->needle, 2);
+			real_p = tlu_strstr(rsrc + offset, rdst + offset);
+			expected_p = strstr(rsrc + offset, rdst + offset);
+			memcpy(edst + offset, esrc + offset + context->needle, 2);
+			ret = NEXT_OFFSET_OR_STATE;
+			break;
+		case 3: {
+			size_t pattern_len = utest_random_range(0, size - offset);
+			BUG_ON((long)pattern_len < 0);
+			memcpy(rdst + offset, rsrc + offset + context->needle, pattern_len);
+			real_p = tlu_strstr(rsrc + offset, rdst + offset);
+			expected_p = strstr(rsrc + offset, rdst + offset);
+			memcpy(edst + offset, esrc + offset + context->needle, pattern_len);
+			ret = NEXT_OFFSET;
+			break;
+		} default:
+			BUG("utest::strstr: invalid state");
+		}
+
+		if (expected_p == NULL) {
+			ASSERT_NULL(real_p);
+		} else {
+			expected_ret = (intptr_t)expected_p - (intptr_t)rsrc;
+			real_ret = (intptr_t)real_p - (intptr_t)rsrc;
+			ASSERT_EQUAL(expected_ret, real_ret);
+		}
+		return ret;
 
 	default:
 		BUG("utest::string_suite: unknown function");

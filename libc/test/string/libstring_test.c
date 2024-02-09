@@ -60,6 +60,14 @@ UTEST(sendswith)
 	utest_string_suite(64, 64, &context, true);
 }
 
+UTEST(strstr)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRSTR;
+	utest_string_suite(64, 64, &context, true);
+}
+
 FUZZ(strlen)
 {
 	struct string_context context;
@@ -116,6 +124,13 @@ FUZZ(sendswith)
 	utest_string_suite(512, 128, &context, false);
 }
 
+FUZZ(strstr)
+{
+	struct string_context context;
+
+	context.function = FUNC_STRSTR;
+	utest_string_suite(512, 128, &context, false);
+}
 
 int main(int argc, const char **argv)
 {
