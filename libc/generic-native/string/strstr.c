@@ -3,12 +3,11 @@
 
 const char *tlu_strstr(const char *s, const char *pattern)
 {
-	while (*s) {
+	do {
 		if (tlu_sstartswith(s, pattern)) {
 			return s;
 		}
-		++s;
-	}
+	} while (*s++);
 	return NULL;
 }
 
