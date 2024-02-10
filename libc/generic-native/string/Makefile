@@ -8,6 +8,7 @@ obj-libstring	+= streq.o
 obj-libstring	+= strlen.o
 obj-libstring	+= strrchr.o
 obj-libstring	+= strstr.o
+obj-libstring	+= strrstr.o
 
 deps-libstring	=
 
