@@ -22,30 +22,58 @@ struct pipe_fd {
 
 static void utest_io_callback(struct io_context *context)
 {
-	uint64_t num = context->generated;
+	unsigned long num = context->generated;
 
 	switch (context->function) {
-	case FUNC_PUTNUM_TO:
-		putnum_to(&context->io_stream, (int64_t)num);
-		fprintf(context->libc_stream, "%" PRId64, (int64_t)num);
-
-		print_flush_to(&context->io_stream);
-		fflush(context->libc_stream);
+	case FUNC_PRINT_USHORT:
+		print_ushort_to(&context->io_stream, (unsigned short)num);
+		fprintf(context->libc_stream, "%hu", (unsigned short)num);
 		break;
 
-	case FUNC_PUTUNUM_TO:
-		putunum_to(&context->io_stream, num);
-		fprintf(context->libc_stream, "%" PRIu64, num);
-
-		print_flush_to(&context->io_stream);
-		fflush(context->libc_stream);
+	case FUNC_PRINT_SHORT:
+		print_short_to(&context->io_stream, (short)num);
+		fprintf(context->libc_stream, "%hd", (short)num);
 		break;
+
+	case FUNC_PRINT_UINT:
+		print_uint_to(&context->io_stream, (unsigned int)num);
+		fprintf(context->libc_stream, "%u", (unsigned int)num);
+		break;
+
+	case FUNC_PRINT_INT:
+		print_int_to(&context->io_stream, (int)num);
+		fprintf(context->libc_stream, "%d", (int)num);
+		break;
+
+	case FUNC_PRINT_ULONG:
+		print_ulong_to(&context->io_stream, (unsigned long)num);
+		fprintf(context->libc_stream, "%lu", (unsigned long)num);
+		break;
+
+	case FUNC_PRINT_LONG:
+		print_long_to(&context->io_stream, (long)num);
+		fprintf(context->libc_stream, "%ld", (long)num);
+		break;
+
+	case FUNC_PRINT_CHAR:
+		print_char_to(&context->io_stream, (char)num);
+		fprintf(context->libc_stream, "%c", (char)num);
+		break;
+
+	case FUNC_PRINT_STR:
+		print_str_to(&context->io_stream, context->generated_str);
+		fprintf(context->libc_stream, "%s", context->generated_str);
+		break;
+
 	default:
 		BUG("utest::io_suite: unknown function");
 	}
+
+	fflush(context->libc_stream);
+	print_flush_to(&context->io_stream);
 }
 
-void utest_io_case(uint64_t val, struct io_context *context)
+void utest_io_case(unsigned long val, struct io_context *context)
 {
 	struct pipe_fd io_pipe;
 	struct pipe_fd libc_pipe;
@@ -65,16 +93,22 @@ void utest_io_case(uint64_t val, struct io_context *context)
 	utest_io_callback(context);
 
 	close(io_pipe.write);
-	close(libc_pipe.write);
+	fclose(context->libc_stream);
 
 	io_printed = (unsigned char *)utest_read_all(io_pipe.read, &io_nr_printed);
 	libc_printed = (unsigned char *)utest_read_all(libc_pipe.read, &libc_nr_printed);
 
-	utest_validate_memory_differ(libc_printed, libc_nr_printed,
-				     io_printed, io_nr_printed);
+	ASSERT_ZERO(utest_validate_memory_differ(libc_printed, libc_nr_printed,
+						 io_printed, io_nr_printed));
 
 	close(io_pipe.read);
 	close(libc_pipe.read);
+}
+
+void utest_io_str(const char *s, struct io_context *context)
+{
+	context->generated_str = s;
+	utest_io_case(0, context);
 }
 
 void utest_io_suite(unsigned long nr_iter, struct io_context *context)

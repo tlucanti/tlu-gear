@@ -10,8 +10,15 @@
 #include <stdio.h>
 
 enum io_func {
-	FUNC_PUTNUM_TO,
-	FUNC_PUTUNUM_TO,
+	FUNC_PRINT_USHORT,
+	FUNC_PRINT_SHORT,
+	FUNC_PRINT_UINT,
+	FUNC_PRINT_INT,
+	FUNC_PRINT_ULONG,
+	FUNC_PRINT_LONG,
+
+	FUNC_PRINT_CHAR,
+	FUNC_PRINT_STR,
 };
 
 struct io_context {
@@ -21,13 +28,15 @@ struct io_context {
 
 	int io_printed;
 	int libc_printed;
-	uint64_t generated;
+	unsigned long generated;
+	const char *generated_str;
 
 	file_stream_t io_stream;
 	FILE *libc_stream;
 };
 
-void utest_io_case(uint64_t val, struct io_context *context);
+void utest_io_case(unsigned long val, struct io_context *context);
+void utest_io_str(const char *s, struct io_context *context);
 void utest_io_suite(unsigned long nr_iter, struct io_context *context);
 
 #endif /* _LIBC_TEST_LIBIO_TEST_H_ */
