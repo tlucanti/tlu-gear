@@ -4,14 +4,12 @@
 
 #include <core/compiler.h>
 
-#include <stddef.h>
-
-#define FILE_BUFFER_SIZE 4096 - sizeof(size_t) - sizeof(int)
+#define FILE_BUFFER_SIZE 4096 - sizeof(unsigned long) - sizeof(unsigned long)
 
 struct __file_stream {
-	char buffer[FILE_BUFFER_SIZE];
-	size_t offset;
+	unsigned int offset;
 	int fd;
+	char buffer[FILE_BUFFER_SIZE];
 } __aligned(4096);
 
 #endif /* _IO_INTERNAL_H_ */

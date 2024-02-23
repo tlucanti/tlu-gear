@@ -3,12 +3,10 @@ obj-libio	=
 obj-libio	+= io_base.o
 obj-libio	+= print_flush.o
 obj-libio	+= print_flush_to.o
-obj-libio	+= putnum.o
-obj-libio	+= putnum_to.o
-obj-libio	+= putunum.o
-obj-libio	+= putunum_to.o
+obj-libio	+= print.o
+obj-libio	+= print_to.o
 
-deps-libio	= $(target-libsyscall) $(target-liblexical)
+deps-libio	= $(target-libsyscall) $(target-liblexical) $(target-libstring)
 
 target-libio	= build/libio.a
 
