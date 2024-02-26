@@ -31,11 +31,14 @@ void *utest_malloc(size_t size)
 	return p;
 }
 
-static char *merge_memory(char *s1, size_t n1, char *s2, size_t n2)
+static char *merge_free_memory(char *s1, size_t n1, char *s2, size_t n2)
 {
 	char *buf = utest_malloc(n1 + n2);
 	memcpy(buf, s1, n1);
 	memcpy(buf + n1, s2, n2);
+
+	free(s1);
+	free(s2);
 	return buf;
 }
 
@@ -51,7 +54,7 @@ static char *read_buf(int fd, size_t size, ssize_t *ret)
 
 char *utest_read_all(int fd, size_t *p_read)
 {
-	const size_t read_size = 1;
+	const size_t read_size = 1000;
 
 	size_t cur_size = 0;
 	char *cur_buf = NULL;
@@ -65,7 +68,7 @@ char *utest_read_all(int fd, size_t *p_read)
 			break;
 		}
 
-		cur_buf = merge_memory(cur_buf, cur_size, next, (size_t)nr_read);
+		cur_buf = merge_free_memory(cur_buf, cur_size, next, (size_t)nr_read);
 		cur_size += (size_t)nr_read;
 	}
 
