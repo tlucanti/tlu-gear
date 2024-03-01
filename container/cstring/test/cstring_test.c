@@ -131,6 +131,28 @@ UTEST(csrting_append)
 	cstring_destroy(&b);
 }
 
+UTEST(csrting_appfront)
+{
+	struct cstring a, b;
+	char buf[1001] = {};
+
+	memset(buf, 'x', 1000);
+
+	cstring_init(&a, "123");
+	cstring_init(&b, "");
+
+	cstring_appfront(&a, 'x');
+	util_cstring_cmp(&a, "x123");
+
+	for (unsigned long i = 0; i < ARRAY_SIZE(buf) - 1; ++i) {
+		cstring_appfront(&b, 'x');
+		util_cstring_cmp(&b, buf + 999 - i);
+	}
+
+	cstring_destroy(&a);
+	cstring_destroy(&b);
+}
+
 UTEST(cstring_extend)
 {
 	struct cstring a, b;
