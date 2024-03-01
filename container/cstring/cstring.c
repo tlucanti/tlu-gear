@@ -155,9 +155,17 @@ int cstring_append(struct cstring *cstring, char c)
 __may_alloc
 int cstring_appfront(struct cstring *cstring, char c)
 {
-	(void)cstring;
-	(void)c;
-	nosys;
+	int err;
+
+	err = check_realloc_more(cstring, cstring->size + 1);
+	if (unlikely(err)) {
+		return err;
+	}
+
+	cstring->size++;
+	tlu_memmove(cstring->data + 1, cstring->data, cstring->size);
+	cstring->data[0] = c;
+
 	return 0;
 }
 
