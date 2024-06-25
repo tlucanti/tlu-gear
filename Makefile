@@ -8,6 +8,10 @@ CFLAGS += -I include
 
 include cflags.mk
 
+CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
+CFLAGS += -D CONFIG_UTEST_FIRST_FAIL=$(CONFIG_UTEST_FIRST_FAIL)
+CFLAGS += -D CONFIG_UTEST_COLOR=$(CONFIG_UTEST_COLOR)
+
 ifeq ($(CONFIG_SANITIZE),1)
 CFLAGS += -fsanitize=address
 CFLAGS += -fsanitize=pointer-compare
@@ -81,6 +85,8 @@ $(target): $(deps) $(obj)
 
 endef
 
+
+include utest/Makefile
 
 include libc/native/mem/Makefile
 
