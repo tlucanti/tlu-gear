@@ -101,6 +101,17 @@ uint64_t utest_random_range(uint64_t from, uint64_t to)
 	return utest_random() % (to - from + 1) + from;
 }
 
+void utest_random_strings(char *a, char *b, uint64_t size)
+{
+	static const char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+
+	for (uint64_t i = 0; i < size; i++) {
+		char c = alphabet[utest_random_range(0, strlen(alphabet) - 1)];
+		a[i] = c;
+		b[i] = c;
+	}
+}
+
 void utest_progress_start(void)
 {
 	if (!isatty(STDOUT_FILENO)) {

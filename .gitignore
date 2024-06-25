@@ -1,5 +1,8 @@
 
 *.o
+*.gcda
+*.gcno
+*.gcov
 
 /build
 /riscv

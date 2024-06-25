@@ -5,7 +5,7 @@
 #include <core/compiler.h>
 #include <utest/internal.h>
 
-#define CONFIG_UTEST_FIRST_FAIL true
+#define CONFIG_UTEST_FIRST_FAIL false
 #define CONFIG_UTEST_CATCH_SEGFAULT false
 
 #ifndef CONFIG_UTEST_CATCH_SEGFAULT

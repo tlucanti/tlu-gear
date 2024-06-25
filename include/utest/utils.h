@@ -10,6 +10,7 @@ char *utest_read_all(int fd, size_t *nr_read);
 void utest_random_init(uint32_t seed);
 uint64_t utest_random(void);
 uint64_t utest_random_range(uint64_t from, uint64_t to);
+void utest_random_strings(char *a, char *b, uint64_t size);
 
 void utest_progress_start(void);
 void utest_progress(unsigned long current, unsigned long total);

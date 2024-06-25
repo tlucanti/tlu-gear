@@ -12,7 +12,21 @@ CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
 CFLAGS += -D CONFIG_COLOR_OUTPUT=$(CONFIG_COLOR_OUTPUT)
 CFLAGS += -D CONFIG_CONTAINER_ALLOC_FAIL=$(CONFIG_CONTAINER_ALLOC_FAIL)
 
-#SANITIZE = -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
+#ifeq ($(CONFIG_SANITIZE),1)
+CFLAGS += -fsanitize=address
+CFLAGS += -fsanitize=pointer-compare
+CFLAGS += -fsanitize=pointer-subtract
+CFLAGS += -fsanitize=undefined
+CFLAGS += -fsanitize-address-use-after-scope
+#CFLAGS += -lasan
+CFLAGS += -static-libasan
+#endif
+
+#ifeq ($(CONFIG_COVERAGE),1)
+CFLAGS += -fprofile-arcs
+CFLAGS += -ftest-coverage
+LDFLAGS += -lgcov --coverage
+#endif
 
 ifeq ($(CONFIG_DEBUG),1)
 CFLAGS += -O0 -g3 -fno-inline
@@ -20,9 +34,6 @@ MESSAGE = "build in debug mode"
 else
 CFLAGS += -O3 -g0
 MESSAGE = "build in release mode"
-endif
-ifeq ($(CONFIG_SANITIZE),1)
-CFLAGS += $(SANITIZE)
 endif
 
 CC = gcc
@@ -70,7 +81,7 @@ $(eval obj-y = $(obj-y) $(obj))
 
 $(target): $(deps) $(obj)
 	@echo LD $(basename $(target).elf)
-	@$(LD) -o $(target) $(obj) $(deps) $(SANITIZE)
+	@$(LD) -o $(target) $(obj) $(deps) $(LDFLAGS) $(CFLAGS)
 
 endef
 
