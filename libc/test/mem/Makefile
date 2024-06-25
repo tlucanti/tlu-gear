@@ -1,6 +1,8 @@
 
 obj-libmem-test		=
 obj-libmem-test		+= memset_test.o
+obj-libmem-test		+= memzero_test.o
+obj-libmem-test		+= libmem_test.o
 
 deps-libmem-test	= $(target-libmem) $(target-utest)
 

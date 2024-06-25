@@ -39,6 +39,7 @@ endif
 CC = gcc
 LD = gcc
 AR = ar rcsT
+RM = rm -f
 
 targets =
 obj-y =
