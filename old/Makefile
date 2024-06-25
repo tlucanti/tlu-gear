@@ -116,6 +116,9 @@ build_all: $(BUILD) $(targets)
 .PHONY: build_all
 
 clean_all:
+	rm -f $$(find . -name '*.gcno')
+	rm -f $$(find . -name '*.gcda')
+	rm -f $$(find . -name '*.gcov')
 	@for ob in $(obj-y) $(targets); do \
 		test -f $$ob && echo "CLEAN $$(basename $$ob)"; \
 		$(RM) $$ob; \
