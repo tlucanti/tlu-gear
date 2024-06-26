@@ -2,6 +2,7 @@
 obj-libmem-test		=
 obj-libmem-test		+= memset_secure_test.o
 obj-libmem-test		+= memset_test.o
+obj-libmem-test		+= memzero_secure_test.o
 obj-libmem-test		+= memzero_test.o
 obj-libmem-test		+= libmem_test.o
 
