@@ -6,16 +6,16 @@
 #include <string.h>
 #include <stdlib.h>
 
-UTEST(memset_simple)
+UTEST(memzero_simple)
 {
 	char before[] = "12345";
-	char after[] = "12x45";
+	char after[] = "12\00045";
 
-	tlu_memset(before + 2, 'x', 1);
+	tlu_memzero(before + 2, 1);
 	ASSERT_EQUAL_STR(after, before);
 }
 
-UTEST(memset_seq)
+UTEST(memzero_seq)
 {
 	const unsigned MAX_SIZE = 512;
 	const unsigned MAX_OFFSET = 8;
@@ -27,8 +27,8 @@ UTEST(memset_seq)
 			char *real = utest_malloc(size + offset);
 
 			utest_random_strings(expected, real, size + offset);
-			memset(real + offset, 'x', size);
-			tlu_memset(real + offset, 'x', size);
+			memset(real + offset, 0, size);
+			tlu_memzero(real + offset, size);
 
 			free(expected);
 			free(real);
