@@ -90,6 +90,8 @@ include utest/Makefile
 
 include libc/native/mem/Makefile
 
+include libc/test/mem/Makefile
+
 
 build_all: $(BUILD) $(targets)
 	echo $(MESSAGE)
