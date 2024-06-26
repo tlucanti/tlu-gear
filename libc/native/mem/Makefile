@@ -1,6 +1,7 @@
 
 obj-libmem	=
 obj-libmem	+= memset.o
+obj-libmem	+= memset_secure.o
 obj-libmem	+= memzero.o
 
 deps-libmem	=

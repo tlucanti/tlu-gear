@@ -5,7 +5,9 @@
 *.gcov
 
 /build
-/riscv
+
 compile_commands.json
 /.cache
+.gdb_history
+peda-session-*
 
