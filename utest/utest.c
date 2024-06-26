@@ -75,6 +75,22 @@ static struct __utest *get_utest_end(struct __utest *end)
 	return end;
 }
 
+__no_sanitize_address
+static uint get_utest_longest_name(struct __utest *start, struct __utest *end)
+{
+	uint longest_name = 0;
+
+	for (; start != end; start++) {
+		if (start->name == NULL)
+			continue;
+
+		longest_name = max(longest_name, strlen(start->name));
+		nr_tests++;
+	}
+
+	return longest_name;
+}
+
 static bool do_skip_utest(const char *name, const char **keep_list)
 {
 	if (keep_list == NULL) {
@@ -111,24 +127,23 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 {
 	struct __utest *begin = get_utest_begin(suite);
 	struct __utest *end = get_utest_end(suite);
+	uint longest_name = get_utest_longest_name(begin, end);
 	uint i = 1;
-
-	nr_tests = end - begin;
 
 	if (SIG_ERR == signal(SIGSEGV, signal_handler) ||
 	    SIG_ERR == signal(SIGBUS, signal_handler)) {
 		utest_panic("failed to set signal handlers");
 	}
 
-	for (; begin != end; ++begin, ++i) {
-		if (begin->name == NULL) {
+	for (; begin != end; begin++, i++) {
+		if (begin->name == NULL)
 			continue;
-		}
 
-		if (setjmp(jump_buf)) {
+		if (setjmp(jump_buf))
 			continue;
-		}
-		printf("%s %u/%u: %s:\t", name, i, nr_tests, begin->name);
+
+		printf("%s %u/%u: %s:", name, i, nr_tests, begin->name);
+		printf("%-*.s   ", (int)(longest_name - strlen(begin->name)), "");
 		fflush(stdout);
 
 		if (begin->skip || do_skip_utest(begin->name, keep_list)) {

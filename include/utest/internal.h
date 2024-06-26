@@ -15,20 +15,20 @@ struct __utest {
 #define __UTEST_MAGIC 0xDEADBEEFBADDADUL
 #define __UTEST_ATTR __used __aligned(1) __section(".utest")
 
-#define __UTEST_FUNC_NAME(__name) __utest_FUNCTION_##__name
+#define __UTEST_FUNC_NAME(__name) __UTEST_FUNCTION_##__name
 #define __UTEST_STRUCT_NAME(__name) __UTEST_WITH_THIS_NAME_ALREADY_DEFINED_##__name
 
-#define __UTEST_IMPL(__name, __skip)						\
-	static void __UTEST_FUNC_NAME(__name)(void);				\
-										\
-	static struct __utest __UTEST_STRUCT_NAME(__name) __UTEST_ATTR = {	\
-		.name = #__name,						\
-		.func = &__UTEST_FUNC_NAME(__name),				\
-		.magic = __UTEST_MAGIC,						\
-		.skip = __skip							\
-	};									\
-										\
-	static void __UTEST_FUNC_NAME(__name)(void)
+#define __UTEST_IMPL(__name, __skip)					\
+	void __UTEST_FUNC_NAME(__name)(void);				\
+									\
+	struct __utest __UTEST_STRUCT_NAME(__name) __UTEST_ATTR = {	\
+		.name = #__name,					\
+		.func = &__UTEST_FUNC_NAME(__name),			\
+		.magic = __UTEST_MAGIC,					\
+		.skip = __skip						\
+	};								\
+									\
+	void __UTEST_FUNC_NAME(__name)(void)
 
 #define __assert_fail() __assert_fail_impl(__FILE__, __LINE__)
 #define __assert_bool(exp, real) __assert_bool_impl(exp, real, __FILE__, __LINE__)
