@@ -34,14 +34,15 @@ struct __utest {
 #define __assert_bool(exp, real) __assert_bool_impl(exp, real, __FILE__, __LINE__)
 #define __assert_equal(exp, real, eq) __assert_eq_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_ptr(exp, real, eq) __assert_ptr_impl(exp, real, eq, __FILE__, __LINE__)
-#define __assert_str(exp, real, eq) __assert_str_impl(exp, real, eq, __FILE__, __LINE__)
+#define __assert_str(exp, real, eq) __assert_mem_impl(exp, (uint64)-1, real, (uint64)-1, eq, __FILE__, __LINE__)
+#define __assert_mem(exp, real, size, eq) __assert_mem_impl(exp, size, real, size, eq, __FILE__, __LINE__)
 #define __assert_sign(exp, real, eq) __assert_sign_impl(exp, real, eq, __FILE__, __LINE__)
 
 __cold __noret void __assert_fail_impl(const char *file, uint line);
 void __assert_bool_impl(bool exp, bool real, const char *file, uint line);
 void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line);
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line);
-void __assert_str_impl(const char *exp, const char *real, bool eq, const char *file, uint line);
+void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint64 size_real, bool eq, const char *file, uint line);
 void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line);
 void __assert_panic_prepare(void);
 void __assert_panic_fini(int was_panic, int fall, const char *file, uint line);

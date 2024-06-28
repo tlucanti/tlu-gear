@@ -25,8 +25,6 @@ void *utest_malloc(uint64 size)
 	p = malloc(size);
 	if (p == NULL)
 		utest_panic("utest: out of memory");
-
-	memset(p, 0xff, size);
 	return p;
 }
 
@@ -76,7 +74,7 @@ void utest_progress_start(void)
 	fflush(stdout);
 }
 
-void utest_progress(unsigned long current, unsigned long total)
+void utest_progress(uint64 current, uint64 total)
 {
 	static uint64 prev = (uint64)-1;
 
@@ -93,6 +91,18 @@ void utest_progress(unsigned long current, unsigned long total)
 		fflush(stdout);
 		prev = current;
 	}
+}
+
+void utest_progress2(uint64 inner, uint64 outer, uint64 inner_total, uint64 outer_total)
+{
+	utest_progress(inner * outer_total + outer, inner_total * outer_total);
+}
+
+void utest_progress3(uint64 inner, uint64 middle, uint64 outer,
+		     uint64 inner_total, uint64 middle_total, uint64 outer_total)
+{
+	utest_progress(inner * middle_total * outer_total + middle * outer_total + outer,
+		       inner_total * middle_total * outer_total);
 }
 
 void utest_progress_done(void)

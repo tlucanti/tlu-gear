@@ -98,12 +98,13 @@ build_all: $(BUILD) $(targets)
 .PHONY: build_all
 
 clean_all:
-	@rm -f $$(find . -name '*.gcno')
-	@rm -f $$(find . -name '*.gcda')
-	@rm -f $$(find . -name '*.gcov')
 	@for ob in $(obj-y) $(targets); do \
-		test -f $$ob && echo "CLEAN $$(basename $$ob)"; \
-		$(RM) $$ob; \
+		f=$${ob%.o}; \
+		test -f $$f.o && echo "CLEAN $$(basename $$ob)"; \
+		$(RM) $$f.o; \
+		$(RM) $$f.gcno; \
+		$(RM) $$f.gcda; \
+		$(RM) $$f.gcov; \
 	done
 .PHONY: clean_all
 

@@ -143,7 +143,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 			continue;
 
 		printf("%s %u/%u: %s:", name, i, nr_tests, begin->name);
-		printf("%-*.s   ", (int)(longest_name - strlen(begin->name)), "");
+		printf("%-*.s\t", (int)(longest_name - strlen(begin->name)), "");
 		fflush(stdout);
 
 		if (begin->skip || do_skip_utest(begin->name, keep_list)) {
@@ -177,10 +177,9 @@ void unittest(const char **argv)
 }
 
 __cold __noret
-static void test_failed(const char *file, uint line)
+static void assert_failed(const char *file, uint line)
 {
 	nr_failed++;
-	printf("\n");
 	utest_print_red("[ASSERT FAILED]");
 	utest_print_white(": %s:%u\n", file, line);
 	fflush(stdout);
@@ -219,12 +218,32 @@ static void print_ptr(const void *v)
 	}
 }
 
+static void print_mem(const void *v, uint64 size)
+{
+	const unsigned char *s = v;
+
+	if (s == NULL) {
+		utest_print_blue("(nil)");
+	} else {
+		utest_print_blue("\"");
+		for (uint64 i = 0; i < size; i++) {
+			if (isalnum(s[i])) {
+				utest_print_blue("%c", s[i]);
+			} else {
+				utest_print_blue(".");
+			}
+		}
+		utest_print_blue("\"");
+	}
+}
+
+__used
 static void print_str(const char *v)
 {
 	if (v == NULL) {
 		utest_print_blue("(nil)");
 	} else {
-		utest_print_blue("\"%s\"", v);
+		print_mem(v, strlen(v));
 	}
 }
 
@@ -243,7 +262,7 @@ void __assert_fail_impl(const char *file, uint line)
 {
 	utest_print_red("[FAIL]\n");
 	utest_print_yellow("should not be here");
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
 void __assert_bool_impl(bool exp, bool real, const char *file, uint line)
@@ -258,7 +277,7 @@ void __assert_bool_impl(bool exp, bool real, const char *file, uint line)
 		return;
 	}
 
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
 void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
@@ -278,7 +297,7 @@ void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint lin
 		return;
 	}
 
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line)
@@ -298,24 +317,32 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 		return;
 	}
 
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
-void __assert_str_impl(const char *exp, const char *real, bool eq, const char *file, uint line)
+void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint64 size_real, bool eq, const char *file, uint line)
 {
-	bool str_eq = !strcmp(exp, real);
-	size_t size_exp = strlen(exp);
-	size_t size_real = strlen(real);
+	bool mem_eq;
 
-	if (unlikely(eq && !str_eq)) {
+	if (size_exp == (uint64)-1)
+		size_exp = strlen(exp);
+	if (size_real == (uint64)-1)
+		size_real = strlen(real);
+
+	if (size_exp == size_real)
+		mem_eq = !memcmp(exp, real, size_exp);
+	else
+		mem_eq = false;
+
+	if (unlikely(eq && !mem_eq)) {
 		utest_print_red("[FAIL]\n");
 		utest_print_yellow("expected: ");
 
-		print_str(exp);
+		print_mem(exp, size_exp);
 		utest_print_yellow("\ngot:      ");
 
 		utest_print_blue("\"");
-		for (size_t i = 0; i < size_real; ++i) {
+		for (uint64 i = 0; i < size_real; ++i) {
 			if (i >= size_exp || exp[i] != real[i]) {
 				if (isalnum(real[i])) {
 					utest_print_red("%c", real[i]);
@@ -328,16 +355,16 @@ void __assert_str_impl(const char *exp, const char *real, bool eq, const char *f
 		}
 		utest_print_blue("\"");
 		printf("\n");
-	} else if (unlikely(!eq && str_eq)) {
+	} else if (unlikely(!eq && mem_eq)) {
 		utest_print_red("[FAIL]\n");
 		utest_print_yellow("got ");
-		print_str(real);
+		print_mem(real, size_real);
 		utest_print_yellow(", but didnt expect");
 	} else {
 		return;
 	}
 
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
 void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
@@ -358,7 +385,7 @@ void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint l
 		return;
 	}
 
-	test_failed(file, line);
+	assert_failed(file, line);
 }
 
 extern __printf(2, 0)

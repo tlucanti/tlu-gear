@@ -13,6 +13,9 @@ void utest_random_strings(char *a, char *b, uint64 size);
 
 void utest_progress_start(void);
 void utest_progress(uint current, uint total);
+void utest_progress2(uint64 inner, uint64 outer, uint64 inner_total, uint64 outer_total);
+void utest_progress3(uint64 inner, uint64 middle, uint64 outer,
+		     uint64 inner_total, uint64 middle_total, uint64 outer_total);
 void utest_progress_done(void);
 void utest_ok(void);
 
