@@ -9,7 +9,7 @@
 |:---------------- |:------:|
 | memccpy          |        |
 | memchr           |        |
-| memcmp           |        |
+| memcmp           |    +   |
 | memcnt           |        |
 | memcpy           |        |
 | memeq            |        |
@@ -17,9 +17,9 @@
 | memnchr          |        |
 | memnrchr         |        |
 | memset           |    +   |
-| memset\_secure   |        |
+| memset\_secure   |    +   |
 | memzero          |    +   |
-| memzero\_secure  |        |
+| memzero\_secure  |    +   |
 
 ## string functions
 
