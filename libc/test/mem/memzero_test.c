@@ -34,7 +34,7 @@ UTEST(memzero_seq)
 
 			free(expected);
 			free(real);
-			utest_progress(offset * MAX_OFFSET + size, MAX_OFFSET * MAX_SIZE);
+			utest_progress2(offset, size, MAX_OFFSET, MAX_SIZE);
 		}
 	}
 	utest_progress_done();
