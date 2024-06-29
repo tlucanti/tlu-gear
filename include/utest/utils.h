@@ -6,10 +6,17 @@
 #include <core/types.h>
 
 void *utest_malloc(uint64 size);
+
+uint64 utest_true_random(void);
+uint64 utest_true_random_range(uint64 min, uint64 max);
 void utest_random_init(uint seed);
 uint64 utest_random(void);
-uint64 utest_random_range(uint64 from, uint64 to);
+uint64 utest_random_range(uint64 min, uint64 max);
 void utest_random_strings(char *a, char *b, uint64 size);
+#define utest_random_string(s, size) utest_random_strings(s, s, size)
+double utest_random_float(void);
+double utest_random_float_uniform(double min, double max);
+bool utest_coin_flip(double propability);
 
 void utest_progress_start(void);
 void utest_progress(uint current, uint total);

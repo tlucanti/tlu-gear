@@ -9,6 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
+static bool random_seed_init = false;
+
 #define DEFINE_printf_color(__color, __format)            \
 	va_list ap;                                       \
 	int ret;                                          \
@@ -28,21 +30,44 @@ void *utest_malloc(uint64 size)
 	return p;
 }
 
-void utest_random_init(uint seed)
+uint64 utest_true_random(void)
 {
-	if (seed == 0) {
-		srandom((unsigned int)time(NULL));
-	} else {
-		srandom(seed);
+	static FILE *dev = NULL;
+	uint64 ret;
+
+	if (dev == NULL) {
+		dev = fopen("/dev/random", "r");
+		if (dev == NULL) {
+			utest_panic("failed to initialize true random");
+		}
 	}
+	return fread(&ret, sizeof(uint64), 1, dev);
+}
+
+uint64 utest_true_random_range(uint64 min, uint64 max)
+{
+	return utest_true_random() % (max - min + 1) + min;
+}
+
+void utest_random_seed(uint32 seed)
+{
+	srand(seed);
+	random_seed_init = true;
 }
 
 uint64 utest_random(void)
 {
-	uint64 r1 = (uint64)random();
-	uint64 r2 = (uint64)random();
+	uint64 r1, r2, r3;
 
-	return r1 | (r2 << 32u);
+	if (random_seed_init == false) {
+		utest_random_seed(utest_true_random());
+		random_seed_init = true;
+	}
+
+	r1 = rand();
+	r2 = rand();
+	r3 = rand();
+	return r1 * r2 + r3;
 }
 
 uint64 utest_random_range(uint64 from, uint64 to)
@@ -62,6 +87,21 @@ void utest_random_strings(char *a, char *b, uint64 size)
 		a[i] = c;
 		b[i] = c;
 	}
+}
+
+double utest_random_float(void)
+{
+	return (double)utest_random() / (double)UINT64_MAX;
+}
+
+double utest_random_float_uniform(double min, double max)
+{
+	return utest_random_float() * (max - min) + min;
+}
+
+bool utest_coin_flip(double propability)
+{
+	return utest_random_float() < propability;
 }
 
 void utest_progress_start(void)
