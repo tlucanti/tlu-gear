@@ -17,18 +17,20 @@ UTEST(memzero_simple)
 
 UTEST(memzero_seq)
 {
-	const unsigned MAX_SIZE = 512;
-	const unsigned MAX_OFFSET = 8;
+	const uint MAX_SIZE = 512;
+	const uint MAX_OFFSET = 8;
 
 	utest_progress_start();
-	for (unsigned offset = 0; offset < MAX_OFFSET; offset++) {
-		for (unsigned size = 0; size < MAX_SIZE; size++) {
+	for (uint offset = 0; offset < MAX_OFFSET; offset++) {
+		for (uint size = 0; size < MAX_SIZE; size++) {
 			char *expected = utest_malloc(size + offset);
 			char *real = utest_malloc(size + offset);
 
-			utest_random_strings(expected, real, size + offset);
-			memset(real + offset, 0, size);
+			utest_random_strings(expected + offset, real, size);
+			memset(expected + offset, 0, size);
 			tlu_memzero(real + offset, size);
+
+			ASSERT_EQUAL_MEM(expected + offset, real + offset, size);
 
 			free(expected);
 			free(real);
