@@ -1,8 +1,9 @@
 
 obj-libmem	=
 obj-libmem	+= memcmp.o
-obj-libmem	+= memeq.o
 obj-libmem	+= memcnt.o
+obj-libmem	+= memcpy.o
+obj-libmem	+= memeq.o
 obj-libmem	+= memset.o
 obj-libmem	+= memset_secure.o
 obj-libmem	+= memzero.o

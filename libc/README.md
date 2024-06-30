@@ -11,7 +11,7 @@
 | memchr           |        |
 | memcmp           |    +   |
 | memcnt           |    +   |
-| memcpy           |        |
+| memcpy           |    +   |
 | memeq            |    +   |
 | memmove          |        |
 | memnchr          |        |
