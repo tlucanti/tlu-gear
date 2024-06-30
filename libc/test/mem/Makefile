@@ -1,5 +1,6 @@
 
 obj-libmem-test		=
+obj-libmem-test		+= memccpy_test.o
 obj-libmem-test		+= memcmp_test.o
 obj-libmem-test		+= memcnt_test.o
 obj-libmem-test		+= memcpy_test.o

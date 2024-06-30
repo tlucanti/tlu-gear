@@ -7,7 +7,7 @@
 
 | function         | status |
 |:---------------- |:------:|
-| memccpy          |        |
+| memccpy          |    +   |
 | memchr           |        |
 | memcmp           |    +   |
 | memcnt           |    +   |

@@ -7,7 +7,8 @@
 int tlu_memcmp(const void *va, const void *vb, uint64 size);
 int tlu_memeq(const void *va, const void *vb, uint64 size);
 uint64 tlu_memcnt(const void *vp, unsigned char c, uint64 n);
-void tlu_memcpy(void *vdst, const void *vsrc, uint64 size);
+void tlu_memccpy(void *dst, const void *src, unsigned char c, uint64 size);
+void tlu_memcpy(void *dst, const void *src, uint64 size);
 void tlu_memset(void *ptr, unsigned char c, uint64 size);
 void tlu_memset_secure(void *ptr, unsigned char c, uint64 size);
 void tlu_memzero(void *ptr, uint64 size);

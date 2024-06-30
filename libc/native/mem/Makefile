@@ -1,5 +1,6 @@
 
 obj-libmem	=
+obj-libmem	+= memccpy.o
 obj-libmem	+= memcmp.o
 obj-libmem	+= memcnt.o
 obj-libmem	+= memcpy.o
