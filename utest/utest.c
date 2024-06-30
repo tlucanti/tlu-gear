@@ -27,7 +27,7 @@ static uint nr_ok = 0;
 static uint nr_skipped = 0;
 static uint nr_failed = 0;
 
-__noret static void utest_fini(const char *color);
+static void utest_fini(const char *color, bool abort);
 
 void utest_ok(void)
 {
@@ -41,12 +41,12 @@ static void signal_handler(int sig)
 	case SIGSEGV:
 		nr_failed++;
 		utest_print_red("[SEGMENTATION FAULT]\n");
-		utest_fini(ANSI_RED);
+		utest_fini(ANSI_RED, true);
 		break;
 	case SIGBUS:
 		nr_failed++;
 		utest_print_red("[BUS ERROR]\n");
-		utest_fini(ANSI_RED);
+		utest_fini(ANSI_RED, true);
 		break;
 	}
 }
@@ -105,8 +105,7 @@ static bool do_skip_utest(const char *name, const char **keep_list)
 	return true;
 }
 
-__noret
-static void utest_fini(const char *color)
+static void utest_fini(const char *color, bool abort)
 {
 	struct timespec time_end_monotonic;
 	struct timespec time_cpu;
@@ -120,7 +119,9 @@ static void utest_fini(const char *color)
 		((double)time_end_monotonic.tv_nsec - time_start_monotonic.tv_nsec) * 1e-9;
 	printf("user time: %.4fs, system time: %.4fs\n",
 	       diff, time_cpu.tv_sec + time_cpu.tv_nsec * 1e-9);
-	exit(1);
+
+	if (abort)
+		exit(1);
 }
 
 static void suite_run(struct __utest *suite, const char *name, const char **keep_list)
@@ -161,7 +162,7 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 	    SIG_ERR == signal(SIGBUS, SIG_DFL)) {
 		utest_panic("failed restore signal handlers");
 	}
-	utest_fini(ANSI_GREEN);
+	utest_fini(ANSI_GREEN, false);
 }
 
 void unittest(const char **argv)
@@ -184,7 +185,7 @@ static void assert_failed(const char *file, uint line)
 	utest_print_white(": %s:%u\n", file, line);
 	fflush(stdout);
 	if (CONFIG_UTEST_FIRST_FAIL) {
-		utest_fini(ANSI_RED);
+		utest_fini(ANSI_RED, true);
 	} else {
 		longjmp(jump_buf, 1);
 	}
@@ -406,5 +407,6 @@ __utest_panic(const char *format, const char *file, const char *func, uint line,
 	fflush(stdout);
 
 	nr_failed++;
-	utest_fini(ANSI_RED);
+	utest_fini(ANSI_RED, true);
+	unreachable();
 }

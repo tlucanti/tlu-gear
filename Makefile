@@ -35,6 +35,12 @@ CFLAGS += -O3 -g0
 MESSAGE = "build in release mode"
 endif
 
+ifeq ($(CONFIG_SILENT),1)
+ECHO = :
+else
+ECHO = echo
+endif
+
 CC = gcc
 LD = gcc
 AR = ar rcsT
@@ -62,7 +68,7 @@ $(eval targets = $(targets) $(target))
 $(eval obj-y = $(obj-y) $(obj))
 
 $(target): $(deps) $(obj)
-	@echo AR $(basename $(target).a)
+	@$(ECHO) AR $(basename $(target).a)
 	@$(AR) $(target) $(obj) $(deps)
 
 endef
@@ -80,7 +86,7 @@ $(eval targets = $(targets) $(target))
 $(eval obj-y = $(obj-y) $(obj))
 
 $(target): $(deps) $(obj)
-	@echo LD $(basename $(target).elf)
+	@$(ECHO) LD $(basename $(target).elf)
 	@$(LD) -o $(target) $(obj) $(deps) $(LDFLAGS) $(CFLAGS)
 
 endef
@@ -94,13 +100,13 @@ include libc/test/mem/Makefile
 
 
 build_all: $(BUILD) $(targets)
-	echo $(MESSAGE)
+	$(ECHO) $(MESSAGE)
 .PHONY: build_all
 
 clean_all:
 	@for ob in $(obj-y) $(targets); do \
 		f=$${ob%.o}; \
-		test -f $$f.o && echo "CLEAN $$(basename $$ob)"; \
+		test -f $$f.o && $(ECHO) "CLEAN $$(basename $$ob)"; \
 		$(RM) $$f.o; \
 		$(RM) $$f.gcno; \
 		$(RM) $$f.gcda; \
@@ -109,12 +115,14 @@ clean_all:
 .PHONY: clean_all
 
 %.o: %.c
-	@echo "CC $$(basename $@)"
+	@$(ECHO) "CC $$(basename $@)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.asm
-	echo "ASM $@"
+	@$(ECHO) "ASM $$(basename $@)"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD):
+	@$(ECHO) "MK $(BUILD)"
 	@mkdir -p $(BUILD)
 
