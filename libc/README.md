@@ -10,9 +10,9 @@
 | memccpy          |        |
 | memchr           |        |
 | memcmp           |    +   |
-| memcnt           |        |
+| memcnt           |    +   |
 | memcpy           |        |
-| memeq            |        |
+| memeq            |    +   |
 | memmove          |        |
 | memnchr          |        |
 | memnrchr         |        |
