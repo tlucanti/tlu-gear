@@ -10,9 +10,10 @@ UTEST(memset_secure_simple)
 {
 	char before[] = "12345";
 	char after[] = "12x45";
+	const uint n = strlen(before);
 
 	tlu_memset_secure(before + 2, 'x', 1);
-	ASSERT_EQUAL_STR(after, before);
+	ASSERT_EQUAL_MEM(after, before, n);
 }
 
 UTEST(memset_secure_seq)

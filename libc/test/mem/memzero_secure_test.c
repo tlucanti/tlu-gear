@@ -10,9 +10,10 @@ UTEST(memzero_secure_simple)
 {
 	char before[] = "12345";
 	char after[] = "12\00045";
+	const uint n = strlen(before);
 
 	tlu_memzero_secure(before + 2, 1);
-	ASSERT_EQUAL_STR(after, before);
+	ASSERT_EQUAL_MEM(after, before, n);
 }
 
 UTEST(memzero_secure_seq)
