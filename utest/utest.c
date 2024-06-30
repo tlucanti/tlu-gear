@@ -178,18 +178,23 @@ void unittest(const char **argv)
 }
 
 __cold __noret
-static void assert_failed(const char *file, uint line)
+static void assert_failed(void)
 {
-	nr_failed++;
-	utest_print_red("[ASSERT FAILED]");
-	utest_print_white(": %s:%u\n", file, line);
-	fflush(stdout);
 	if (CONFIG_UTEST_FIRST_FAIL) {
 		utest_fini(ANSI_RED, true);
 	} else {
 		longjmp(jump_buf, 1);
 	}
 	unreachable();
+}
+
+static void announce_fail(const char *file, uint line)
+{
+	nr_failed++;
+	utest_print_red("[FAIL]\n");
+	utest_print_red("[ASSERT FAILED]");
+	utest_print_white(": %s:%u\n", file, line);
+	fflush(stdout);
 }
 
 static void print_bool(bool v)
@@ -261,64 +266,67 @@ static void print_sign(int64 v)
 
 void __assert_fail_impl(const char *file, uint line)
 {
-	utest_print_red("[FAIL]\n");
-	utest_print_yellow("should not be here");
-	assert_failed(file, line);
+	announce_fail(file, line);
+	utest_print_yellow("should not be here\n");
+	assert_failed();
 }
 
 void __assert_bool_impl(bool exp, bool real, const char *file, uint line)
 {
 	if (unlikely(exp != real)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("expected ");
 		print_bool(exp);
 		utest_print_yellow(", got ");
 		print_bool(real);
+		printf("\n");
 	} else {
 		return;
 	}
 
-	assert_failed(file, line);
+	assert_failed();
 }
 
 void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
 {
 	if (unlikely(eq && exp != real)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("expected ");
 		print_int(exp);
 		utest_print_yellow(", got ");
 		print_int(real);
+		printf("\n");
 	} else if (unlikely(!eq && exp == real)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("got ");
 		print_int(real);
-		utest_print_yellow(", but didnt expect");
+		utest_print_yellow(", but didnt expect\n");
 	} else {
 		return;
 	}
 
-	assert_failed(file, line);
+	assert_failed();
 }
 
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line)
 {
 	if (unlikely(eq && exp != real)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("expected ");
 		print_ptr(exp);
 		utest_print_yellow(", got ");
 		print_ptr(real);
+		printf("\n");
 	} else if (unlikely(!eq && exp == real)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("got ");
 		print_ptr(real);
-		utest_print_yellow(", but didnt expect");
+		utest_print_yellow(", but didnt expect\n");
 	} else {
 		return;
 	}
 
-	assert_failed(file, line);
+	assert_failed();
 }
 
 void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint64 size_real, bool eq, const char *file, uint line)
@@ -336,9 +344,8 @@ void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint6
 		mem_eq = false;
 
 	if (unlikely(eq && !mem_eq)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("expected: ");
-
 		print_mem(exp, size_exp);
 		utest_print_yellow("\ngot:      ");
 
@@ -357,36 +364,38 @@ void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint6
 		utest_print_blue("\"");
 		printf("\n");
 	} else if (unlikely(!eq && mem_eq)) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("got ");
 		print_mem(real, size_real);
-		utest_print_yellow(", but didnt expect");
+		utest_print_yellow(", but didnt expect\n");
 	} else {
 		return;
 	}
 
-	assert_failed(file, line);
+	assert_failed();
 }
 
 void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
 {
 	if (unlikely(eq && sign(exp) != sign(real))) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("expected ");
 		print_sign(exp);
 		utest_print_yellow(", got ");
 		print_sign(real);
+		printf("\n");
 	} else if (unlikely(!eq && sign(exp) == sign(real))) {
-		utest_print_red("[FAIL]\n");
+		announce_fail(file, line);
 		utest_print_yellow("got ");
 		print_sign(real);
 		utest_print_yellow(", but expected ");
 		print_sign(exp);
+		printf("\n");
 	} else {
 		return;
 	}
 
-	assert_failed(file, line);
+	assert_failed();
 }
 
 extern __printf(2, 0)
@@ -399,7 +408,6 @@ __utest_panic(const char *format, const char *file, const char *func, uint line,
 
 	utest_print_red("[PANIC]\n");
 	utest_print_white("%s:%u: %s: ", file, line, func);
-	printf(ANSI_WHITE);
 
 	va_start(args, line);
 	__utest_print_color(ANSI_WHITE, format, args);
@@ -410,3 +418,4 @@ __utest_panic(const char *format, const char *file, const char *func, uint line,
 	utest_fini(ANSI_RED, true);
 	unreachable();
 }
+
