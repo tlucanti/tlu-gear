@@ -14,7 +14,7 @@
 | memcpy           |    +   |
 | memeq            |    +   |
 | memmove          |        |
-| memnchr          |        |
+| memnchr          |    +   |
 | memnrchr         |        |
 | memset           |    +   |
 | memset\_secure   |    +   |
