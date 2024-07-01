@@ -38,7 +38,7 @@ void unittest(const char **argv);
 		if (unlikely(expr)) {                   \
 			utest_panic("PANIC_ON failed"); \
 		}                                       \
-		while (false)
+	} while (false)
 
 extern __cold __noret __printf(1, 5) void
 __utest_panic(const char *format, const char *file, const char *func, uint line, ...);
