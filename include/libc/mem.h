@@ -4,6 +4,7 @@
 
 #include <core/types.h>
 
+const void *tlu_memchr(const void *vp, unsigned char c);
 int tlu_memcmp(const void *va, const void *vb, uint64 size);
 int tlu_memeq(const void *va, const void *vb, uint64 size);
 uint64 tlu_memcnt(const void *vp, unsigned char c, uint64 n);
