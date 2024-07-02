@@ -7,6 +7,7 @@ obj-libmem	+= memcnt.o
 obj-libmem	+= memcpy.o
 obj-libmem	+= memeq.o
 obj-libmem	+= memnchr.o
+obj-libmem	+= memnrchr.o
 obj-libmem	+= memset.o
 obj-libmem	+= memset_secure.o
 obj-libmem	+= memzero.o

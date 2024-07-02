@@ -97,7 +97,7 @@ static bool do_skip_utest(const char *name, const char **keep_list)
 		return false;
 	}
 	while (*keep_list) {
-		if (!strcmp(name, *keep_list)) {
+		if (!strncmp(name, *keep_list, strlen(*keep_list))) {
 			return false;
 		}
 		++keep_list;
