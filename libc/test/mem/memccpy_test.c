@@ -39,7 +39,7 @@ UTEST(memccpy_seq)
 				char *exp_dst = utest_malloc(size + off1);
 				char *real_src = utest_malloc(size + off2);
 				char *exp_src = utest_malloc(size + off2);
-				unsigned char c = utest_random_range('a', 'z');
+				uint8 c = utest_random_range('a', 'z');
 
 				utest_random_strings(real_src + off2, exp_src + off2, size);
 				tlu_memccpy(real_dst + off1, real_src + off2, c, size);

@@ -226,7 +226,7 @@ static void print_ptr(const void *v)
 
 static void print_mem(const void *v, uint64 size)
 {
-	const unsigned char *s = v;
+	const uint8 *s = v;
 
 	if (s == NULL) {
 		utest_print_blue("(nil)");

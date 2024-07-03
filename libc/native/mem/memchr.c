@@ -1,9 +1,9 @@
 
 #include <libc/mem.h>
 
-const void *tlu_memchr(const void *vp, unsigned char c)
+const void *tlu_memchr(const void *vp, uint8 c)
 {
-	const unsigned char *p = vp;
+	const uint8 *p = vp;
 
 	while (*p != c) {
 		++p;

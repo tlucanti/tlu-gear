@@ -23,7 +23,7 @@ UTEST(memchr_seq)
 	for (uint offset = 0; offset < MAX_OFFSET; offset++) {
 		for (uint size = 0; size < MAX_SIZE; size++) {
 			char *s = utest_malloc(size + offset);
-			unsigned char c = utest_random_range('a', 'z');
+			uint8 c = utest_random_range('a', 'z');
 
 			utest_random_string(s, size + offset);
 			if (size == 0) {

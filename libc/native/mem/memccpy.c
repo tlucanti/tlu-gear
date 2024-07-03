@@ -1,10 +1,10 @@
 
 #include <libc/mem.h>
 
-void tlu_memccpy(void *vdst, const void *vsrc, unsigned char c, uint64 size)
+void tlu_memccpy(void *vdst, const void *vsrc, uint8 c, uint64 size)
 {
-	unsigned char *dst = vdst;
-	const unsigned char *src = vsrc;
+	uint8 *dst = vdst;
+	const uint8 *src = vsrc;
 
 	for (uint64 i = 0; i < size; ++i) {
 		dst[i] = src[i];
