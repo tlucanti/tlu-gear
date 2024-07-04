@@ -101,8 +101,10 @@ endef
 include utest/Makefile
 
 include libc/native/mem/Makefile
+include libc/native/string/Makefile
 
 include libc/test/mem/Makefile
+include libc/test/string/Makefile
 
 
 build_all: $(BUILD) $(targets)
