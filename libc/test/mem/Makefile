@@ -6,6 +6,7 @@ obj-libmem-test		+= memcmp_test.o
 obj-libmem-test		+= memcnt_test.o
 obj-libmem-test		+= memcpy_test.o
 obj-libmem-test		+= memeq_test.o
+obj-libmem-test		+= memmove_test.o
 obj-libmem-test		+= memnchr_test.o
 obj-libmem-test		+= memnrchr_test.o
 obj-libmem-test		+= memset_secure_test.o

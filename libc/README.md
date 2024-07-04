@@ -13,7 +13,7 @@
 | memcnt           |    +   |
 | memcpy           |    +   |
 | memeq            |    +   |
-| memmove          |        |
+| memmove          |    +   |
 | memnchr          |    +   |
 | memnrchr         |    +   |
 | memset           |    +   |
