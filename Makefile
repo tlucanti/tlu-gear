@@ -63,12 +63,15 @@ $(eval deps = $(strip $3))
 $(eval dir = $(strip $4))
 
 $(eval obj = $(addprefix $(dir)/,$(obj)))
+$(eval name = $(notdir $(target)))
 
 $(eval targets = $(targets) $(target))
 $(eval obj-y = $(obj-y) $(obj))
 
+$(name): $(target)
+
 $(target): $(deps) $(obj)
-	@$(ECHO) AR $(basename $(target).a)
+	@$(ECHO) AR $(name)
 	@$(AR) $(target) $(obj) $(deps)
 
 endef
@@ -81,12 +84,15 @@ $(eval deps = $(strip $3))
 $(eval dir = $(strip $4))
 
 $(eval obj = $(addprefix $(dir)/,$(obj)))
+$(eval name = $(notdir $(target)))
 
 $(eval targets = $(targets) $(target))
 $(eval obj-y = $(obj-y) $(obj))
 
+$(name): $(target)
+
 $(target): $(deps) $(obj)
-	@$(ECHO) LD $(basename $(target).elf)
+	@$(ECHO) LD $(name)
 	@$(LD) -o $(target) $(obj) $(deps) $(LDFLAGS) $(CFLAGS)
 
 endef
