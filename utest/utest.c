@@ -329,14 +329,16 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 	assert_failed();
 }
 
-void __assert_mem_impl(const char *exp, uint64 size_exp, const char *real, uint64 size_real, bool eq, const char *file, uint line)
+void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, const char *file, uint line)
 {
 	bool mem_eq;
+	uint64 size_exp = size;
+	uint64 size_real = size;
 
-	if (size_exp == (uint64)-1)
+	if (size == (uint64)-1) {
 		size_exp = strlen(exp);
-	if (size_real == (uint64)-1)
 		size_real = strlen(real);
+	}
 
 	if (size_exp == size_real)
 		mem_eq = !memcmp(exp, real, size_exp);
