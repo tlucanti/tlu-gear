@@ -27,7 +27,7 @@
 
 | function  | status |
 |:--------- |:------:|
-| strlen    |        |
+| strlen    |    +   |
 | strcmp    |        |
 | strncmp   |        |
 | strchr    |        |

@@ -1,5 +1,6 @@
 
 obj-libstring	=
+obj-libstring	+=	strlen.o
 
 deps-libstring	= $(target-libmem)
 

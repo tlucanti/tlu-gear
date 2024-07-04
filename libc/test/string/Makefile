@@ -1,5 +1,6 @@
 
 obj-libstring-test	=
+obj-libstring-test	+= strlen_test.o
 
 obj-libstring-test	+= libstring_test.o
 
