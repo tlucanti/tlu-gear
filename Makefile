@@ -112,13 +112,17 @@ build_all: $(BUILD) $(targets)
 .PHONY: build_all
 
 clean_all:
-	@for ob in $(obj-y) $(targets); do \
+	@for ob in $(obj-y); do \
 		f=$${ob%.o}; \
 		test -f $$f.o && $(ECHO) "CLEAN $$(basename $$ob)"; \
 		$(RM) $$f.o; \
 		$(RM) $$f.gcno; \
 		$(RM) $$f.gcda; \
 		$(RM) $$f.gcov; \
+	done
+	@for ob in $(targets); do \
+		test -f $$ob && $(ECHO) "CLEAN $$(basename $$ob)"; \
+		$(RM) $$ob; \
 	done
 .PHONY: clean_all
 
