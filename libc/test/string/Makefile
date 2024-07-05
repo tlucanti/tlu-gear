@@ -1,6 +1,7 @@
 
 obj-libstring-test	=
 obj-libstring-test	+= strcmp_test.o
+obj-libstring-test	+= streq_test.o
 obj-libstring-test	+= strlen_test.o
 
 obj-libstring-test	+= libstring_test.o

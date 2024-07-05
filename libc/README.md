@@ -39,4 +39,4 @@
 | strends   |        |
 | strstarts |        |
 | strcnt    |        |
-| streq     |        |
+| streq     |    +   |
