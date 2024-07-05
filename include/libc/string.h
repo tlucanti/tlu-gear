@@ -4,6 +4,7 @@
 
 #include <core/types.h>
 
+uint64 tlu_strcmp(const char *a, const char *b);
 uint64 tlu_strlen(const char *s);
 
 #endif /* LIBC_STRING_H */
