@@ -30,7 +30,7 @@
 | strlen    |    +   |
 | strcmp    |    +   |
 | strncmp   |    +   |
-| strchr    |        |
+| strchr    |    +   |
 | strrchr   |        |
 | strpbrk   |        |
 | strrpbrk  |        |
