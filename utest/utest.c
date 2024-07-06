@@ -180,7 +180,9 @@ void unittest(const char **argv)
 __cold __noret
 static void assert_failed(void)
 {
-	if (CONFIG_UTEST_FIRST_FAIL) {
+	if (CONFIG_UTEST_FAIL_HALT) {
+		while (true);
+	} if (CONFIG_UTEST_FIRST_FAIL) {
 		utest_fini(ANSI_RED, true);
 	} else {
 		longjmp(jump_buf, 1);
@@ -329,6 +331,38 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 	assert_failed();
 }
 
+static void __utest_print_mem(const char *exp, const char *real, uint64 size_exp, uint64 size_real)
+{
+	utest_print_yellow("expected: ");
+	print_mem(exp, size_exp);
+	utest_print_yellow("\ngot:      ");
+
+	utest_print_blue("\"");
+	for (uint64 i = 0; i < size_real; ++i) {
+		if (i >= size_exp || exp[i] != real[i]) {
+			if (isalnum(real[i])) {
+				utest_print_red("%c", real[i]);
+			} else {
+				utest_print_red(".");
+			}
+		} else {
+			utest_print_blue("%c", real[i]);
+		}
+	}
+	utest_print_blue("\"");
+	printf("\n");
+}
+
+void utest_print_mem(const void *exp, const void *real, uint64 size)
+{
+	__utest_print_mem(exp, real, size, size);
+}
+
+void utest_print_str(const char *exp, const char *real)
+{
+	__utest_print_mem(exp, real, strlen(exp), strlen(real));
+}
+
 void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, const char *file, uint line)
 {
 	bool mem_eq;
@@ -347,24 +381,7 @@ void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, 
 
 	if (unlikely(eq && !mem_eq)) {
 		announce_fail(file, line);
-		utest_print_yellow("expected: ");
-		print_mem(exp, size_exp);
-		utest_print_yellow("\ngot:      ");
-
-		utest_print_blue("\"");
-		for (uint64 i = 0; i < size_real; ++i) {
-			if (i >= size_exp || exp[i] != real[i]) {
-				if (isalnum(real[i])) {
-					utest_print_red("%c", real[i]);
-				} else {
-					utest_print_red(".");
-				}
-			} else {
-				utest_print_blue("%c", real[i]);
-			}
-		}
-		utest_print_blue("\"");
-		printf("\n");
+		__utest_print_mem(exp, real, size_exp, size_real);
 	} else if (unlikely(!eq && mem_eq)) {
 		announce_fail(file, line);
 		utest_print_yellow("got ");

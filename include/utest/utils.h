@@ -18,6 +18,9 @@ double utest_random_float(void);
 double utest_random_float_uniform(double min, double max);
 bool utest_coin_flip(double propability);
 
+void utest_print_mem(const void *exp, const void *real, uint64 size);
+void utest_print_str(const char *exp, const char *real);
+
 void utest_progress_start(void);
 void utest_progress(uint current, uint total);
 void utest_progress2(uint64 inner, uint64 outer, uint64 inner_total, uint64 outer_total);
