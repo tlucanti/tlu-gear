@@ -7,12 +7,20 @@
 
 UTEST(streq_simple)
 {
-	const char *s1 = "12345";
-	const char *s2 = "12345";
-	const char *s3 = "12x45";
+	const char s1[] = "12345";
+	const char s2[] = "12345";
+	const char s3[] = "12x45";
 
 	ASSERT_TRUE(tlu_streq(s1, s2));
 	ASSERT_FALSE(tlu_streq(s1, s3));
+}
+
+UTEST(streq_simple2)
+{
+	const char s1[] = "";
+	const char s2[] = "";
+
+	ASSERT_TRUE(tlu_streq(s1, s2));
 }
 
 UTEST(streq_seq)

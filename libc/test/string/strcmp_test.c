@@ -4,15 +4,24 @@
 #include <libc/string.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 UTEST(strcmp_simple)
 {
-	const char *s1 = "12345";
-	const char *s2 = "12345";
-	const char *s3 = "12x45";
+	const char s1[] = "12345";
+	const char s2[] = "12345";
+	const char s3[] = "12x45";
 
 	ASSERT_ZERO(tlu_strcmp(s1, s2));
 	ASSERT_NOT_ZERO(tlu_strcmp(s1, s3));
+}
+
+UTEST(strcmp_simple2)
+{
+	const char s1[] = "";
+	const char s2[] = "";
+
+	ASSERT_ZERO(tlu_strcmp(s1, s2));
 }
 
 UTEST(strcmp_seq)
@@ -36,6 +45,20 @@ UTEST(strcmp_seq)
 					free(s1);
 					free(s2);
 				}
+				{
+					char *s1 = utest_malloc(size + off1 + 1);
+					char *s2 = utest_malloc(size + off2 + 1);
+					s1[size + off1] = '\0';
+					s2[size + off2] = '\0';
+
+					int real = tlu_strcmp(s1 + off1, s2 + off2);
+					int exp = strcmp(s1 + off1, s2 + off2);
+
+					ASSERT_EQUAL_SIGN(exp, real);
+
+					free(s1);
+					free(s2);
+				}
 				if (size != 0) {
 					char *s1 = utest_malloc(size + off1 + 1);
 					char *s2 = utest_malloc(size + off2 + 1);
@@ -45,7 +68,10 @@ UTEST(strcmp_seq)
 
 					utest_random_strings(s1 + off1, s2 + off2, size);
 					s1[off1 + diff] = '*';
-					ASSERT_NOT_ZERO(tlu_strcmp(s1 + off1, s2 + off2));
+
+					int real = tlu_strcmp(s1 + off1, s2 + off2);
+					int exp = strcmp(s1 + off1, s2 + off2);
+					ASSERT_EQUAL_SIGN(exp, real);
 
 					free(s1);
 					free(s2);
@@ -59,7 +85,10 @@ UTEST(strcmp_seq)
 
 					utest_random_strings(s1 + off1, s2 + off2, size);
 					s2[off2 + diff] = '*';
-					ASSERT_NOT_ZERO(tlu_strcmp(s1 + off1, s2 + off2));
+
+					int real = tlu_strcmp(s1 + off1, s2 + off2);
+					int exp = strcmp(s1 + off1, s2 + off2);
+					ASSERT_EQUAL_SIGN(exp, real);
 
 					free(s1);
 					free(s2);

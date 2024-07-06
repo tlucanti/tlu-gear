@@ -11,6 +11,14 @@ UTEST(strlen_simple)
 	const char *s = "12345\0006789";
 
 	ASSERT_EQUAL(5, tlu_strlen(s));
+	ASSERT_EQUAL(0, tlu_strlen(""));
+}
+
+UTEST(strlen_simple2)
+{
+	const char *s = "";
+
+	ASSERT_ZERO(tlu_strlen(s));
 }
 
 UTEST(strlen_seq)

@@ -8,23 +8,30 @@
 
 UTEST(strncmp_simple)
 {
-	const char *s1 = "12345";
-	const char *s2 = "12345";
-	const char *s3 = "12x45";
-	uint n = strlen(s1);
+	const char s1[] = "12345";
+	const char s2[] = "12345";
+	const char s3[] = "12x45";
 
-	ASSERT_ZERO(tlu_strncmp(s1, s2, n));
-	ASSERT_NOT_ZERO(tlu_strncmp(s1, s3, n));
+	ASSERT_ZERO(tlu_strncmp(s1, s2, 1000));
+	ASSERT_NOT_ZERO(tlu_strncmp(s1, s3, 1000));
 }
 
 UTEST(strncmp_simple2)
 {
-	const char *s1 = "1234x";
-	const char *s2 = "1234y";
+	const char s1[] = "1234x";
+	const char s2[] = "1234y";
 	uint n = strlen(s1);
 
 	ASSERT_NOT_ZERO(tlu_strncmp(s1, s2, n));
 	ASSERT_ZERO(tlu_strncmp(s1, s2, n - 1));
+}
+
+UTEST(strncmp_simple3)
+{
+	const char s1[] = "";
+	const char s2[] = "";
+
+	ASSERT_ZERO(tlu_strncmp(s1, s2, 1000));
 }
 
 UTEST(strncmp_seq)
