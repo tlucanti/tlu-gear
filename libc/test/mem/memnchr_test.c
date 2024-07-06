@@ -29,6 +29,13 @@ UTEST(memnchr_simple3)
 	ASSERT_EQUAL_PTR(NULL, tlu_memnchr(s, 'x', 0));
 }
 
+UTEST(memnchr_simple4)
+{
+	const char s[] = "12345";
+
+	ASSERT_NULL(tlu_memnchr(s, 'x', 1000));
+}
+
 UTEST(memnchr_seq)
 {
 	const uint MAX_SIZE = 512;

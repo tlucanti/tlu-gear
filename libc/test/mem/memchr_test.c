@@ -9,7 +9,7 @@
 
 UTEST(memchr_simple)
 {
-	const char s[] = "12x456x78910x";
+	const char *s = "12x456x78910x";
 
 	ASSERT_EQUAL_PTR(s + 2, tlu_memchr(s, 'x'));
 }
