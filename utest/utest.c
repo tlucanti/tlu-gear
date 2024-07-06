@@ -41,14 +41,19 @@ static void signal_handler(int sig)
 	case SIGSEGV:
 		nr_failed++;
 		utest_print_red("[SEGMENTATION FAULT]\n");
-		utest_fini(ANSI_RED, true);
 		break;
 	case SIGBUS:
 		nr_failed++;
 		utest_print_red("[BUS ERROR]\n");
-		utest_fini(ANSI_RED, true);
 		break;
+	default:
+		nr_failed++;
+		utest_print_red("[UNKNOWN SIGNAL]\n");
 	}
+	if (CONFIG_UTEST_FAIL_HALT) {
+		while (true);
+	}
+	utest_fini(ANSI_RED, true);
 }
 
 __no_sanitize_address
