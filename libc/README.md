@@ -29,7 +29,7 @@
 |:--------- |:------:|
 | strlen    |    +   |
 | strcmp    |    +   |
-| strncmp   |        |
+| strncmp   |    +   |
 | strchr    |        |
 | strrchr   |        |
 | strpbrk   |        |
