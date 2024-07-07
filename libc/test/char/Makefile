@@ -1,6 +1,5 @@
 
 obj-libchar-test	=
-
 obj-libchar-test	+= libchar_test.o
 
 deps-libchar-test	= $(target-libchar) $(target-utest)
