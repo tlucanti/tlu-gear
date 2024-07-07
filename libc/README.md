@@ -35,7 +35,7 @@
 | strpbrk   |        |
 | strrpbrk  |        |
 | strstr    |        |
-| strcpy    |        |
+| strcpy    |    +   |
 | strends   |        |
 | strstarts |        |
 | strcnt    |    +   |

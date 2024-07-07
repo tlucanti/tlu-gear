@@ -3,6 +3,7 @@ obj-libstring	=
 obj-libstring	+=	strchr.o
 obj-libstring	+=	strcmp.o
 obj-libstring	+=	strcnt.o
+obj-libstring	+=	strcpy.o
 obj-libstring	+=	streq.o
 obj-libstring	+=	strlen.o
 obj-libstring	+=	strncmp.o

@@ -3,6 +3,7 @@ obj-libstring-test	=
 obj-libstring-test	+= strchr_test.o
 obj-libstring-test	+= strcmp_test.o
 obj-libstring-test	+= strcnt_test.o
+obj-libstring-test	+= strcpy_test.o
 obj-libstring-test	+= streq_test.o
 obj-libstring-test	+= strlen_test.o
 obj-libstring-test	+= strncmp_test.o
