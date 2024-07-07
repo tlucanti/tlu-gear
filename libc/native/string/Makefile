@@ -1,5 +1,6 @@
 
 obj-libstring	=
+obj-libstring	+=	strbreak.o
 obj-libstring	+=	strchr.o
 obj-libstring	+=	strcmp.o
 obj-libstring	+=	strcnt.o

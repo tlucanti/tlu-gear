@@ -32,8 +32,9 @@
 | strncmp   |    +   |
 | strchr    |    +   |
 | strrchr   |    +   |
-| strpbrk   |        |
-| strrpbrk  |        |
+| strbreak  |    +   |
+| strrbreak |        |
+| strspan   |        |
 | strstr    |    +   |
 | strcpy    |    +   |
 | strends   |    +   |
