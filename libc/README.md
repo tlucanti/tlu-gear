@@ -41,3 +41,19 @@
 | strcnt    |    +   |
 | streq     |    +   |
 
+## character classifiction functions
+
+| function | status |
+|:-------- |:------:|
+| isalnum  |        |
+| isalpha  |        |
+| isdigit  |        |
+| ishex    |        |
+| islower  |        |
+| isprint  |        |
+| ispunct  |        |
+| isspace  |        |
+| isupper  |        |
+| tolower  |        |
+| toupper  |        |
+

@@ -103,9 +103,11 @@ include utest/Makefile
 
 include libc/native/mem/Makefile
 include libc/native/string/Makefile
+include libc/native/char/Makefile
 
 include libc/test/mem/Makefile
 include libc/test/string/Makefile
+include libc/test/char/Makefile
 
 
 build_all: $(BUILD) $(targets)
