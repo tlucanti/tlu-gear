@@ -109,6 +109,8 @@ include libc/test/mem/Makefile
 include libc/test/string/Makefile
 include libc/test/char/Makefile
 
+include container/cvector/Makefile
+include container/cvector/test/Makefile
 
 build_all: $(BUILD) $(targets)
 	$(ECHO) $(MESSAGE)
