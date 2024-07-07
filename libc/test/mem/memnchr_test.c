@@ -33,7 +33,7 @@ UTEST(memnchr_simple4)
 {
 	const char s[] = "12345";
 
-	ASSERT_NULL(tlu_memnchr(s, 'x', 1000));
+	ASSERT_NULL(tlu_memnchr(s, 'x', strlen(s)));
 }
 
 UTEST(memnchr_seq)

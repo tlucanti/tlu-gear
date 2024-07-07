@@ -32,7 +32,7 @@ ifeq ($(CONFIG_DEBUG),1)
 CFLAGS += -O0 -g3 -fno-inline
 MESSAGE = "build in debug mode"
 else
-CFLAGS += -O3 -g0
+CFLAGS += -O3
 MESSAGE = "build in release mode"
 endif
 
@@ -113,6 +113,7 @@ build_all: $(BUILD) $(targets)
 .PHONY: build_all
 
 clean_all:
+	@rm -f *.gcov
 	@for ob in $(obj-y); do \
 		f=$${ob%.o}; \
 		test -f $$f.o && $(ECHO) "CLEAN $$(basename $$ob)"; \

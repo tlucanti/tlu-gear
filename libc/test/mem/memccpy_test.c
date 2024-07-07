@@ -45,6 +45,8 @@ UTEST(memccpy_seq)
 				tlu_memccpy(real_dst + off1, real_src + off2, c, size);
 				memccpy(exp_dst + off1, exp_src + off2, c, size);
 
+				ASSERT_EQUAL_MEM(exp_dst + off1, real_dst + off1, size);
+
 				free(real_dst);
 				free(exp_dst);
 				free(real_src);

@@ -22,19 +22,20 @@ UTEST(memcpy_seq)
 	const uint MAX_OFFSET = 8;
 
 	utest_progress_start();
-	for (uint off1 = 0; off1 < MAX_OFFSET; off1++) {
-		for (uint off2 = 0; off2 < MAX_OFFSET; off2++) {
+	for (uint offs = 0; offs < MAX_OFFSET; offs++) {
+		for (uint offd = 0; offd < MAX_OFFSET; offd++) {
 			for (uint size = 0; size < MAX_SIZE; size++) {
-				char *dst = utest_malloc(size + off1);
-				char *src = utest_malloc(size + off2);
+				char *dst = utest_malloc(size + offd);
+				char *src = utest_malloc(size + offs);
 
-				utest_random_string(src + off2, size);
-				tlu_memcpy(dst + off1, src + off2, size);
+				utest_random_string(src + offs, size);
+				tlu_memcpy(dst + offd, src + offs, size);
+				ASSERT_EQUAL_MEM(src + offs, dst + offd, size);
 
 				free(dst);
 				free(src);
 
-				utest_progress3(off1, off2, size, MAX_OFFSET, MAX_OFFSET, MAX_SIZE);
+				utest_progress3(offs, offd, size, MAX_OFFSET, MAX_OFFSET, MAX_SIZE);
 				if (size > 128)
 					size += utest_random_range(1, 8);
 			}
