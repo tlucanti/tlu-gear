@@ -10,6 +10,7 @@ obj-libstring	+=	streq.o
 obj-libstring	+=	strlen.o
 obj-libstring	+=	strncmp.o
 obj-libstring	+=	strrchr.o
+obj-libstring	+=	strspan.o
 obj-libstring	+=	strstarts.o
 obj-libstring	+=	strstr.o
 

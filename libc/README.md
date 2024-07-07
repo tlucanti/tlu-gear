@@ -33,11 +33,11 @@
 | strchr    |    +   |
 | strrchr   |    +   |
 | strbreak  |    +   |
-| strrbreak |        |
-| strspan   |        |
+| strspan   |    +   |
 | strstr    |    +   |
 | strcpy    |    +   |
 | strends   |    +   |
 | strstarts |    +   |
 | strcnt    |    +   |
 | streq     |    +   |
+
