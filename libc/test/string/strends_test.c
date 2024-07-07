@@ -5,41 +5,41 @@
 
 #include <stdlib.h>
 
-UTEST(strstarts_simple)
+UTEST(strends_simple)
 {
 	const char s1[] = "12345";
 	const char s2[] = "12345";
 	const char s3[] = "12x45";
 
-	ASSERT_TRUE(tlu_strstarts(s1, s2));
-	ASSERT_FALSE(tlu_strstarts(s1, s3));
+	ASSERT_TRUE(tlu_strends(s1, s2));
+	ASSERT_FALSE(tlu_strends(s1, s3));
 }
 
-UTEST(strstarts_simple2)
+UTEST(strends_simple2)
 {
 	const char s[] = "123";
-	const char s1[] = "1";
-	const char s2[] = "12";
+	const char s1[] = "3";
+	const char s2[] = "23";
 	const char s3[] = "123";
 
-	ASSERT_TRUE(tlu_strstarts(s, s1));
-	ASSERT_TRUE(tlu_strstarts(s, s2));
-	ASSERT_TRUE(tlu_strstarts(s, s3));
+	ASSERT_TRUE(tlu_strends(s, s1));
+	ASSERT_TRUE(tlu_strends(s, s2));
+	ASSERT_TRUE(tlu_strends(s, s3));
 
-	ASSERT_FALSE(tlu_strstarts(s1, s));
-	ASSERT_FALSE(tlu_strstarts(s2, s));
-	ASSERT_TRUE(tlu_strstarts(s3, s));
+	ASSERT_FALSE(tlu_strends(s1, s));
+	ASSERT_FALSE(tlu_strends(s2, s));
+	ASSERT_TRUE(tlu_strends(s3, s));
 }
 
-UTEST(strstarts_simple3)
+UTEST(strends_simple3)
 {
 	const char s1[] = "";
 	const char s2[] = "";
 
-	ASSERT_TRUE(tlu_strstarts(s1, s2));
+	ASSERT_TRUE(tlu_strends(s1, s2));
 }
 
-UTEST(strstarts_seq)
+UTEST(strends_seq)
 {
 	const uint MAX_SIZE = 512;
 	const uint MAX_OFFSET = 8;
@@ -55,9 +55,9 @@ UTEST(strstarts_seq)
 					s1[size + off1] = '\0';
 					s2[size + off2] = '\0';
 					utest_random_strings(s1 + off1, s2 + off2, size);
-					s2[off2 + utest_random_range(0, size)] = '\0';
+					uint64 start = utest_random_range(0, size);
 
-					ASSERT_TRUE(tlu_strstarts(s1 + off1, s2 + off2));
+					ASSERT_TRUE(tlu_strends(s1 + off1, s2 + off2 + start));
 
 					free(s1);
 					free(s2);
@@ -69,11 +69,10 @@ UTEST(strstarts_seq)
 					s1[size + off1] = '\0';
 					s2[size + off2] = '\0';
 					utest_random_strings(s1 + off1, s2 + off2, size);
-					uint64 end = utest_random_range(1, size);
-					s2[off2 + end] = '\0';
-					s2[off2 + utest_random_range(0, end - 1)] = '*';
+					uint64 start = utest_random_range(0, size - 1);
+					s2[off2 + utest_random_range(start, size - 1)] = '*';
 
-					ASSERT_FALSE(tlu_strstarts(s1 + off1, s2 + off2));
+					ASSERT_FALSE(tlu_strends(s1 + off1, s2 + off2 + start));
 
 					free(s1);
 					free(s2);

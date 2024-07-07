@@ -4,6 +4,7 @@
 
 #include <core/types.h>
 
+bool tlu_strends(const char *str, const char *pattern);
 bool tlu_streq(const char *a, const char *b);
 bool tlu_strstarts(const char *str, const char *pattern);
 char *tlu_strchr(const char *s, uint8 c);
