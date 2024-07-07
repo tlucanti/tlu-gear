@@ -58,10 +58,10 @@ UTEST(strrchr_seq)
 			{
 				char *s = utest_malloc(size + offset + 1);
 
-				utest_random_string(s, size);
+				utest_random_string(s + offset, size);
 				s[offset + size] = '\0';
 
-				ASSERT_NULL(tlu_strrchr(s, '#'));
+				ASSERT_NULL(tlu_strrchr(s + offset, '#'));
 				free(s);
 			}
 			utest_progress2(offset, size, MAX_OFFSET, MAX_SIZE);

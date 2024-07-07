@@ -51,6 +51,7 @@ UTEST(strcmp_seq)
 					s1[size + off1] = '\0';
 					s2[size + off2] = '\0';
 
+					utest_random_strings(s1 + off1, s2 + off2, size);
 					int real = tlu_strcmp(s1 + off1, s2 + off2);
 					int exp = strcmp(s1 + off1, s2 + off2);
 
