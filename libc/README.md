@@ -31,7 +31,7 @@
 | strcmp    |    +   |
 | strncmp   |    +   |
 | strchr    |    +   |
-| strrchr   |        |
+| strrchr   |    +   |
 | strpbrk   |        |
 | strrpbrk  |        |
 | strstr    |        |
