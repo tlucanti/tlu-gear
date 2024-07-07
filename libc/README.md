@@ -37,6 +37,6 @@
 | strstr    |        |
 | strcpy    |    +   |
 | strends   |        |
-| strstarts |        |
+| strstarts |    +   |
 | strcnt    |    +   |
 | streq     |    +   |

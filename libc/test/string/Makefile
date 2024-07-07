@@ -8,6 +8,7 @@ obj-libstring-test	+= streq_test.o
 obj-libstring-test	+= strlen_test.o
 obj-libstring-test	+= strncmp_test.o
 obj-libstring-test	+= strrchr_test.o
+obj-libstring-test	+= strstarts_test.o
 
 obj-libstring-test	+= libstring_test.o
 
