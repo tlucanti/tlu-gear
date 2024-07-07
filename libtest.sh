@@ -8,6 +8,10 @@ elif [ $1 == 'libstring' ]; then
 	NAME=LIBSTRING
 	TARGET=./build/libstring_unittest.elf
 	DIR=libc/native/string
+elif [ $1 == 'libchar' ]; then
+	NAME=LIBCHAR
+	TARGET=./build/libchar_unittest.elf
+	DIR=libc/native/char
 else
 	echo 'evaliable tests: libmem, libstring'
 	exit 1
