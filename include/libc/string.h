@@ -4,6 +4,7 @@
 
 #include <core/types.h>
 
+uint64 tlu_strcnt(const char *s, uint8 c);
 bool tlu_streq(const char *a, const char *b);
 char *tlu_strchr(const char *s, uint8 c);
 char *tlu_strrchr(const char *s, uint8 c);

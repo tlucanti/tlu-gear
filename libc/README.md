@@ -38,5 +38,5 @@
 | strcpy    |        |
 | strends   |        |
 | strstarts |        |
-| strcnt    |        |
+| strcnt    |    +   |
 | streq     |    +   |
