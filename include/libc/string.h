@@ -9,6 +9,7 @@ bool tlu_streq(const char *a, const char *b);
 bool tlu_strstarts(const char *str, const char *pattern);
 char *tlu_strchr(const char *s, uint8 c);
 char *tlu_strrchr(const char *s, uint8 c);
+const char *tlu_strstr(const char *a, const char *b);
 uint64 tlu_strcmp(const char *a, const char *b);
 uint64 tlu_strcnt(const char *s, uint8 c);
 uint64 tlu_strlen(const char *s);

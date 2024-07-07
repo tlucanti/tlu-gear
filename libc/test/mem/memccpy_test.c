@@ -32,27 +32,27 @@ UTEST(memccpy_seq)
 	const uint MAX_OFFSET = 8;
 
 	utest_progress_start();
-	for (uint off1 = 0; off1 < MAX_OFFSET; off1++) {
-		for (uint off2 = 0; off2 < MAX_OFFSET; off2++) {
+	for (uint offd = 0; offd < MAX_OFFSET; offd++) {
+		for (uint offs = 0; offs < MAX_OFFSET; offs++) {
 			for (uint size = 0; size < MAX_SIZE; size++) {
-				char *real_dst = utest_malloc(size + off1);
-				char *exp_dst = utest_malloc(size + off1);
-				char *real_src = utest_malloc(size + off2);
-				char *exp_src = utest_malloc(size + off2);
+				char *real_dst = utest_malloc(size + offd);
+				char *exp_dst = utest_malloc(size + offd);
+				char *real_src = utest_malloc(size + offs);
+				char *exp_src = utest_malloc(size + offs);
 				uint8 c = utest_random_range('a', 'z');
 
-				utest_random_strings(real_src + off2, exp_src + off2, size);
-				tlu_memccpy(real_dst + off1, real_src + off2, c, size);
-				memccpy(exp_dst + off1, exp_src + off2, c, size);
+				utest_random_strings(real_src + offs, exp_src + offs, size);
+				tlu_memccpy(real_dst + offd, real_src + offs, c, size);
+				memccpy(exp_dst + offd, exp_src + offs, c, size);
 
-				ASSERT_EQUAL_MEM(exp_dst + off1, real_dst + off1, size);
+				ASSERT_EQUAL_MEM(exp_dst + offd, real_dst + offd, size);
 
 				free(real_dst);
 				free(exp_dst);
 				free(real_src);
 				free(exp_src);
 
-				utest_progress3(off1, off2, size, MAX_OFFSET, MAX_OFFSET, MAX_SIZE);
+				utest_progress3(offd, offs, size, MAX_OFFSET, MAX_OFFSET, MAX_SIZE);
 				if (size > 128)
 					size += utest_random_range(1, 8);
 			}

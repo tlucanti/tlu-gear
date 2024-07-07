@@ -10,6 +10,7 @@ obj-libstring	+=	strlen.o
 obj-libstring	+=	strncmp.o
 obj-libstring	+=	strrchr.o
 obj-libstring	+=	strstarts.o
+obj-libstring	+=	strstr.o
 
 deps-libstring	= $(target-libmem)
 
