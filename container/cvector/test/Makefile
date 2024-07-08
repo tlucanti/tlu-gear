@@ -3,7 +3,7 @@ obj-cvector-test	=
 
 obj-cvector-test	+= cvector_test.o
 
-deps-cvector-test	= $(target-libmem) $(target-utest)
+deps-cvector-test	= $(target-libcvector) $(target-utest)
 
 target-cvector-test	= build/cvector_unittest.elf
 
