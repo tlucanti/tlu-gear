@@ -1,8 +1,8 @@
 
-#include <core/math.h>
+#include <core/defs.h>
+#include <libc/mem.h>
 #include <utest/utest.h>
 #include <utest/utils.h>
-#include <libc/mem.h>
 
 #include <string.h>
 #include <stdlib.h>

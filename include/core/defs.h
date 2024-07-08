@@ -1,8 +1,9 @@
 
-#ifndef CORE_MATH_H
-#define CORE_MATH_H
+#ifndef CORE_DEFS_H
+#define CORE_DEFS_H
 
 #include <core/compiler.h>
+#include <core/types.h>
 
 #define __cmp_once(x, y, op)            \
 	({                              \
@@ -27,5 +28,8 @@
 		(b) = (tmp);         \
 	} while (0)
 
-#endif /* CORE_MATH_H */
+#define container_of(ptr, type, member) \
+        ((type *)((uint64)(const void *)(ptr) - offsetof(type, member)))
+
+#endif /* CORE_DEFS_H */
 

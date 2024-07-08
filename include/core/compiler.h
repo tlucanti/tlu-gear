@@ -67,11 +67,15 @@
 #endif
 
 #ifndef typeof
-# define typeof __typeof
+# define typeof(expr) __typeof(expr)
 #endif
 
 #ifndef typeof_unqual
-# define typeof_unqual __typeof
+# define typeof_unqual(expr) typeof(expr)
+#endif
+
+#ifndef offsetof
+# define offsetof(type, member) __builtin_offsetof(type, member)
 #endif
 
 #ifndef __no_sanitize_address
