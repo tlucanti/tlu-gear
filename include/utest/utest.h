@@ -21,15 +21,20 @@ void unittest(const char **argv);
 #define ASSERT_EQUAL(exp, real) __assert_equal(exp, real, true)
 #define ASSERT_NOT_EQUAL(exp, real) __assert_equal(exp, real, false)
 
+#define ASSERT_GREATER(exp, real) __assert_gt(exp, real, true, false)
+#define ASSERT_GREATER_EQUAL(exp, real) __assert_gt(exp, real, true, true)
+#define ASSERT_LESS(exp, real) __assert_gt(exp, real, false, false)
+#define ASSERT_LESS_EQUAL(exp, real) __assert_gt(exp, real, false, true)
+
 #define ASSERT_NULL(expr) __assert_ptr(NULL, expr, true)
 #define ASSERT_NOT_NULL(expr) __assert_ptr(NULL, expr, false)
 #define ASSERT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, true)
 #define ASSERT_NOT_EQUAL_PTR(exp, real) __assert_ptr(exp, real, false)
 
-#define ASSERT_EQUAL_STR(exp, real) __assert_str(exp, real, true)
-#define ASSERT_NOT_EQUAL_STR(exp, real) __assert_str(exp, real, false)
-#define ASSERT_EQUAL_MEM(exp, real, size) __assert_mem(exp, real, size, true)
-#define ASSERT_NOT_EQUAL_MEM(exp, real, size) __assert_mem(exp, real, size, false)
+#define ASSERT_EQUAL_STR(border, val) __assert_str(border, val, true)
+#define ASSERT_NOT_EQUAL_STR(border, val) __assert_str(border, val, false)
+#define ASSERT_EQUAL_MEM(border, val, size) __assert_mem(border, val, size, true)
+#define ASSERT_NOT_EQUAL_MEM(border, val, size) __assert_mem(border, val, size, false)
 
 #define ASSERT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, true)
 #define ASSERT_NOT_EQUAL_SIGN(exp, real) __assert_sign(exp, real, false)

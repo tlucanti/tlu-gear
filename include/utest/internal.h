@@ -33,6 +33,7 @@ struct __utest {
 #define __assert_fail() __assert_fail_impl(__FILE__, __LINE__)
 #define __assert_bool(exp, real) __assert_bool_impl(exp, real, __FILE__, __LINE__)
 #define __assert_equal(exp, real, eq) __assert_eq_impl(exp, real, eq, __FILE__, __LINE__)
+#define __assert_gt(border, val, greater, equal) __assert_gt_impl(border, val, greater, equal, __FILE__, __LINE__)
 #define __assert_ptr(exp, real, eq) __assert_ptr_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_str(exp, real, eq) __assert_mem_impl(exp, real, (uint64)-1, eq, __FILE__, __LINE__)
 #define __assert_mem(exp, real, size, eq) __assert_mem_impl(exp, real, size, eq, __FILE__, __LINE__)
@@ -41,6 +42,7 @@ struct __utest {
 __cold __noret void __assert_fail_impl(const char *file, uint line);
 void __assert_bool_impl(bool exp, bool real, const char *file, uint line);
 void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line);
+void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const char *file, uint line);
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line);
 void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, const char *file, uint line);
 void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line);

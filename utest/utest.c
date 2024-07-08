@@ -315,6 +315,45 @@ void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint lin
 	assert_failed();
 }
 
+void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const char *file, uint line)
+{
+	const char *sign;
+	bool ok;
+
+	switch (greater << 1 | equal) {
+	case 0b00:
+		/* less than */
+		sign = "<";
+		ok = val < border;
+		break;
+	case 0b01:
+		/* less or equal */
+		sign = "<=";
+		ok = val <= border;
+		break;
+	case 0b10:
+		/* greater than */
+		sign = ">";
+		ok = val > border;
+		break;
+	case 0b11:
+		/* greater or equal */
+		sign = ">=";
+		ok = val >= border;
+		break;
+	}
+
+	if (unlikely(!ok)) {
+		announce_fail(file, line);
+		utest_print_yellow("expected ");
+		print_int(val);
+		utest_print_blue(" %s ", sign);
+		print_int(border);
+		utest_print_yellow("\n");
+		assert_failed();
+	}
+}
+
 void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line)
 {
 	if (unlikely(eq && exp != real)) {
