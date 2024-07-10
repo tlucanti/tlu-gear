@@ -5,6 +5,7 @@
 #include <container/cvector.h>
 #include <core/compiler.h>
 #include <core/defs.h>
+#include <core/panic.h>
 #include <libc/mem.h>
 
 #if CONFIG_CVECTOR_VALIDATION_LAYER

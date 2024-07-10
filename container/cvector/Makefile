@@ -1,7 +1,7 @@
 
 obj-libcvector	= cvector.o
 
-deps-libcvector	= $(target-libmem)
+deps-libcvector	= $(target-libmem) $(target-libconsole)
 
 target-libcvector	= build/libcvector.a
 

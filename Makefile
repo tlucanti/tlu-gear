@@ -9,9 +9,12 @@ CFLAGS += -I include
 include cflags.mk
 
 CFLAGS += -D CONFIG_DEBUG=$(CONFIG_DEBUG)
+
 CFLAGS += -D CONFIG_UTEST_FAIL_HALT=$(CONFIG_UTEST_FAIL_HALT)
 CFLAGS += -D CONFIG_UTEST_FIRST_FAIL=$(CONFIG_UTEST_FIRST_FAIL)
 CFLAGS += -D CONFIG_UTEST_COLOR=$(CONFIG_UTEST_COLOR)
+
+CFLAGS += -D CONFIG_CVECTOR_VALIDATION_LAYER=$(CONFIG_CVECTOR_VALIDATION_LAYER)
 
 ifeq ($(CONFIG_SANITIZE),1)
 CFLAGS += -fsanitize=address
@@ -100,6 +103,7 @@ endef
 
 
 include utest/Makefile
+include libc/io/Makefile
 
 include libc/native/mem/Makefile
 include libc/native/string/Makefile
