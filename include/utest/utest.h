@@ -10,7 +10,7 @@ void unittest(const char **argv);
 #define UTEST(name) __UTEST_IMPL(name, false)
 #define UTEST_SKIP(name) __UTEST_IMPL(name, true)
 
-#define ASSERT_FAIL() __assert_fail()
+#define ASSERT_FAIL(message) __assert_fail(message)
 
 #define ASSERT_EQUAL_BOOL(exp, real) __assert_bool(exp, real)
 #define ASSERT_FALSE(expr) __assert_bool(false, expr)

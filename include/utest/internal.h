@@ -30,7 +30,7 @@ struct __utest {
 									\
 	void __UTEST_FUNC_NAME(__name)(void)
 
-#define __assert_fail() __assert_fail_impl(__FILE__, __LINE__)
+#define __assert_fail(message) __assert_fail_impl(message, __FILE__, __LINE__)
 #define __assert_bool(exp, real) __assert_bool_impl(exp, real, __FILE__, __LINE__)
 #define __assert_equal(exp, real, eq) __assert_eq_impl(exp, real, eq, __FILE__, __LINE__)
 #define __assert_gt(border, val, greater, equal) __assert_gt_impl(border, val, greater, equal, __FILE__, __LINE__)
@@ -39,7 +39,7 @@ struct __utest {
 #define __assert_mem(exp, real, size, eq) __assert_mem_impl(exp, real, size, eq, __FILE__, __LINE__)
 #define __assert_sign(exp, real, eq) __assert_sign_impl(exp, real, eq, __FILE__, __LINE__)
 
-__cold __noret void __assert_fail_impl(const char *file, uint line);
+__cold __noret void __assert_fail_impl(const char *message, const char *file, uint line);
 void __assert_bool_impl(bool exp, bool real, const char *file, uint line);
 void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line);
 void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const char *file, uint line);

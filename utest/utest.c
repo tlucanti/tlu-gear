@@ -271,10 +271,10 @@ static void print_sign(int64 v)
 	}
 }
 
-void __assert_fail_impl(const char *file, uint line)
+void __assert_fail_impl(const char *message, const char *file, uint line)
 {
 	announce_fail(file, line);
-	utest_print_yellow("should not be here\n");
+	utest_print_yellow("%s\n", message);
 	assert_failed();
 }
 
