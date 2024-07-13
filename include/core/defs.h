@@ -31,5 +31,8 @@
 #define container_of(ptr, type, member) \
         ((type *)((uint64)(const void *)(ptr) - offsetof(type, member)))
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
+#define PTR_ERR(ptr) ((ptr) < (void *)4096ul)
+
 #endif /* CORE_DEFS_H */
 

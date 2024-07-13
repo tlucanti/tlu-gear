@@ -82,7 +82,5 @@
 # define __no_sanitize_address __attribute__((__no_sanitize_address__))
 #endif
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
-
 #endif /* CORE_COMPILER_H */
 
