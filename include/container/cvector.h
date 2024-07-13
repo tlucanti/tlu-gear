@@ -5,12 +5,18 @@
 #include <core/types.h>
 #include <core/compiler.h>
 
-enum cvecor_create_flags {
+typedef enum __cvector_create_flags {
 	CVECTOR_CREATE_DEFAULT		= 0,
 	CVECTOR_CREATE_EXACT_SIZE	= 1,
 	CVECTOR_CREATE_ZERO		= 2,
 	CVECTOR_CREATE_ONLY_PREALLOC	= 4,
-};
+} cvector_create_flags_t;
+
+typedef enum __cvector_copy_flags {
+	CVECTOR_COPY_DEFAULT		= 0,
+	CVECTOR_COPY_EXACT_SIZE		= 1,
+	CVECTOR_COPY_EMPTY		= 2,
+} cvector_copy_flags_t;
 
 // ====================================================================================================================
 void cvector_init(void);
@@ -20,7 +26,7 @@ void cvector_fini(void);
 #define cvector_create(type, size, flags) (type *)__cvector_create(sizeof(type), size, flags)
 void cvector_destroy(void *vector);
 
-#define cvector_copy(other, flags) (typeof(other))__cvector_copy(other, flags)
+#define cvector_copy(other, flags) (typeof(other))__cvector_copy(other, sizeof(*(other)), flags)
 #define cvector_create_from(flags, initializer_list)								\
 	({													\
 		typeof((initializer_list)[0]) *list = (initializer_list);					\
@@ -123,7 +129,9 @@ uint64 cvector_capacity(const void *vector);
 
 // ====================================================================================================================
 
-extern void *__cvector_create(uint type_size, uint64 size, uint flags);
+extern void *__cvector_create(uint type_size, uint64 size, cvector_create_flags_t flags);
+extern void *__cvector_copy(const void *vec, uint type_size, cvector_copy_flags_t flags);
+
 extern void *__cvector_create_from(uint flags, uint type_size, void *start, void *end);
 extern void *__cvector_at(void *vector, uint64 idx, void *ret);
 extern void *__cvector_insert(void **vptr, uint type_size, void *pos);

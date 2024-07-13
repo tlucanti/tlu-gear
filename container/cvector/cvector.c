@@ -19,6 +19,16 @@ uint64 allocation_grid_upper(uint64 size)
 }
 
 INTERNAL
+void set_magic(struct cvector *cvector)
+{
+#if CONFIG_CVECTOR_VALIDATION_LAYER
+	cvector->magic = CVECTOR_MAGIC;
+#else
+	(void)cvector;
+#endif
+}
+
+INTERNAL
 void check_magic(const struct cvector *cvector)
 {
 #if CONFIG_CVECTOR_VALIDATION_LAYER
@@ -46,7 +56,7 @@ void cvector_fini(void)
 {
 }
 
-void *__cvector_create(uint type_size, uint64 size, uint flags)
+void *__cvector_create(uint type_size, uint64 size, cvector_create_flags_t flags)
 {
 	struct cvector *cvector;
 	uint64 alloc;
@@ -58,17 +68,15 @@ void *__cvector_create(uint type_size, uint64 size, uint flags)
 
 
 	cvector = malloc(type_size * alloc + sizeof(struct cvector));
-	if (cvector == NULL)
+	if (unlikely(cvector == NULL))
 		return NULL;
 
+	set_magic(cvector);
 	cvector->allocated = alloc;
 	if (flags & CVECTOR_CREATE_ONLY_PREALLOC)
 		cvector->size = 0;
 	else
 		cvector->size = size;
-#if CONFIG_CVECTOR_VALIDATION_LAYER
-	cvector->magic = CVECTOR_MAGIC;
-#endif
 
 	if (flags & CVECTOR_CREATE_ZERO)
 		tlu_memzero(cvector->data, type_size * cvector->size);
@@ -82,6 +90,34 @@ void cvector_destroy(void *ptr)
 
 	check_magic(cvector);
 	free(cvector);
+}
+
+void *__cvector_copy(const void *pother, uint type_size, cvector_copy_flags_t flags)
+{
+	struct cvector *other = cvector_entry(pother);
+	struct cvector *copy;
+	uint64 alloc;
+	uint64 size;
+
+	check_magic(other);
+	alloc = other->allocated;
+	size = other->size;
+
+	if (flags & CVECTOR_COPY_EXACT_SIZE)
+		alloc = size;
+	if (flags & CVECTOR_COPY_EMPTY)
+		size = 0;
+
+	copy = malloc(type_size * alloc + sizeof(struct cvector));
+	if (unlikely(copy == NULL))
+		return NULL;
+
+	set_magic(copy);
+	copy->allocated = alloc;
+	copy->size = size;
+
+	tlu_memcpy(copy->data, other->data, size * type_size);
+	return copy->data;
 }
 
 void *__cvector_at(void *ptr, uint64 idx, void *ret)

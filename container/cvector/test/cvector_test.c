@@ -141,6 +141,63 @@ UTEST(cvector_create_ext4)
 	cvector_destroy(v);
 }
 
+UTEST(cvector_copy)
+{
+	uint16 *v = cvector_create(uint16, 5, 0);
+	uint16 *c = cvector_copy(v, 0);
+
+	struct cvector *cv = cvector_entry(v);
+	struct cvector *cc = cvector_entry(c);
+
+	ASSERT_EQUAL(cv->size, cc->size);
+	ASSERT_EQUAL(cv->allocated, cc->allocated);
+	ASSERT_ZERO(memcmp(c, v, cv->size * sizeof(uint16)));
+
+	cvector_destroy(v);
+	cvector_destroy(c);
+}
+
+UTEST(cvector_copy_ext)
+{
+	int32 *v = cvector_create(int32, 13, 0);
+	struct cvector *cv = cvector_entry(v);
+
+	for (uint i = 0; i < 13; i++) {
+		v[i] = i * 10 + i;
+	}
+
+	{
+		int32 *c1 = cvector_copy(v, CVECTOR_COPY_EMPTY);
+		struct cvector *cc1 = cvector_entry(c1);
+
+		ASSERT_EQUAL(0, cc1->size);
+		ASSERT_EQUAL(cv->allocated, cc1->allocated);
+
+		cvector_destroy(c1);
+	}
+	{
+		int32 *c2 = cvector_copy(v, CVECTOR_COPY_EXACT_SIZE);
+		struct cvector *cc2 = cvector_entry(c2);
+
+		ASSERT_EQUAL(cv->size, cc2->size);
+		ASSERT_EQUAL(cv->size, cc2->allocated);
+		ASSERT_ZERO(memcmp(c2, v, cv->size * sizeof(int32)));
+
+		cvector_destroy(c2);
+	}
+	{
+		int32 *c3 = cvector_copy(v, CVECTOR_COPY_EXACT_SIZE | CVECTOR_COPY_EMPTY);
+		struct cvector *cc3 = cvector_entry(c3);
+
+		ASSERT_EQUAL(0, cc3->size);
+		ASSERT_EQUAL(cv->size, cc3->allocated);
+
+		cvector_destroy(c3);
+	}
+	cvector_destroy(v);
+}
+
+
 UTEST(cvector_at)
 {
 	int *v = cvector_create(int, 3, 0);
