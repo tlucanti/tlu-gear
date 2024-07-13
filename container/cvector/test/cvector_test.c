@@ -39,7 +39,7 @@ void cvector_panic(const char *message)
 UTEST(cvector_create)
 {
 	const uint n = 31;
-	int8 *v = cvector_create(int8, n);
+	int8 *v = cvector_create(int8, n, 0);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL_PTR(v, cv->data);
@@ -57,7 +57,7 @@ UTEST(cvector_create)
 UTEST(cvector_create2)
 {
 	const uint n = 10;
-	uint64 *v = cvector_create(uint64, n);
+	uint64 *v = cvector_create(uint64, n, 0);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL_PTR(v, cv->data);
@@ -75,7 +75,7 @@ UTEST(cvector_create2)
 UTEST(cvector_create_ext)
 {
 	const uint n = 10;
-	char **v = cvector_create_ext(char *, n, CVECTOR_CREATE_ZERO, malloc);
+	char **v = cvector_create(char *, n, CVECTOR_CREATE_ZERO);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL_PTR(v, cv->data);
@@ -87,7 +87,7 @@ UTEST(cvector_create_ext)
 		ASSERT_NULL(v[i]);
 	}
 
-	cvector_destroy_ext(v, 0, free);
+	cvector_destroy(v);
 }
 
 struct test_struct {
@@ -99,7 +99,7 @@ struct test_struct {
 UTEST(cvector_create_ext2)
 {
 	const uint n = 7;
-	struct test_struct *v = cvector_create_ext(struct test_struct, n, CVECTOR_CREATE_EXACT_SIZE, NULL);
+	struct test_struct *v = cvector_create(struct test_struct, n, CVECTOR_CREATE_EXACT_SIZE);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL_PTR(v, cv->data);
@@ -111,13 +111,13 @@ UTEST(cvector_create_ext2)
 		touch_memory(v[i]);
 	}
 
-	cvector_destroy_ext(v, 0, NULL);
+	cvector_destroy(v);
 }
 
 UTEST(cvector_create_ext3)
 {
 	const uint n = 10;
-	double *v = cvector_create_ext(double, n, CVECTOR_CREATE_ONLY_PREALLOC, NULL);
+	double *v = cvector_create(double, n, CVECTOR_CREATE_ONLY_PREALLOC);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL(0, cv->size);
@@ -132,7 +132,7 @@ UTEST(cvector_create_ext3)
 
 UTEST(cvector_create_ext4)
 {
-	int16 *v = cvector_create_ext(int16, 0, CVECTOR_CREATE_ONLY_PREALLOC | CVECTOR_CREATE_EXACT_SIZE, NULL);
+	int16 *v = cvector_create(int16, 0, CVECTOR_CREATE_ONLY_PREALLOC | CVECTOR_CREATE_EXACT_SIZE);
 	struct cvector *cv = cvector_entry(v);
 
 	ASSERT_EQUAL(0, cv->size);
@@ -143,7 +143,7 @@ UTEST(cvector_create_ext4)
 
 UTEST(cvector_at)
 {
-	int *v = cvector_create(int, 3);
+	int *v = cvector_create(int, 3, 0);
 
 	v[0] = 1;
 	v[1] = 2;

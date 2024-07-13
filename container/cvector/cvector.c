@@ -46,15 +46,10 @@ void cvector_fini(void)
 {
 }
 
-void *__cvector_create(uint type_size, uint64 size, uint flags,
-		       allocator_t allocator)
+void *__cvector_create(uint type_size, uint64 size, uint flags)
 {
 	struct cvector *cvector;
 	uint64 alloc;
-
-	if (allocator == NULL)
-		allocator = malloc;
-
 
 	if (flags & CVECTOR_CREATE_EXACT_SIZE)
 		alloc = size;
@@ -62,7 +57,7 @@ void *__cvector_create(uint type_size, uint64 size, uint flags,
 		alloc = allocation_grid_upper(size);
 
 
-	cvector = allocator(type_size * alloc + sizeof(struct cvector));
+	cvector = malloc(type_size * alloc + sizeof(struct cvector));
 	if (cvector == NULL)
 		return NULL;
 
@@ -81,16 +76,12 @@ void *__cvector_create(uint type_size, uint64 size, uint flags,
 	return cvector->data;
 }
 
-void cvector_destroy_ext(void *ptr, uint flags, destructor_t destructor)
+void cvector_destroy(void *ptr)
 {
 	struct cvector *cvector = cvector_entry(ptr);
-	(void)flags;
 
 	check_magic(cvector);
-
-	if (destructor == NULL)
-		destructor = free;
-	destructor(cvector);
+	free(cvector);
 }
 
 void *__cvector_at(void *ptr, uint64 idx, void *ret)

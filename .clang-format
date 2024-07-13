@@ -65,6 +65,7 @@ ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
 
 ForEachMacros:
+  - 'cvector_for_each'
 
 IncludeBlocks: Preserve
 IncludeCategories:

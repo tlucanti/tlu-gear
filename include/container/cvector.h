@@ -3,31 +3,133 @@
 #define CONTAINER_CVECTOR_H
 
 #include <core/types.h>
-
-typedef void *(* allocator_t)(uint64 size);
-typedef void (* destructor_t)(void *);
+#include <core/compiler.h>
 
 enum cvecor_create_flags {
-	CVECTOR_CREATE_EXACT_SIZE = 1,
-	CVECTOR_CREATE_ZERO = 2,
-	CVECTOR_CREATE_ONLY_PREALLOC = 4,
+	CVECTOR_CREATE_DEFAULT		= 0,
+	CVECTOR_CREATE_EXACT_SIZE	= 1,
+	CVECTOR_CREATE_ZERO		= 2,
+	CVECTOR_CREATE_ONLY_PREALLOC	= 4,
 };
 
+// ====================================================================================================================
 void cvector_init(void);
 void cvector_fini(void);
 
-#define cvector_create(type, size) cvector_create_ext(type, size, 0, NULL)
-#define cvector_create_ext(type, size, flags, allocator) \
-	(type *)__cvector_create(sizeof(type), size, flags, allocator);
+// ====================================================================================================================
+#define cvector_create(type, size, flags) (type *)__cvector_create(sizeof(type), size, flags)
+void cvector_destroy(void *vector);
 
-#define cvector_destroy(cvector) cvector_destroy_ext(cvector, 0, NULL)
-void cvector_destroy_ext(void *cvector, uint flags, destructor_t destructor);
+#define cvector_copy(other, flags) (typeof(other))__cvector_copy(other, flags)
+#define cvector_create_from(flags, initializer_list)								\
+	({													\
+		typeof((initializer_list)[0]) *list = (initializer_list);					\
+		uint64 size = ARRAY_SIZE(initializer_list);							\
+		__cvector_create_from(flags, sizeof((initializer_list)[0], list, list + size);			\
+	})
 
-#define cvector_at(cvector, idx) (*(typeof(cvector))__cvector_at(cvector, idx, (cvector) + (idx)))
+// ====================================================================================================================
+#define cvector_at(vector, idx) (*(typeof(vector))__cvector_at(vector, idx, (vector) + (idx)))
+#define cvector_rat(vector, idx) cvector_at(vector, cvector_size(vector) - (idx) - 1)
+#define cvector_front(vector) cvector_at(vector, 0)
+#define cvector_back(vector) cvector_rat(vector, 0)
 
-extern void *__cvector_create(uint type_size, uint64 size, uint flags,
-			      allocator_t allocator);
-extern void *__cvector_at(void *cvector, uint64 idx, void *ret);
+// ====================================================================================================================
+bool cvector_empty(const void *vector);
+uint64 cvector_size(const void *vector);
+uint64 cvector_capacity(const void *vector);
+
+#define cvector_find(vector, value)					\
+	({								\
+		typeof(*vector) *res = NULL;				\
+		typeof(*vector) *iter;					\
+		const typeof(value) _value = value;			\
+		cvector_for_each(vector, iter) {			\
+			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+				res = iter;				\
+				break;					\
+			}						\
+		}							\
+		res;							\
+	})
+
+#define cvector_rfind(vector, value)					\
+	({								\
+		typeof(*vector) *res = NULL;				\
+		typeof(*vector) *iter;					\
+		const typeof(value) _value = value;			\
+		cvector_for_each_reverse(vector, iter)			\
+		{							\
+			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+				res = iter;				\
+				break;					\
+			}						\
+		}							\
+		res;							\
+	})
+
+#define cvector_contains(vector, value) (cvector_find(vector, value) != NULL)
+
+#define cvector_count(vector, value)					\
+	({								\
+		uint64 res = 0;						\
+		typeof(*vector) *iter;					\
+		const typeof(value) _value = value;			\
+		cvector_for_each(vector, iter) {			\
+			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+				res++;					\
+			}						\
+		}							\
+		res;							\
+	})
+
+// ====================================================================================================================
+#define cvector_insert(vptr, iter, value)						\
+	({										\
+		__cvector_same_type(*vptr, iter);					\
+		typeof(iter) ret = __cvector_insert(vptr, sizeof(*(iter)), iter);	\
+		if (!PTR_ERR(ret)) {							\
+			*ret = (value);							\
+		}									\
+		ret;									\
+	})
+#define cvector_push_front(vptr, value) cvector_insert(vptr, cvector_begin(*(vptr)), value)
+#define cvector_push_back(vptr, value) cvector_insert(vptr, cvector_end(*(vptr)), value)
+
+#define cvector_erase(vptr, iter)						\
+	({									\
+		__cvector_same_type(*vptr, iter);				\
+		(typeof(iter))__cvector_erase(vptr, sizeof(*iter), iter);	\
+	})
+#define cvector_pop_front(vptr) cvector_erase(vptr, cvector_begin(*(vptr)))
+#define cvector_pop_back(vptr) cvector_erase(vptr, cvector_rbegin(*(vptr)))
+
+#define cvector_extend(vptr, vector)					\
+	({								\
+		__cvector_same_type(*vptr, vector);			\
+		__cvector_extend(vptr, vector, sizeof(*vector));	\
+	})
+
+// ====================================================================================================================
+#define cvector_begin(vptr) (vptr)
+#define cvector_end(vptr) ((vptr) + cvector_size(vptr) - 1)
+#define cvector_cbegin(vptr) (const typeof(*vptr) *)cvector_begin(vptr)
+#define cvector_cend(vptr) (const typeof(*vptr) *)cvector_end(vptr)
+
+#define cvector_rbegin(vptr) ((vptr) + cvector_size(vptr))
+#define cvector_rend(vptr) ((vptr) - 1)
+#define cvector_crbegin(vptr) (const typeof(*vptr) *)cvector_rbegin(vptr)
+#define cvector_crend(vptr) (const typeof(*vptr) *)cvector_rend(vptr)
+
+// ====================================================================================================================
+
+extern void *__cvector_create(uint type_size, uint64 size, uint flags);
+extern void *__cvector_create_from(uint flags, uint type_size, void *start, void *end);
+extern void *__cvector_at(void *vector, uint64 idx, void *ret);
+extern void *__cvector_insert(void **vptr, uint type_size, void *pos);
+extern void *__cvector_erase(void **vptr, uint type_size, void *pos);
+
+#define __cvector_same_type(ptr1, ptr2) (void)((ptr1) == (ptr2))
 
 #endif /* CONTAINER_CVECTOR_H */
 
