@@ -88,24 +88,24 @@ flags = {
 };
 
 // int *a = cvector_create_from(flags, (int[]){1, 2, 3, 4, 5});
-type *cvector_create_from_list(flags, {initializer_list})
+type *cvector_create_from_list(flags, {initializer_list}) /* skipped */
 flags = {
 	CVECTOR_CREATE_FROM_EXACT_SIZE
 };
-type *cvector_create_from(flags, type *begin, type *end) /* ? */
+type *cvector_create_from(flags, type *begin, type *end) /* done */
 
 // =============================================================================
 type = cvector[index];
 
-type cvector_at(const type *vector, idx);
-type cvector_rat(const type *vector, idx)
-type cvector_front(const type *vector);
-type cvector_back(const type *vector);
+type cvector_at(const type *vector, idx); /* done */
+type cvector_rat(const type *vector, idx) /* done */
+type cvector_front(const type *vector); /* done */
+type cvector_back(const type *vector); /* done */
 
 // =============================================================================
-bool cvector_empty(const type *vector);
-uint64 cvector_size(const type *vector);
-uint64 cvector_capacity(const type *vector);
+bool cvector_empty(const type *vector); /* done */
+uint64 cvector_size(const type *vector); /* done */
+uint64 cvector_capacity(const type *vector); /* done */
 
 type *cvector_find(const type *vector, type val);
 type *cvector_rfind(const type *vector, type val);

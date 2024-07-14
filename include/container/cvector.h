@@ -37,11 +37,11 @@ void cvector_destroy(void *vector);
 		__cvector_same_type(begin, end);						\
 		(typeof(*(begin)) *)__cvector_create_from(begin, end, sizeof(*(begin)), flags);	\
 	})
-#define cvector_create_from_list(flags, initializer_list)							\
-	({													\
-		typeof((initializer_list)[0]) *list = (initializer_list);					\
-		uint64 size = ARRAY_SIZE(initializer_list);							\
-		(typeof(list))__cvector_create_from(list, list + size, sizeof((initializer_list)[0], flags);	\
+#define cvector_create_from_list(flags, initializer_list)					\
+	({											\
+		typeof((initializer_list)) *list = (initializer_list);				\
+		uint64 size = ARRAY_SIZE(initializer_list);					\
+		(typeof(list))__cvector_create_from(list, list + size, sizeof(*list), flags);	\
 	})
 
 // ====================================================================================================================
@@ -51,7 +51,7 @@ void cvector_destroy(void *vector);
 #define cvector_back(vector) cvector_rat(vector, 0)
 
 // ====================================================================================================================
-bool cvector_empty(const void *vector);
+#define cvector_empty(vector) (cvector_size(vector) == 0)
 uint64 cvector_size(const void *vector);
 uint64 cvector_capacity(const void *vector);
 

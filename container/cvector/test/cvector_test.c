@@ -219,6 +219,14 @@ UTEST(cvector_create_from)
 	cvector_destroy(v);
 }
 
+UTEST(cvector_create_from2)
+{
+	const void *begin = (const void *)200ul;
+	const void *end = (const void *)100ul;
+
+	ASSERT_PANIC(cvector_create_from(begin, end, 0));
+}
+
 UTEST(cvector_create_from_ext)
 {
 	const uint n = 9;
@@ -240,6 +248,52 @@ UTEST(cvector_create_from_ext)
 	cvector_destroy(v);
 }
 
+UTEST(cvector_size)
+{
+	unsigned char *v1 = cvector_create(unsigned char, 0, 0);
+	unsigned char *v2 = cvector_create(unsigned char, 4, 0);
+	unsigned char *v3 = cvector_create(unsigned char, 10, CVECTOR_CREATE_ONLY_PREALLOC);
+
+	ASSERT_EQUAL(0, cvector_size(v1));
+	ASSERT_EQUAL(4, cvector_size(v2));
+	ASSERT_EQUAL(0, cvector_size(v3));
+
+	cvector_destroy(v1);
+	cvector_destroy(v2);
+	cvector_destroy(v3);
+}
+
+UTEST(cvector_empty)
+{
+	char *v1 = cvector_create(char, 0, 0);
+	char *v2 = cvector_create(char, 4, 0);
+	char *v3 = cvector_create(char, 10, CVECTOR_CREATE_ONLY_PREALLOC);
+
+	ASSERT_TRUE(cvector_empty(v1));
+	ASSERT_FALSE(cvector_empty(v2));
+	ASSERT_TRUE(cvector_empty(v3));
+
+	cvector_destroy(v1);
+	cvector_destroy(v2);
+	cvector_destroy(v3);
+}
+
+
+UTEST(cvector_capacity)
+{
+	unsigned char *v1 = cvector_create(unsigned char, 0, 0);
+	unsigned char *v2 = cvector_create(unsigned char, 4, 0);
+	unsigned char *v3 = cvector_create(unsigned char, 10, CVECTOR_CREATE_EXACT_SIZE);
+
+	ASSERT_GREATER_EQUAL(0, cvector_capacity(v1));
+	ASSERT_GREATER_EQUAL(4, cvector_capacity(v2));
+	ASSERT_EQUAL(10, cvector_capacity(v3));
+
+	cvector_destroy(v1);
+	cvector_destroy(v2);
+	cvector_destroy(v3);
+}
+
 UTEST(cvector_at)
 {
 	int *v = cvector_create(int, 3, 0);
@@ -255,7 +309,69 @@ UTEST(cvector_at)
 	ASSERT_PANIC(cvector_at(v, 3));
 	ASSERT_PANIC(cvector_at(v, -1));
 
+	cvector_at(v, 1) = 123;
+	ASSERT_EQUAL(123, cvector_at(v, 1));
+
 	cvector_destroy(v);
+}
+
+UTEST(cvector_rat)
+{
+	int *v = cvector_create(int, 3, 0);
+
+	v[0] = 1;
+	v[1] = 2;
+	v[2] = 3;
+
+	ASSERT_EQUAL(3, cvector_rat(v, 0));
+	ASSERT_EQUAL(2, cvector_rat(v, 1));
+	ASSERT_EQUAL(1, cvector_rat(v, 2));
+
+	ASSERT_PANIC(cvector_rat(v, 3));
+	ASSERT_PANIC(cvector_rat(v, -1));
+
+	cvector_rat(v, 1) = 123;
+	ASSERT_EQUAL(123, cvector_rat(v, 1));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_front)
+{
+	int *v1 = cvector_create(int, 0, 0);
+	int *v2 = cvector_create(int, 3, 0);
+
+	v2[0] = 1;
+	v2[1] = 2;
+	v2[3] = 3;
+
+	ASSERT_EQUAL(1, cvector_front(v2));
+	ASSERT_PANIC(cvector_front(v1));
+
+	cvector_front(v2) = 321;
+	ASSERT_EQUAL(321, cvector_front(v2));
+
+	cvector_destroy(v1);
+	cvector_destroy(v2);
+}
+
+UTEST(cvector_back)
+{
+	int *v1 = cvector_create(int, 0, 0);
+	int *v2 = cvector_create(int, 3, 0);
+
+	v2[0] = 1;
+	v2[1] = 2;
+	v2[2] = 3;
+
+	ASSERT_EQUAL(3, cvector_back(v2));
+	ASSERT_PANIC(cvector_front(v1));
+
+	cvector_back(v2) = 321;
+	ASSERT_EQUAL(321, cvector_back(v2));
+
+	cvector_destroy(v1);
+	cvector_destroy(v2);
 }
 
 int main(int argc, const char **argv)

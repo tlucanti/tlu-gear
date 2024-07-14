@@ -155,3 +155,19 @@ void *__cvector_at(void *ptr, uint64 idx, void *ret)
 	return ret;
 }
 
+uint64 cvector_size(const void *ptr)
+{
+	const struct cvector *cvector = cvector_entry(ptr);
+
+	check_magic(cvector);
+	return cvector->size;
+}
+
+uint64 cvector_capacity(const void *ptr)
+{
+	const struct cvector *cvector = cvector_entry(ptr);
+
+	check_magic(cvector);
+	return cvector->allocated;
+}
+
