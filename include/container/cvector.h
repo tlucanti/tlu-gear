@@ -5,18 +5,23 @@
 #include <core/types.h>
 #include <core/compiler.h>
 
-typedef enum __cvector_create_flags {
+typedef enum {
 	CVECTOR_CREATE_DEFAULT		= 0,
 	CVECTOR_CREATE_EXACT_SIZE	= 1,
 	CVECTOR_CREATE_ZERO		= 2,
 	CVECTOR_CREATE_ONLY_PREALLOC	= 4,
 } cvector_create_flags_t;
 
-typedef enum __cvector_copy_flags {
+typedef enum {
 	CVECTOR_COPY_DEFAULT		= 0,
 	CVECTOR_COPY_EXACT_SIZE		= 1,
-	CVECTOR_COPY_EMPTY		= 2,
+	CVECTOR_COPY_EMPTY		= 8,
 } cvector_copy_flags_t;
+
+typedef enum {
+	CVECTOR_CREATE_FROM_DEFAULT	= 0,
+	CVECTOR_CREATE_FROM_EXACT_SIZE	= 1,
+} cvector_create_from_flags_t;
 
 // ====================================================================================================================
 void cvector_init(void);
@@ -27,11 +32,16 @@ void cvector_fini(void);
 void cvector_destroy(void *vector);
 
 #define cvector_copy(other, flags) (typeof(other))__cvector_copy(other, sizeof(*(other)), flags)
-#define cvector_create_from(flags, initializer_list)								\
+#define cvector_create_from(begin, end, flags)							\
+	({											\
+		__cvector_same_type(begin, end);						\
+		(typeof(*(begin)) *)__cvector_create_from(begin, end, sizeof(*(begin)), flags);	\
+	})
+#define cvector_create_from_list(flags, initializer_list)							\
 	({													\
 		typeof((initializer_list)[0]) *list = (initializer_list);					\
 		uint64 size = ARRAY_SIZE(initializer_list);							\
-		__cvector_create_from(flags, sizeof((initializer_list)[0], list, list + size);			\
+		(typeof(list))__cvector_create_from(list, list + size, sizeof((initializer_list)[0], flags);	\
 	})
 
 // ====================================================================================================================
@@ -131,8 +141,8 @@ uint64 cvector_capacity(const void *vector);
 
 extern void *__cvector_create(uint type_size, uint64 size, cvector_create_flags_t flags);
 extern void *__cvector_copy(const void *vec, uint type_size, cvector_copy_flags_t flags);
+extern void *__cvector_create_from(const void *begin, const void *end, uint type_size, cvector_create_from_flags_t flags);
 
-extern void *__cvector_create_from(uint flags, uint type_size, void *start, void *end);
 extern void *__cvector_at(void *vector, uint64 idx, void *ret);
 extern void *__cvector_insert(void **vptr, uint type_size, void *pos);
 extern void *__cvector_erase(void **vptr, uint type_size, void *pos);

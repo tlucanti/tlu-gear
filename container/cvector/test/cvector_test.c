@@ -144,10 +144,18 @@ UTEST(cvector_create_ext4)
 UTEST(cvector_copy)
 {
 	uint16 *v = cvector_create(uint16, 5, 0);
-	uint16 *c = cvector_copy(v, 0);
+	uint16 *c;
 
-	struct cvector *cv = cvector_entry(v);
-	struct cvector *cc = cvector_entry(c);
+	struct cvector *cv;
+	struct cvector *cc;
+
+	for (uint i = 0; i < 5; i++) {
+		v[i] = i;
+	}
+
+	c = cvector_copy(v, 0);
+	cv = cvector_entry(v);
+	cc = cvector_entry(c);
 
 	ASSERT_EQUAL(cv->size, cc->size);
 	ASSERT_EQUAL(cv->allocated, cc->allocated);
@@ -197,6 +205,40 @@ UTEST(cvector_copy_ext)
 	cvector_destroy(v);
 }
 
+UTEST(cvector_create_from)
+{
+	int64 init[] = {1, 2, 3, 4, 5};
+	const uint n = ARRAY_SIZE(init);
+	int64 *v = cvector_create_from(init, init + n, 0);
+	struct cvector *cv = cvector_entry(v);
+
+	ASSERT_EQUAL(n, cv->size);
+	ASSERT_GREATER_EQUAL(n, cv->allocated);
+	ASSERT_ZERO(memcmp(init, v, sizeof(int64) * n));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_create_from_ext)
+{
+	const uint n = 9;
+	int8 *c = cvector_create(int8, n, 0);
+	int8 *v;
+	struct cvector *cv;
+
+	for (uint i = 0; i < n; i++) {
+		c[i] = i * 10 + i;
+	}
+	v = cvector_create_from(c, c + n, CVECTOR_CREATE_FROM_EXACT_SIZE);
+	cv = cvector_entry(v);
+
+	ASSERT_EQUAL(n, cv->size);
+	ASSERT_EQUAL(n, cv->allocated);
+	ASSERT_ZERO(memcmp(c, v, sizeof(int8) * n));
+
+	cvector_destroy(c);
+	cvector_destroy(v);
+}
 
 UTEST(cvector_at)
 {
@@ -212,6 +254,8 @@ UTEST(cvector_at)
 
 	ASSERT_PANIC(cvector_at(v, 3));
 	ASSERT_PANIC(cvector_at(v, -1));
+
+	cvector_destroy(v);
 }
 
 int main(int argc, const char **argv)

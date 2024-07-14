@@ -82,16 +82,17 @@ flags = {
 
 void cvector_destroy(type *vector); /* done */
 
-type *cvector_copy(const type *vector, flags)
+type *cvector_copy(const type *vector, flags) /* done */
 flags = {
 	CVECTOR_COPY_EXACT_SIZE
 };
 
 // int *a = cvector_create_from(flags, (int[]){1, 2, 3, 4, 5});
-type *cvector_create_from(flags, {initializer_list})
+type *cvector_create_from_list(flags, {initializer_list})
 flags = {
 	CVECTOR_CREATE_FROM_EXACT_SIZE
 };
+type *cvector_create_from(flags, type *begin, type *end) /* ? */
 
 // =============================================================================
 type = cvector[index];

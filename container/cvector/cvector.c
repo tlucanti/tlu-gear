@@ -120,6 +120,32 @@ void *__cvector_copy(const void *pother, uint type_size, cvector_copy_flags_t fl
 	return copy->data;
 }
 
+void *__cvector_create_from(const void *begin, const void *end, uint type_size, cvector_create_from_flags_t flags)
+{
+	struct cvector *cvector;
+	uint64 alloc;
+	uint64 size = (end - begin) / type_size;
+
+	if (unlikely(begin > end))
+		cvector_panic("cvector: end iterator less than begin iterator");
+
+	if (flags & CVECTOR_CREATE_FROM_EXACT_SIZE)
+		alloc = size;
+	else
+		alloc = allocation_grid_upper(size);
+
+	cvector = malloc(type_size * alloc + sizeof(struct cvector));
+	if (unlikely(cvector == NULL))
+		return NULL;
+
+	set_magic(cvector);
+	cvector->allocated = alloc;
+	cvector->size = size;
+
+	tlu_memcpy(cvector->data, begin, size * type_size);
+	return cvector->data;
+}
+
 void *__cvector_at(void *ptr, uint64 idx, void *ret)
 {
 	struct cvector *cvector = cvector_entry(ptr);
