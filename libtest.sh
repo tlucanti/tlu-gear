@@ -12,8 +12,12 @@ elif [ $1 == 'libchar' ]; then
 	NAME=LIBCHAR
 	TARGET=./build/libchar_unittest.elf
 	DIR=libc/native/char
+elif [ $1 == 'cvector' ]; then
+	NAME=CVECTOR
+	TARGET=./build/cvector_unittest.elf
+	DIR=container/cvector
 else
-	echo 'evaliable tests: libmem, libstring'
+	echo 'evaliable tests: libmem, libstring, cvector'
 	exit 1
 fi
 
@@ -23,7 +27,7 @@ CONFIG_SILENT=1 make --environment-overrides clean
 CONFIG_SANITIZE=0 make --environment-overrides --quiet -j $TARGET
 echo
 echo VALGRIND $NAME
-valgrind $TARGET
+valgrind --leak-check=full -s $TARGET
 
 
 echo

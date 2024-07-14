@@ -19,7 +19,7 @@ static inline void __tlu_panic(const char *message, const char *file, uint line)
 __cold __noret
 static inline void __tlu_panic(const char *message, const char *file, uint line)
 {
-	tlu_console_puts("[PANIC]: ");
+	tlu_console_puts("[PANIC]\n");
 	tlu_console_puts(file);
 	tlu_console_putc(':');
 	tlu_console_putn(line);
