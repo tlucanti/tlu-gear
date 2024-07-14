@@ -42,10 +42,17 @@ UTEST(memccpy_seq)
 				uint8 c = utest_random_range('a', 'z');
 
 				utest_random_strings(real_src + offs, exp_src + offs, size);
-				tlu_memccpy(real_dst + offd, real_src + offs, c, size);
-				memccpy(exp_dst + offd, exp_src + offs, c, size);
+				const char *real = tlu_memccpy(real_dst + offd, real_src + offs, c, size);
+				const char *exp = memccpy(exp_dst + offd, exp_src + offs, c, size);
 
-				ASSERT_EQUAL_MEM(exp_dst + offd, real_dst + offd, size);
+				if (exp == NULL) {
+					ASSERT_NULL(real);
+					ASSERT_EQUAL_MEM(exp_dst + offd, real_dst + offd, size);
+				} else {
+					ASSERT_NOT_NULL(real);
+					ASSERT_EQUAL(exp - exp_dst - offd, real - real_dst - offd);
+					ASSERT_EQUAL_MEM(exp_dst + offd, real_dst + offd, exp - exp_dst - offd);
+				}
 
 				free(real_dst);
 				free(exp_dst);
