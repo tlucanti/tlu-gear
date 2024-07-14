@@ -82,5 +82,9 @@
 # define __no_sanitize_address __attribute__((__no_sanitize_address__))
 #endif
 
+#ifndef barrier
+# define barrier() __asm__ __volatile__("": : :"memory")
+#endif
+
 #endif /* CORE_COMPILER_H */
 
