@@ -107,7 +107,11 @@ bool cvector_empty(const type *vector); /* done */
 uint64 cvector_size(const type *vector); /* done */
 uint64 cvector_capacity(const type *vector); /* done */
 
-type *cvector_find(const type *vector, type val);
+// =============================================================================
+#define cvector_for_each(type *vector, type val) /* done */
+#define cvector_for_each_reverse(type *cvector, type val)
+
+type *cvector_find(const type *vector, type val); /* done */
 type *cvector_rfind(const type *vector, type val);
 
 bool cvector_contains(const type *vector, type val);
@@ -139,6 +143,4 @@ const type *cvector_crbegin(const type *vector);
 const type *cvector_crend(const type *vector);
 
 // =============================================================================
-#define cvector_for_each(type *vector, type val) /* */
-#define cvector_for_each_reverse(type *cvector, type val) /* */
 ```

@@ -20,6 +20,8 @@ static jmp_buf jump_buf;
 # define ASSERT_PANIC(expr) /* nothing */
 #endif
 
+#define direct_cmp(a, b) ((a) != (b))
+
 #define touch_memory(x)                   \
 	do {                              \
 		memset(&x, 0, sizeof(x)); \
@@ -34,6 +36,11 @@ void cvector_panic(const char *message)
 	} else {
 		ASSERT_FAIL(message);
 	}
+}
+
+static int64 int64_cmp(int64 a, int64 b)
+{
+	return a != b;
 }
 
 UTEST(cvector_create)
@@ -372,6 +379,79 @@ UTEST(cvector_back)
 
 	cvector_destroy(v1);
 	cvector_destroy(v2);
+}
+
+UTEST(cvector_for_each)
+{
+	const uint n = 15;
+	int16 *v = cvector_create(int16, n, 0);
+	int16 *iter;
+	uint i;
+
+	for (i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	i = 0;
+	cvector_for_each(v, iter) {
+		ASSERT_EQUAL(i + 1, *iter);
+		i++;
+	}
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_find)
+{
+	const uint n = 15;
+	int16 *v = cvector_create(int16, n, 0);
+	int16 *iter;
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	iter = cvector_find(v, (uint64)7, direct_cmp);
+	ASSERT_EQUAL_PTR(v + 6, iter);
+	ASSERT_EQUAL(7, *iter);
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_find2)
+{
+	const uint n = 15;
+	int64 *v = cvector_create(int64, n, 0);
+	int64 *iter;
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	iter = cvector_find(v, (uint8)7, int64_cmp);
+	ASSERT_EQUAL_PTR(v + 6, iter);
+	ASSERT_EQUAL(7, *iter);
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_find3)
+{
+	const char *items[] = { "1", "2", "3", "4", "5" };
+	char f[] = "3";
+	const char **v = cvector_create(const char *, 5, 0);
+	const char **iter;
+	uint i;
+
+	for (i = 0; i < 5; i++) {
+		v[i] = items[i];
+	}
+
+	iter = cvector_find(v, f, strcmp);
+	ASSERT_EQUAL_PTR(v + 2, iter);
+	ASSERT_ZERO(strcmp(*iter, "3"));
+
+	cvector_destroy(v);
 }
 
 int main(int argc, const char **argv)

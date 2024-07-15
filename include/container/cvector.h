@@ -51,17 +51,24 @@ void cvector_destroy(void *vector);
 #define cvector_back(vector) cvector_rat(vector, 0)
 
 // ====================================================================================================================
-#define cvector_empty(vector) (cvector_size(vector) == 0)
+bool cvector_empty(const void *vector);
 uint64 cvector_size(const void *vector);
 uint64 cvector_capacity(const void *vector);
 
-#define cvector_find(vector, value)					\
+// ====================================================================================================================
+#define cvector_for_each(vector, iter) \
+	for ((iter) = cvector_begin(vector); (iter) != cvector_end(vector); (iter)++)
+
+#define cvector_for_each_reverse(vector, iter) \
+	for ((iter) = cvector_rbegin(vector); (iter) != cvector_rend(vector); (iter)--)
+
+#define cvector_find(vector, value, cmp)				\
 	({								\
-		typeof(*vector) *res = NULL;				\
-		typeof(*vector) *iter;					\
-		const typeof(value) _value = value;			\
+		typeof(*(vector)) *res = NULL;				\
+		typeof(*(vector)) *iter;				\
+		typeof(*(vector)) _value = value;			\
 		cvector_for_each(vector, iter) {			\
-			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+			if (!cmp(*(iter), _value)) {			\
 				res = iter;				\
 				break;					\
 			}						\
@@ -69,14 +76,13 @@ uint64 cvector_capacity(const void *vector);
 		res;							\
 	})
 
-#define cvector_rfind(vector, value)					\
+#define cvector_rfind(vector, value, cmp)				\
 	({								\
-		typeof(*vector) *res = NULL;				\
-		typeof(*vector) *iter;					\
-		const typeof(value) _value = value;			\
-		cvector_for_each_reverse(vector, iter)			\
-		{							\
-			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+		typeof(*(vector)) *res = NULL;				\
+		typeof(*(vector)) *iter;				\
+		typeof(*(vector)) _value = value;			\
+		cvector_for_each_reverse(vector, iter) {		\
+			if (!cmp(*(iter), _value)) {			\
 				res = iter;				\
 				break;					\
 			}						\
@@ -84,16 +90,17 @@ uint64 cvector_capacity(const void *vector);
 		res;							\
 	})
 
-#define cvector_contains(vector, value) (cvector_find(vector, value) != NULL)
+#define cvector_contains(vector, value, cmp) (cvector_find(vector, value, cmp) != NULL)
 
-#define cvector_count(vector, value)					\
+#define cvector_count(vector, value, cmp)				\
 	({								\
-		uint64 res = 0;						\
-		typeof(*vector) *iter;					\
-		const typeof(value) _value = value;			\
+	 	uint64 res = 0;						\
+		typeof(*(vector)) *iter;				\
+		typeof(*(vector)) _value = value;			\
 		cvector_for_each(vector, iter) {			\
-			if (tlu_memeq(iter, &_value, sizeof(_value))) {	\
+			if (!cmp(*(iter), _value)) {			\
 				res++;					\
+				break;					\
 			}						\
 		}							\
 		res;							\
@@ -138,7 +145,6 @@ uint64 cvector_capacity(const void *vector);
 #define cvector_crend(vptr) (const typeof(*vptr) *)cvector_rend(vptr)
 
 // ====================================================================================================================
-
 extern void *__cvector_create(uint type_size, uint64 size, cvector_create_flags_t flags);
 extern void *__cvector_copy(const void *vec, uint type_size, cvector_copy_flags_t flags);
 extern void *__cvector_create_from(const void *begin, const void *end, uint type_size, cvector_create_from_flags_t flags);

@@ -155,6 +155,11 @@ void *__cvector_at(void *ptr, uint64 idx, void *ret)
 	return ret;
 }
 
+bool cvector_empty(const void *ptr)
+{
+	return cvector_size(ptr) == 0;
+}
+
 uint64 cvector_size(const void *ptr)
 {
 	const struct cvector *cvector = cvector_entry(ptr);
