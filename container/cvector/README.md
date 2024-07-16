@@ -109,13 +109,13 @@ uint64 cvector_capacity(const type *vector); /* done */
 
 // =============================================================================
 #define cvector_for_each(type *vector, type val) /* done */
-#define cvector_for_each_reverse(type *cvector, type val)
+#define cvector_for_each_reverse(type *cvector, type val) /* done */
 
 type *cvector_find(const type *vector, type val); /* done */
-type *cvector_rfind(const type *vector, type val);
+type *cvector_rfind(const type *vector, type val); /* done */
 
-bool cvector_contains(const type *vector, type val);
-uint64 cvector_count(const type *vector, type val);
+bool cvector_contains(const type *vector, type val); /* done */
+uint64 cvector_count(const type *vector, type val); /* done */
 
 // =============================================================================
 type *cvector_insert(type **vector, type *pos, type value);
@@ -132,13 +132,13 @@ cvector_reserve
 int cvector_extend(type **vector, type *other);
 
 // =============================================================================
-type *cvector_begin(const type *vector);
-type *cvector_end(const type *vector);
+type *cvector_begin(const type *vector); /* done */
+type *cvector_end(const type *vector); /* done */
 const type *cvector_cbegin(type *vector);
 const type *cvector_cend(type *vector);
 
-type *cvector_rbegin(const type *vector);
-type *cvector_rend(const type *vector);
+type *cvector_rbegin(const type *vector); /* begin */
+type *cvector_rend(const type *vector); /* begin */
 const type *cvector_crbegin(const type *vector);
 const type *cvector_crend(const type *vector);
 

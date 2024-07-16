@@ -100,11 +100,11 @@ uint64 cvector_capacity(const void *vector);
 		cvector_for_each(vector, iter) {			\
 			if (!cmp(*(iter), _value)) {			\
 				res++;					\
-				break;					\
 			}						\
 		}							\
 		res;							\
 	})
+
 
 // ====================================================================================================================
 #define cvector_insert(vptr, iter, value)						\
@@ -135,11 +135,11 @@ uint64 cvector_capacity(const void *vector);
 
 // ====================================================================================================================
 #define cvector_begin(vptr) (vptr)
-#define cvector_end(vptr) ((vptr) + cvector_size(vptr) - 1)
+#define cvector_end(vptr) ((vptr) + cvector_size(vptr))
 #define cvector_cbegin(vptr) (const typeof(*vptr) *)cvector_begin(vptr)
 #define cvector_cend(vptr) (const typeof(*vptr) *)cvector_end(vptr)
 
-#define cvector_rbegin(vptr) ((vptr) + cvector_size(vptr))
+#define cvector_rbegin(vptr) ((vptr) + cvector_size(vptr) - 1)
 #define cvector_rend(vptr) ((vptr) - 1)
 #define cvector_crbegin(vptr) (const typeof(*vptr) *)cvector_rbegin(vptr)
 #define cvector_crend(vptr) (const typeof(*vptr) *)cvector_rend(vptr)

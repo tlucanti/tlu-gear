@@ -303,7 +303,7 @@ UTEST(cvector_capacity)
 
 UTEST(cvector_at)
 {
-	int *v = cvector_create(int, 3, 0);
+	int *v = cvector_create(int, 3, CVECTOR_CREATE_EXACT_SIZE);
 
 	v[0] = 1;
 	v[1] = 2;
@@ -324,7 +324,7 @@ UTEST(cvector_at)
 
 UTEST(cvector_rat)
 {
-	int *v = cvector_create(int, 3, 0);
+	int *v = cvector_create(int, 3, CVECTOR_CREATE_EXACT_SIZE);
 
 	v[0] = 1;
 	v[1] = 2;
@@ -345,12 +345,12 @@ UTEST(cvector_rat)
 
 UTEST(cvector_front)
 {
-	int *v1 = cvector_create(int, 0, 0);
-	int *v2 = cvector_create(int, 3, 0);
+	int *v1 = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+	int *v2 = cvector_create(int, 3, CVECTOR_CREATE_EXACT_SIZE);
 
 	v2[0] = 1;
 	v2[1] = 2;
-	v2[3] = 3;
+	v2[2] = 3;
 
 	ASSERT_EQUAL(1, cvector_front(v2));
 	ASSERT_PANIC(cvector_front(v1));
@@ -364,8 +364,8 @@ UTEST(cvector_front)
 
 UTEST(cvector_back)
 {
-	int *v1 = cvector_create(int, 0, 0);
-	int *v2 = cvector_create(int, 3, 0);
+	int *v1 = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+	int *v2 = cvector_create(int, 3, CVECTOR_CREATE_EXACT_SIZE);
 
 	v2[0] = 1;
 	v2[1] = 2;
@@ -383,10 +383,10 @@ UTEST(cvector_back)
 
 UTEST(cvector_for_each)
 {
-	const uint n = 15;
-	int16 *v = cvector_create(int16, n, 0);
+	const int n = 15;
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
 	int16 *iter;
-	uint i;
+	int i;
 
 	for (i = 0; i < n; i++) {
 		v[i] = i + 1;
@@ -395,8 +395,58 @@ UTEST(cvector_for_each)
 	i = 0;
 	cvector_for_each(v, iter) {
 		ASSERT_EQUAL(i + 1, *iter);
+		ASSERT_LESS(15, i);
 		i++;
 	}
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_for_each2)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+	int *iter;
+	int i = 0;
+
+	cvector_for_each(v, iter) {
+		i++;
+	}
+	ASSERT_ZERO(i);
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_for_each_reverse)
+{
+	const int n = 15;
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
+	int16 *iter;
+	int i;
+
+	for (i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	i = 15;
+	cvector_for_each_reverse(v, iter) {
+		ASSERT_EQUAL(i, *iter);
+		ASSERT_GREATER_EQUAL(0, i);
+		i--;
+	}
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_for_each_reverse2)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+	int *iter;
+	int i = 0;
+
+	cvector_for_each_reverse(v, iter) {
+		i++;
+	}
+	ASSERT_ZERO(i);
 
 	cvector_destroy(v);
 }
@@ -404,16 +454,20 @@ UTEST(cvector_for_each)
 UTEST(cvector_find)
 {
 	const uint n = 15;
-	int16 *v = cvector_create(int16, n, 0);
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
 	int16 *iter;
 
 	for (uint i = 0; i < n; i++) {
 		v[i] = i + 1;
 	}
 
-	iter = cvector_find(v, (uint64)7, direct_cmp);
-	ASSERT_EQUAL_PTR(v + 6, iter);
-	ASSERT_EQUAL(7, *iter);
+	for (uint i = 1; i <= n; i++) {
+		iter = cvector_find(v, (uint64)i, direct_cmp);
+		ASSERT_EQUAL_PTR(v + i - 1, iter);
+		ASSERT_EQUAL(i, *iter);
+	}
+
+	ASSERT_NULL(cvector_find(v, (uint64)123, direct_cmp));
 
 	cvector_destroy(v);
 }
@@ -421,16 +475,20 @@ UTEST(cvector_find)
 UTEST(cvector_find2)
 {
 	const uint n = 15;
-	int64 *v = cvector_create(int64, n, 0);
+	int64 *v = cvector_create(int64, n, CVECTOR_CREATE_EXACT_SIZE);
 	int64 *iter;
 
 	for (uint i = 0; i < n; i++) {
 		v[i] = i + 1;
 	}
 
-	iter = cvector_find(v, (uint8)7, int64_cmp);
-	ASSERT_EQUAL_PTR(v + 6, iter);
-	ASSERT_EQUAL(7, *iter);
+	for (uint i = 1; i <= n; i++) {
+		iter = cvector_find(v, (uint8)i, int64_cmp);
+		ASSERT_EQUAL_PTR(v + i - 1, iter);
+		ASSERT_EQUAL(i, *iter);
+	}
+
+	ASSERT_NULL(cvector_find(v, (uint8)0, int64_cmp));
 
 	cvector_destroy(v);
 }
@@ -439,7 +497,7 @@ UTEST(cvector_find3)
 {
 	const char *items[] = { "1", "2", "3", "4", "5" };
 	char f[] = "3";
-	const char **v = cvector_create(const char *, 5, 0);
+	const char **v = cvector_create(const char *, 5, CVECTOR_CREATE_EXACT_SIZE);
 	const char **iter;
 	uint i;
 
@@ -450,6 +508,188 @@ UTEST(cvector_find3)
 	iter = cvector_find(v, f, strcmp);
 	ASSERT_EQUAL_PTR(v + 2, iter);
 	ASSERT_ZERO(strcmp(*iter, "3"));
+
+	ASSERT_NULL(cvector_find(v, "lol", strcmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_find4)
+{
+	char *v = cvector_create(char, 5, CVECTOR_CREATE_EXACT_SIZE);
+	char *iter;
+	memcpy(v, "12321", 5);
+
+	iter = cvector_find(v, '2', direct_cmp);
+	ASSERT_EQUAL_PTR(v + 1, iter);
+	ASSERT_EQUAL('2', *iter);
+
+	ASSERT_NULL(cvector_find(v, 'x', direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_rfind)
+{
+	const uint n = 15;
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
+	int16 *iter;
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	for (uint i = 1; i <= n; i++) {
+		iter = cvector_rfind(v, (uint64)i, direct_cmp);
+		ASSERT_EQUAL_PTR(v + i - 1, iter);
+		ASSERT_EQUAL(i, *iter);
+	}
+
+	ASSERT_NULL(cvector_rfind(v, (uint64)123, direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_rfind2)
+{
+	const uint n = 15;
+	int64 *v = cvector_create(int64, n, CVECTOR_CREATE_EXACT_SIZE);
+	int64 *iter;
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	for (uint i = 1; i <= n; i++) {
+		iter = cvector_rfind(v, (uint8)i, int64_cmp);
+		ASSERT_EQUAL_PTR(v + i - 1, iter);
+		ASSERT_EQUAL(i, *iter);
+	}
+
+	ASSERT_NULL(cvector_rfind(v, (uint8)0, int64_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_rfind3)
+{
+	const char *items[] = { "1", "2", "3", "4", "5" };
+	char f[] = "3";
+	const char **v = cvector_create(const char *, 5, CVECTOR_CREATE_EXACT_SIZE);
+	const char **iter;
+	uint i;
+
+	for (i = 0; i < 5; i++) {
+		v[i] = items[i];
+	}
+
+	iter = cvector_rfind(v, f, strcmp);
+	ASSERT_EQUAL_PTR(v + 2, iter);
+	ASSERT_ZERO(strcmp(*iter, "3"));
+
+	ASSERT_NULL(cvector_rfind(v, "lol", strcmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_rfind4)
+{
+	char *v = cvector_create(char, 5, CVECTOR_CREATE_EXACT_SIZE);
+	char *iter;
+	memcpy(v, "12321", 5);
+
+	iter = cvector_rfind(v, '2', direct_cmp);
+	ASSERT_EQUAL_PTR(v + 3, iter);
+	ASSERT_EQUAL('2', *iter);
+
+	ASSERT_NULL(cvector_rfind(v, 'x', direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_contains)
+{
+	const uint n = 15;
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	for (uint i = 1; i <= n; i++) {
+		ASSERT_TRUE(cvector_contains(v, i, direct_cmp));
+	}
+
+	ASSERT_FALSE(cvector_contains(v, 123, direct_cmp));
+	ASSERT_FALSE(cvector_contains(v, 0, direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_count)
+{
+	const uint n = 15;
+	int16 *v = cvector_create(int16, n, CVECTOR_CREATE_EXACT_SIZE);
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	for (uint i = 1; i <= n; i++) {
+		ASSERT_EQUAL(1, cvector_count(v, (uint64)i, direct_cmp));
+	}
+
+	ASSERT_ZERO(cvector_contains(v, (uint64)123, direct_cmp));
+	ASSERT_ZERO(cvector_contains(v, (uint64)0, direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_count2)
+{
+	const uint n = 15;
+	int64 *v = cvector_create(int64, n, CVECTOR_CREATE_EXACT_SIZE);
+
+	for (uint i = 0; i < n; i++) {
+		v[i] = i + 1;
+	}
+
+	for (uint i = 1; i <= n; i++) {
+		ASSERT_EQUAL(1, cvector_count(v, (uint8)i, int64_cmp));
+	}
+
+	ASSERT_EQUAL(0, cvector_count(v, (uint8)123, int64_cmp));
+	ASSERT_EQUAL(0, cvector_count(v, (uint8)0, int64_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_count3)
+{
+	const char *items[] = { "1", "2", "3", "4", "5" };
+	char f[] = "3";
+	const char **v = cvector_create(const char *, 5, CVECTOR_CREATE_EXACT_SIZE);
+	uint i;
+
+	for (i = 0; i < 5; i++) {
+		v[i] = items[i];
+	}
+
+	ASSERT_EQUAL(1, cvector_count(v, f, strcmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_count4)
+{
+	char *v = cvector_create(char, 5, CVECTOR_CREATE_EXACT_SIZE);
+	memcpy(v, "12321", 5);
+
+	ASSERT_EQUAL(0, cvector_count(v, '0', direct_cmp));
+	ASSERT_EQUAL(2, cvector_count(v, '1', direct_cmp));
+	ASSERT_EQUAL(2, cvector_count(v, '2', direct_cmp));
+	ASSERT_EQUAL(1, cvector_count(v, '3', direct_cmp));
+	ASSERT_EQUAL(0, cvector_count(v, '4', direct_cmp));
 
 	cvector_destroy(v);
 }
