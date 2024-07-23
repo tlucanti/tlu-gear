@@ -34,5 +34,14 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
 #define PTR_ERR(ptr) ((ptr) < (void *)4096ul)
 
+
+#define __VA_CLEAR(...)
+#define __VA_SAME(...) __VA_ARGS__
+#define __IF_EMPTY(...) __VA_SAME __VA_OPT__(()__VA_CLEAR)
+#define __IF_NOT_EMPTY(...) __VA_CLEAR __VA_OPT__(()__VA_SAME)
+
+#define ARG_OR(val, ...) __IF_EMPTY(__VA_ARGS__)(val) __VA_ARGS__
+#define ARG_OR_NULL(...) ARG_OR(0, __VA_ARGS__)
+
 #endif /* CORE_DEFS_H */
 

@@ -15,6 +15,14 @@
 #include <string.h>
 #include <time.h>
 
+#define UTEST_PRINT_VA(color, format)				\
+	do {							\
+		va_list __ap;					\
+		va_start(__ap, format);				\
+		__utest_print_color(color, format, __ap);	\
+		va_end(__ap);					\
+	} while (false)
+
 static struct __utest utest_init __UTEST_ATTR = { .name = NULL,
 						  .func = NULL,
 						  .magic = __UTEST_MAGIC,
@@ -28,6 +36,9 @@ static uint nr_skipped = 0;
 static uint nr_failed = 0;
 
 static void utest_fini(const char *color, bool abort);
+
+extern __printf(2, 0)
+int __utest_print_color(const char *color, const char *format, va_list ap);
 
 void utest_ok(void)
 {
@@ -167,7 +178,11 @@ static void suite_run(struct __utest *suite, const char *name, const char **keep
 	    SIG_ERR == signal(SIGBUS, SIG_DFL)) {
 		utest_panic("failed restore signal handlers");
 	}
-	utest_fini(ANSI_GREEN, false);
+
+	if (nr_failed > 0)
+		utest_fini(ANSI_RED, false);
+	else
+		utest_fini(ANSI_GREEN, false);
 }
 
 void unittest(const char **argv)
@@ -271,17 +286,29 @@ static void print_sign(int64 v)
 	}
 }
 
-void __assert_fail_impl(const char *message, const char *file, uint line)
+void __assert_fail_impl(const char *file, uint line, const char *format, ...)
 {
 	announce_fail(file, line);
-	utest_print_yellow("%s\n", message);
+	if (format != NULL) {
+		utest_print_yellow("reason: ");
+		UTEST_PRINT_VA(ANSI_YELLOW, format);
+		printf("\n");
+	} else {
+		utest_print_yellow("should not be there\n");
+	}
+
 	assert_failed();
 }
 
-void __assert_bool_impl(bool exp, bool real, const char *file, uint line)
+void __assert_bool_impl(bool exp, bool real, const char *file, uint line, const char *format, ...)
 {
 	if (unlikely(exp != real)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("expected ");
 		print_bool(exp);
 		utest_print_yellow(", got ");
@@ -294,10 +321,15 @@ void __assert_bool_impl(bool exp, bool real, const char *file, uint line)
 	assert_failed();
 }
 
-void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
+void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint line, const char *format, ...)
 {
 	if (unlikely(eq && exp != real)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("expected ");
 		print_int(exp);
 		utest_print_yellow(", got ");
@@ -305,6 +337,11 @@ void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint lin
 		printf("\n");
 	} else if (unlikely(!eq && exp == real)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("got ");
 		print_int(real);
 		utest_print_yellow(", but didnt expect\n");
@@ -315,7 +352,7 @@ void __assert_eq_impl(int64 exp, int64 real, bool eq, const char *file, uint lin
 	assert_failed();
 }
 
-void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const char *file, uint line)
+void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const char *file, uint line, const char *format, ...)
 {
 	const char *sign;
 	bool ok;
@@ -345,6 +382,11 @@ void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const c
 
 	if (unlikely(!ok)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("expected ");
 		print_int(val);
 		utest_print_blue(" %s ", sign);
@@ -354,10 +396,15 @@ void __assert_gt_impl(int64 border, int64 val, bool greater, bool equal, const c
 	}
 }
 
-void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line)
+void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *file, uint line, const char *format, ...)
 {
 	if (unlikely(eq && exp != real)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("expected ");
 		print_ptr(exp);
 		utest_print_yellow(", got ");
@@ -365,6 +412,11 @@ void __assert_ptr_impl(const void *exp, const void *real, bool eq, const char *f
 		printf("\n");
 	} else if (unlikely(!eq && exp == real)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("got ");
 		print_ptr(real);
 		utest_print_yellow(", but didnt expect\n");
@@ -407,7 +459,7 @@ void utest_print_str(const char *exp, const char *real)
 	__utest_print_mem(exp, real, strlen(exp), strlen(real));
 }
 
-void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, const char *file, uint line)
+void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, const char *file, uint line, const char *format, ...)
 {
 	bool mem_eq;
 	uint64 size_exp = size;
@@ -425,9 +477,19 @@ void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, 
 
 	if (unlikely(eq && !mem_eq)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			printf("\n");
+		}
+
 		__utest_print_mem(exp, real, size_exp, size_real);
 	} else if (unlikely(!eq && mem_eq)) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("got ");
 		print_mem(real, size_real);
 		utest_print_yellow(", but didnt expect\n");
@@ -438,10 +500,15 @@ void __assert_mem_impl(const char *exp, const char *real, uint64 size, bool eq, 
 	assert_failed();
 }
 
-void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line)
+void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint line, const char *format, ...)
 {
 	if (unlikely(eq && sign(exp) != sign(real))) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("expected ");
 		print_sign(exp);
 		utest_print_yellow(", got ");
@@ -449,6 +516,11 @@ void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint l
 		printf("\n");
 	} else if (unlikely(!eq && sign(exp) == sign(real))) {
 		announce_fail(file, line);
+		if (format != NULL) {
+			UTEST_PRINT_VA(ANSI_YELLOW, format);
+			utest_print_yellow(": ");
+		}
+
 		utest_print_yellow("got ");
 		print_sign(real);
 		utest_print_yellow(", but expected ");
@@ -460,9 +532,6 @@ void __assert_sign_impl(int64 exp, int64 real, bool eq, const char *file, uint l
 
 	assert_failed();
 }
-
-extern __printf(2, 0)
-int __utest_print_color(const char *color, const char *format, va_list ap);
 
 __cold __noret __printf(1, 5) void
 __utest_panic(const char *format, const char *file, const char *func, uint line, ...)

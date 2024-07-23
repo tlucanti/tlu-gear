@@ -121,14 +121,16 @@ build_all: $(BUILD) $(targets)
 .PHONY: build_all
 
 clean_all:
-	@rm -f *.gcov
+	@$(RM) *.gcov
 	@for ob in $(obj-y); do \
 		f=$${ob%.o}; \
-		test -f $$f.o && $(ECHO) "CLEAN $$(basename $$ob)"; \
-		$(RM) $$f.o; \
-		$(RM) $$f.gcno; \
-		$(RM) $$f.gcda; \
-		$(RM) $$f.gcov; \
+		if test -f $$f.o; then \
+			$(ECHO) "CLEAN $$(basename $$ob)"; \
+			$(RM) $$f.o; \
+			$(RM) $$f.gcno; \
+			$(RM) $$f.gcda; \
+			$(RM) $$f.gcov; \
+		fi \
 	done
 	@for ob in $(targets); do \
 		test -f $$ob && $(ECHO) "CLEAN $$(basename $$ob)"; \
