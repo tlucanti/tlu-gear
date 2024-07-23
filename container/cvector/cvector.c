@@ -15,7 +15,22 @@ void cvector_panic(const char *message)
 INTERNAL
 uint64 allocation_grid_upper(uint64 size)
 {
-	return size * 3 / 2;
+	return max(7u, size * 3 / 2);
+}
+
+INTERNAL
+struct cvector *realloc_more(struct cvector *old, uint type_size)
+{
+	uint64 alloc = allocation_grid_upper(old->allocated);
+	struct cvector *vec = malloc(alloc * type_size + sizeof(struct cvector));
+
+	if (vec == NULL)
+		return NULL;
+	tlu_memcpy(vec, old, old->allocated * type_size + sizeof(struct cvector));
+	vec->allocated = alloc;
+
+	free(old);
+	return vec;
 }
 
 INTERNAL
@@ -151,8 +166,34 @@ void *__cvector_at(void *ptr, uint64 idx, void *ret)
 	struct cvector *cvector = cvector_entry(ptr);
 
 	check_magic(cvector);
-	check_range(cvector, idx);
+	if (idx != cvector->size)
+		check_range(cvector, idx);
+
 	return ret;
+}
+
+extern void *__cvector_insert(void *vvptr, uint type_size, void *pos)
+{
+	void **vptr = vvptr;
+	struct cvector *cvector = cvector_entry(*vptr);
+	uint64 idx = (pos - *vptr) / type_size;
+
+	check_magic(cvector);
+	if (unlikely(cvector->size == cvector->allocated)) {
+		cvector = realloc_more(cvector, type_size);
+		if (unlikely(cvector == NULL))
+			return NULL;
+
+		*vptr = cvector->data;
+		pos = cvector->data + idx * type_size;
+	}
+
+	if (cvector->size != idx)
+		check_range(cvector, idx);
+	tlu_memmove(pos + type_size, pos, (cvector->size - idx) * type_size);
+	cvector->size++;
+
+	return pos;
 }
 
 bool cvector_empty(const void *ptr)

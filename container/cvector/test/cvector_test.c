@@ -1,31 +1,62 @@
 
 #include <container/cvector.h>
 #include <utest/utest.h>
+#include <utest/utils.h>
 
 #include "../cvector_internal.h"
-#include <string.h>
 #include <setjmp.h>
+#include <stdio.h>
+#include <string.h>
 
 #if CONFIG_CVECTOR_VALIDATION_LAYER
 static jmp_buf jump_buf;
-#define ASSERT_PANIC(expr)                        \
-	do {                                      \
-		__cvector_expected_panic = true;  \
-		if (setjmp(jump_buf) == 0) {      \
-			(void)(expr);             \
-		}                                 \
-		__cvector_expected_panic = false; \
+#define ASSERT_PANIC(expr)				\
+	do {						\
+		__cvector_expected_panic = true;	\
+		if (setjmp(jump_buf) == 0) {		\
+			(void)(expr);			\
+		}					\
+		__cvector_expected_panic = false;	\
 	} while (false)
 #else
 # define ASSERT_PANIC(expr) /* nothing */
 #endif
 
+#define ASSERT_CVECTOR(vec, values)								\
+	do {											\
+		typeof(vec) iter;								\
+		uint i = 0;									\
+		bool ok = true;									\
+		ASSERT_EQUAL(strlen(values), cvector_size(vec), "ASSERT_CVECTOR: (size)");	\
+		cvector_for_each(vec, iter) {							\
+			if ((int64)values[i] - '0' != (int64)*iter) {				\
+				ok = false;							\
+				break;								\
+			}									\
+			i++;									\
+		}										\
+		i = 0;										\
+		if (!ok) {									\
+			utest_print_yellow("\nASSERT_CVECTOR: expected:\n");			\
+			for (uint i = 0; i < strlen(values); i++) {				\
+				utest_print_blue("%c ", values[i]);				\
+			}									\
+			utest_print_yellow("\nASSERT_CVECTOR: got:\n");				\
+			cvector_for_each(vec, iter) {						\
+				if (values[i] - '0' != (int64)*iter) {				\
+					utest_print_red("%ld ", (int64)*iter);			\
+				} else {							\
+					utest_print_blue("%ld ", (int64)*iter);			\
+				}								\
+			}									\
+			printf("\n");								\
+			ASSERT_FAIL("ASSERT_CVECTOR");						\
+		}										\
+	} while (false)
+
 #define direct_cmp(a, b) ((a) != (b))
 
-#define touch_memory(x)                   \
-	do {                              \
-		memset(&x, 0, sizeof(x)); \
-	} while (false)
+#define touch_memory(x) memset(&x, 0, sizeof(x))
 
 static bool __cvector_expected_panic = false;
 
@@ -234,6 +265,23 @@ UTEST(cvector_create_from2)
 	ASSERT_PANIC(cvector_create_from(begin, end, 0));
 }
 
+UTEST(cvector_create_from3)
+{
+	int *a = cvector_create(int, 3, 0);
+	int *b;
+
+	a[0] = 1;
+	a[1] = 2;
+	a[2] = 3;
+
+	ASSERT_CVECTOR(a, "123");
+	b = cvector_create_from(cvector_begin(a), cvector_end(a), 0);
+	ASSERT_CVECTOR(b, "123");
+
+	cvector_destroy(a);
+	cvector_destroy(b);
+}
+
 UTEST(cvector_create_from_ext)
 {
 	const uint n = 9;
@@ -253,6 +301,27 @@ UTEST(cvector_create_from_ext)
 
 	cvector_destroy(c);
 	cvector_destroy(v);
+}
+
+UTEST(cvector_create_from_list)
+{
+	uint8 *v0 = cvector_create_from_list(uint8, 0, {9, 8, 7});
+	int *v1 = cvector_create_from_list(int, 0, {1, 2, 3, 4});
+	uint64 *v2 = cvector_create_from_list(uint64, 0, {3, 2, 1});
+	const char **v3 = cvector_create_from_list(const char *, 0, {"lol", "kek"});
+
+	ASSERT_CVECTOR(v0, "987");
+	ASSERT_CVECTOR(v1, "1234");
+	ASSERT_CVECTOR(v2, "321");
+
+	ASSERT_EQUAL(2, cvector_size(v3));
+	ASSERT_ZERO(strcmp(v3[0], "lol"));
+	ASSERT_ZERO(strcmp(v3[1], "kek"));
+
+	cvector_destroy(v0);
+	cvector_destroy(v1);
+	cvector_destroy(v2);
+	cvector_destroy(v3);
 }
 
 UTEST(cvector_size)
@@ -690,6 +759,48 @@ UTEST(cvector_count4)
 	ASSERT_EQUAL(2, cvector_count(v, '2', direct_cmp));
 	ASSERT_EQUAL(1, cvector_count(v, '3', direct_cmp));
 	ASSERT_EQUAL(0, cvector_count(v, '4', direct_cmp));
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_insert)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+
+	cvector_insert(&v, cvector_end(v), 1);
+	ASSERT_CVECTOR(v, "1");
+	cvector_insert(&v, cvector_end(v), 2);
+	ASSERT_CVECTOR(v, "12");
+	cvector_insert(&v, cvector_end(v), 3);
+	ASSERT_CVECTOR(v, "123");
+
+	cvector_insert(&v, cvector_begin(v), 4);
+	ASSERT_CVECTOR(v, "4123");
+	cvector_insert(&v, cvector_begin(v), 5);
+	ASSERT_CVECTOR(v, "54123");
+	cvector_insert(&v, cvector_begin(v), 6);
+	ASSERT_CVECTOR(v, "654123");
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_insert2)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+
+	cvector_insert(&v, cvector_end(v), 1);
+	ASSERT_CVECTOR(v, "1");
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_insert3)
+{
+	int *v = cvector_create_from_list(int, 0, {1, 2, 3});
+
+	ASSERT_CVECTOR(v, "123");
+	cvector_insert(&v, cvector_begin(v) + 2, 9);
+	ASSERT_CVECTOR(v, "1293");
 
 	cvector_destroy(v);
 }

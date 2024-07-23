@@ -37,11 +37,11 @@ void cvector_destroy(void *vector);
 		__cvector_same_type(begin, end);						\
 		(typeof(*(begin)) *)__cvector_create_from(begin, end, sizeof(*(begin)), flags);	\
 	})
-#define cvector_create_from_list(flags, initializer_list)					\
+#define cvector_create_from_list(type, flags, ...)					\
 	({											\
-		typeof((initializer_list)) *list = (initializer_list);				\
-		uint64 size = ARRAY_SIZE(initializer_list);					\
-		(typeof(list))__cvector_create_from(list, list + size, sizeof(*list), flags);	\
+		type list[] = __VA_ARGS__;			\
+		uint64 size = ARRAY_SIZE(list);					\
+		(type *)__cvector_create_from(list, list + size, sizeof(type), flags);	\
 	})
 
 // ====================================================================================================================
@@ -109,9 +109,9 @@ uint64 cvector_capacity(const void *vector);
 // ====================================================================================================================
 #define cvector_insert(vptr, iter, value)						\
 	({										\
-		__cvector_same_type(*vptr, iter);					\
+		__cvector_same_type(*(vptr), iter);					\
 		typeof(iter) ret = __cvector_insert(vptr, sizeof(*(iter)), iter);	\
-		if (!PTR_ERR(ret)) {							\
+		if (ret) {								\
 			*ret = (value);							\
 		}									\
 		ret;									\
@@ -121,7 +121,7 @@ uint64 cvector_capacity(const void *vector);
 
 #define cvector_erase(vptr, iter)						\
 	({									\
-		__cvector_same_type(*vptr, iter);				\
+		__cvector_same_type(*(vptr), iter);				\
 		(typeof(iter))__cvector_erase(vptr, sizeof(*iter), iter);	\
 	})
 #define cvector_pop_front(vptr) cvector_erase(vptr, cvector_begin(*(vptr)))
@@ -129,7 +129,7 @@ uint64 cvector_capacity(const void *vector);
 
 #define cvector_extend(vptr, vector)					\
 	({								\
-		__cvector_same_type(*vptr, vector);			\
+		__cvector_same_type(*(vptr), vector);			\
 		__cvector_extend(vptr, vector, sizeof(*vector));	\
 	})
 
@@ -148,9 +148,9 @@ uint64 cvector_capacity(const void *vector);
 extern void *__cvector_create(uint type_size, uint64 size, cvector_create_flags_t flags);
 extern void *__cvector_copy(const void *vec, uint type_size, cvector_copy_flags_t flags);
 extern void *__cvector_create_from(const void *begin, const void *end, uint type_size, cvector_create_from_flags_t flags);
-
 extern void *__cvector_at(void *vector, uint64 idx, void *ret);
-extern void *__cvector_insert(void **vptr, uint type_size, void *pos);
+extern void *__cvector_insert(void *vptr, uint type_size, void *pos);
+
 extern void *__cvector_erase(void **vptr, uint type_size, void *pos);
 
 #define __cvector_same_type(ptr1, ptr2) (void)((ptr1) == (ptr2))
