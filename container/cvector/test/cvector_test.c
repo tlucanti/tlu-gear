@@ -805,6 +805,70 @@ UTEST(cvector_insert3)
 	cvector_destroy(v);
 }
 
+UTEST(cvector_push_back)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+
+	cvector_push_back(&v, 1);
+	ASSERT_CVECTOR(v, "1");
+
+	cvector_push_back(&v, 2);
+	ASSERT_CVECTOR(v, "12");
+
+	cvector_push_back(&v, 3);
+	ASSERT_CVECTOR(v, "123");
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_push_back2)
+{
+	int *v = cvector_create_from_list(int, 0, {1, 2, 3});
+
+	cvector_push_back(&v, 9);
+	ASSERT_CVECTOR(v, "1239");
+
+	cvector_push_back(&v, 8);
+	ASSERT_CVECTOR(v, "12398");
+
+	cvector_push_back(&v, 7);
+	ASSERT_CVECTOR(v, "123987");
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_push_front)
+{
+	int *v = cvector_create(int, 0, CVECTOR_CREATE_EXACT_SIZE);
+
+	cvector_push_front(&v, 1);
+	ASSERT_CVECTOR(v, "1");
+
+	cvector_push_front(&v, 2);
+	ASSERT_CVECTOR(v, "21");
+
+	cvector_push_front(&v, 3);
+	ASSERT_CVECTOR(v, "321");
+
+	cvector_destroy(v);
+}
+
+UTEST(cvector_push_front2)
+{
+	int *v = cvector_create_from_list(int, 0, {1, 2, 3});
+
+	cvector_push_front(&v, 9);
+	ASSERT_CVECTOR(v, "9123");
+
+	cvector_push_front(&v, 8);
+	ASSERT_CVECTOR(v, "89123");
+
+	cvector_push_front(&v, 7);
+	ASSERT_CVECTOR(v, "789123");
+
+	cvector_destroy(v);
+}
+
 int main(int argc, const char **argv)
 {
 	(void)argc;

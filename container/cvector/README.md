@@ -95,7 +95,7 @@ flags = {
 type *cvector_create_from(flags, type *begin, type *end) /* done */
 
 // =============================================================================
-type = cvector[index];
+type = cvector[index]; /* done */
 
 type cvector_at(const type *vector, idx); /* done */
 type cvector_rat(const type *vector, idx) /* done */
@@ -118,9 +118,9 @@ bool cvector_contains(const type *vector, type val); /* done */
 uint64 cvector_count(const type *vector, type val); /* done */
 
 // =============================================================================
-type *cvector_insert(type **vector, type *pos, type value);
-type *cvector_push_back(type **vector, type value);
-type *cvector_push_front(type **vector, type value);
+type *cvector_insert(type **vector, type *pos, type value); /* done */
+type *cvector_push_back(type **vector, type value); /* done */
+type *cvector_push_front(type **vector, type value); /* done */
 
 type *cvector_erase(type **vector, type *pos);
 type *cvector_pop_front(type **vector);
